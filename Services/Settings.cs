@@ -7,6 +7,8 @@ public sealed class Settings
 {
     public string? AdbPath { get; set; }
     public string? LastConnectAddress { get; set; }
+    public string? SortColumn { get; set; }
+    public bool SortDescending { get; set; }
 
     private static string FilePath => Path.Combine(AdbService.AppDataDir, "settings.json");
 

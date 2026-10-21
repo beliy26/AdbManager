@@ -35,12 +35,14 @@ public sealed partial class MainWindow : Window
 
         ExtendsContentIntoTitleBar = true;
         SetTitleBar(AppTitleBar);
-        AppWindow.Resize(new SizeInt32(1240, 820));
+        SetInitialWindowSize();
         AppWindow.SetIcon(Path.Combine(AppContext.BaseDirectory, "Assets", "AppIcon.ico"));
 
         _adb.Log += msg => DispatcherQueue.TryEnqueue(() => AppendLog(msg));
 
         ConnectAddressBox.Text = _settings.LastConnectAddress ?? "";
+        if (Enum.TryParse<SortColumn>(_settings.SortColumn, out var sortColumn)) _sortColumn = sortColumn;
+        _sortDescending = _settings.SortDescending;
 
         _devicePollTimer = DispatcherQueue.CreateTimer();
         _devicePollTimer.Interval = TimeSpan.FromSeconds(3);
@@ -52,6 +54,36 @@ public sealed partial class MainWindow : Window
             _devicePollTimer.Stop();
             _metadataCts?.Cancel();
         };
+    }
+
+    // ======================= Размер окна =======================
+
+    [System.Runtime.InteropServices.DllImport("user32.dll")]
+    private static extern uint GetDpiForWindow(IntPtr hwnd);
+
+    /// <summary>
+    /// Стартовый размер окна в логических пикселях — AppWindow работает в физических,
+    /// поэтому учитываем масштаб экрана и не выходим за рабочую область монитора.
+    /// </summary>
+    private void SetInitialWindowSize()
+    {
+        const int width = 1480, height = 920;          // желаемый размер, DIP
+        const int minWidth = 1100, minHeight = 640;    // меньше — таблица не помещается
+
+        var hwnd = WinRT.Interop.WindowNative.GetWindowHandle(this);
+        var scale = Math.Max(1.0, GetDpiForWindow(hwnd) / 96.0);
+        var area = Microsoft.UI.Windowing.DisplayArea.GetFromWindowId(AppWindow.Id,
+            Microsoft.UI.Windowing.DisplayAreaFallback.Primary).WorkArea;
+
+        int w = Math.Min((int)(width * scale), (int)(area.Width * 0.95));
+        int h = Math.Min((int)(height * scale), (int)(area.Height * 0.92));
+        AppWindow.MoveAndResize(new RectInt32(area.X + (area.Width - w) / 2, area.Y + (area.Height - h) / 2, w, h));
+
+        if (AppWindow.Presenter is Microsoft.UI.Windowing.OverlappedPresenter presenter)
+        {
+            presenter.PreferredMinimumWidth = Math.Min((int)(minWidth * scale), area.Width);
+            presenter.PreferredMinimumHeight = Math.Min((int)(minHeight * scale), area.Height);
+        }
     }
 
     // ======================= Инициализация adb =======================
@@ -424,8 +456,8 @@ public sealed partial class MainWindow : Window
             .Where(p => query.Length == 0 ||
                         p.Name.Contains(query, StringComparison.OrdinalIgnoreCase) ||
                         p.Label?.Contains(query, StringComparison.CurrentCultureIgnoreCase) == true)
-            .OrderBy(p => p.DisplayName, StringComparer.CurrentCultureIgnoreCase)
             .ToList();
+        filtered = SortPackages(filtered);
 
         var selected = PackagesList.SelectedItems.OfType<PackageInfo>().ToHashSet();
         Packages.Clear();
@@ -433,8 +465,79 @@ public sealed partial class MainWindow : Window
         foreach (var p in filtered.Where(selected.Contains)) PackagesList.SelectedItems.Add(p);
 
         EmptyPackagesPanel.Visibility = Packages.Count == 0 ? Visibility.Visible : Visibility.Collapsed;
+        PackagesHeaderRow.Visibility = Packages.Count == 0 ? Visibility.Collapsed : Visibility.Visible;
+        UpdateSortArrows();
         UpdatePackagesCountText();
         UpdatePackageButtons();
+    }
+
+    // ----- Сортировка -----
+
+    private enum SortColumn { Name, Package, Status, Kind, Size }
+
+    private SortColumn _sortColumn = SortColumn.Name;
+    private bool _sortDescending;
+
+    private List<PackageInfo> SortPackages(List<PackageInfo> items)
+    {
+        var byName = StringComparer.CurrentCultureIgnoreCase;
+        IOrderedEnumerable<PackageInfo> sorted = _sortColumn switch
+        {
+            SortColumn.Package => Order(items, p => p.Name, StringComparer.OrdinalIgnoreCase),
+            SortColumn.Status => Order(items, p => p.State, Comparer<PackageState>.Create((a, b) => StatusRank(a).CompareTo(StatusRank(b)))),
+            SortColumn.Kind => Order(items, p => p.IsSystem, Comparer<bool>.Default),
+            // Приложения без данных о размере — всегда в конце.
+            SortColumn.Size => items.OrderBy(p => p.TotalSize is null)
+                .ThenBy(p => p.TotalSize ?? 0, _sortDescending ? Comparer<long>.Create((a, b) => b.CompareTo(a)) : Comparer<long>.Default),
+            _ => Order(items, p => p.DisplayName, byName),
+        };
+        // Вторичная сортировка — по названию.
+        return sorted.ThenBy(p => p.DisplayName, byName).ToList();
+
+        IOrderedEnumerable<PackageInfo> Order<TKey>(IEnumerable<PackageInfo> source, Func<PackageInfo, TKey> key, IComparer<TKey> comparer) =>
+            _sortDescending ? source.OrderByDescending(key, comparer) : source.OrderBy(key, comparer);
+
+        static int StatusRank(PackageState s) => s switch
+        {
+            PackageState.Enabled => 0,
+            PackageState.Unused => 1,
+            _ => 2,
+        };
+    }
+
+    private void SortHeader_Click(object sender, RoutedEventArgs e)
+    {
+        if (sender is not FrameworkElement { Tag: string tag } || !Enum.TryParse<SortColumn>(tag, out var column)) return;
+
+        if (column == _sortColumn)
+        {
+            _sortDescending = !_sortDescending;
+        }
+        else
+        {
+            _sortColumn = column;
+            // Размер удобнее сразу смотреть от больших к маленьким.
+            _sortDescending = column == SortColumn.Size;
+        }
+
+        _settings.SortColumn = _sortColumn.ToString();
+        _settings.SortDescending = _sortDescending;
+        _settings.Save();
+        ApplyFilter();
+    }
+
+    private void UpdateSortArrows()
+    {
+        var arrows = new Dictionary<SortColumn, FontIcon>
+        {
+            [SortColumn.Name] = SortByNameArrow,
+            [SortColumn.Package] = SortByPackageArrow,
+            [SortColumn.Status] = SortByStatusArrow,
+            [SortColumn.Kind] = SortByKindArrow,
+            [SortColumn.Size] = SortBySizeArrow,
+        };
+        foreach (var (column, arrow) in arrows)
+            arrow.Glyph = column != _sortColumn ? "" : _sortDescending ? "" : ""; // вниз / вверх
     }
 
     private void UpdatePackagesCountText()
@@ -448,8 +551,11 @@ public sealed partial class MainWindow : Window
         var text = Packages.Count == _allPackages.Count
             ? $"Всего: {_allPackages.Count}"
             : $"Найдено: {Packages.Count} из {_allPackages.Count}";
-        var frozen = _allPackages.Count(p => p.IsDisabled);
-        PackagesCountText.Text = frozen > 0 ? $"{text} · заморожено: {frozen}" : text;
+        var frozen = _allPackages.Count(p => p.IsFrozen);
+        var unused = _allPackages.Count(p => p.IsUnused);
+        if (frozen > 0) text += $" · заморожено: {frozen}";
+        if (unused > 0) text += $" · не используется: {unused}";
+        PackagesCountText.Text = text;
     }
 
     private void UpdatePackageButtons()
@@ -458,8 +564,8 @@ public sealed partial class MainWindow : Window
         var count = selected.Count;
         var online = SelectedDevice?.IsOnline == true;
         UninstallButton.IsEnabled = online && count > 0;
-        FreezeButton.IsEnabled = online && selected.Any(p => !p.IsDisabled);
-        UnfreezeButton.IsEnabled = online && selected.Any(p => p.IsDisabled);
+        FreezeButton.IsEnabled = online && selected.Any(p => p.State == PackageState.Enabled);
+        UnfreezeButton.IsEnabled = online && selected.Any(p => p.State != PackageState.Enabled);
         PullApkButton.IsEnabled = online && count == 1;
         CopyNameButton.IsEnabled = count > 0;
     }
@@ -684,7 +790,7 @@ public sealed partial class MainWindow : Window
 
     private async void Freeze_Click(object sender, RoutedEventArgs e)
     {
-        var selected = PackagesList.SelectedItems.OfType<PackageInfo>().Where(p => !p.IsDisabled).ToList();
+        var selected = PackagesList.SelectedItems.OfType<PackageInfo>().Where(p => p.State == PackageState.Enabled).ToList();
         if (selected.Count == 0) return;
 
         var content = new StackPanel { Spacing = 8 };
@@ -732,7 +838,7 @@ public sealed partial class MainWindow : Window
 
     private async void Unfreeze_Click(object sender, RoutedEventArgs e)
     {
-        var selected = PackagesList.SelectedItems.OfType<PackageInfo>().Where(p => p.IsDisabled).ToList();
+        var selected = PackagesList.SelectedItems.OfType<PackageInfo>().Where(p => p.State != PackageState.Enabled).ToList();
         if (selected.Count > 0) await SetFrozenAsync(selected, frozen: false);
     }
 
@@ -746,11 +852,22 @@ public sealed partial class MainWindow : Window
             var changed = new List<PackageInfo>();
             foreach (var pkg in packages)
             {
-                ShowStatus(InfoBarSeverity.Informational, frozen ? "Заморозка…" : "Разморозка…", pkg.DisplayName);
-                var r = await _adb.SetFrozenAsync(device.Serial, pkg.Name, frozen);
+                AdbResult r;
+                if (!frozen && pkg.IsUnused)
+                {
+                    // Остановленное системой приложение включается только запуском.
+                    ShowStatus(InfoBarSeverity.Informational, "Включение (запуск на телефоне)…", pkg.DisplayName);
+                    r = await _adb.WakeAsync(device.Serial, pkg.Name);
+                }
+                else
+                {
+                    ShowStatus(InfoBarSeverity.Informational, frozen ? "Заморозка…" : "Разморозка…", pkg.DisplayName);
+                    r = await _adb.SetFrozenAsync(device.Serial, pkg.Name, frozen);
+                }
+
                 if (r.Success)
                 {
-                    pkg.IsDisabled = frozen;
+                    pkg.State = frozen ? PackageState.Frozen : PackageState.Enabled;
                     changed.Add(pkg);
                 }
                 else
@@ -762,7 +879,7 @@ public sealed partial class MainWindow : Window
             UpdatePackagesCountText();
             UpdatePackageButtons();
 
-            var verb = frozen ? "Заморожено" : "Разморожено";
+            var verb = frozen ? "Заморожено" : "Включено";
             if (errors.Count == 0)
                 ShowStatus(InfoBarSeverity.Success, verb, string.Join(", ", changed.Select(p => p.DisplayName)));
             else

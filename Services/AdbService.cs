@@ -249,13 +249,99 @@ public sealed class AdbService
             list.AddRange(ParsePackages(system.Output, isSystem: true));
         }
 
-        // Замороженные (отключённые) пакеты.
-        var disabled = await RunOnDeviceAsync(serial, "shell", "pm", "list", "packages", "-d");
-        var disabledNames = ParsePackages(disabled.Output, isSystem: false).Select(p => p.Name).ToHashSet();
+        var states = await GetDisabledStatesAsync(serial);
         foreach (var p in list)
-            p.IsDisabled = disabledNames.Contains(p.Name);
+            p.State = states.GetValueOrDefault(p.Name, PackageState.Enabled);
+
+        var sizes = await GetSizesAsync(serial);
+        foreach (var p in list)
+            if (sizes.TryGetValue(p.Name, out var s))
+                p.SetSizes(s.App, s.Data, s.Cache);
 
         return list.OrderBy(p => p.Name, StringComparer.OrdinalIgnoreCase).ToList();
+    }
+
+    /// <summary>
+    /// Состояние отключённых пакетов. <c>pm list packages -d</c> не различает «заморожено» и
+    /// «остановлено системой как неиспользуемое», поэтому для каждого отключённого пакета
+    /// читаем enabled=N из dumpsys (одним вызовом adb).
+    /// </summary>
+    private async Task<Dictionary<string, PackageState>> GetDisabledStatesAsync(string serial)
+    {
+        const string script =
+            "for p in $(pm list packages -d | cut -d: -f2); do " +
+            "s=$(dumpsys package $p 2>/dev/null | grep -m1 -E 'User 0: .*enabled=' | grep -o ' enabled=[0-9]'); " +
+            "echo \"$p$s\"; done";
+        var r = await RunAsync(["-s", serial, "shell", script]);
+
+        var result = new Dictionary<string, PackageState>();
+        foreach (var raw in r.Output.Split('\n'))
+        {
+            var line = raw.Trim();
+            if (line.Length == 0) continue;
+
+            var idx = line.IndexOf(" enabled=", StringComparison.Ordinal);
+            var name = idx < 0 ? line : line[..idx];
+            var code = idx < 0 ? -1 : line[^1] - '0';
+            // 4 = DISABLED_UNTIL_USED; 2 (DISABLED) / 3 (DISABLED_USER) — заморожено.
+            result[name] = code == 4 ? PackageState.Unused : PackageState.Frozen;
+        }
+        return result;
+    }
+
+    /// <summary>
+    /// Размеры приложений из <c>dumpsys diskstats</c> (их периодически считает сама система,
+    /// поэтому для только что установленных приложений данных может не быть).
+    /// </summary>
+    private async Task<Dictionary<string, (long App, long Data, long Cache)>> GetSizesAsync(string serial)
+    {
+        var result = new Dictionary<string, (long, long, long)>();
+        try
+        {
+            var r = await RunAsync(["-s", serial, "shell", "dumpsys", "diskstats"], quiet: true);
+
+            T[]? Array<T>(string key)
+            {
+                var line = r.Output.Split('\n').FirstOrDefault(l => l.StartsWith(key + ": ["));
+                return line is null ? null : System.Text.Json.JsonSerializer.Deserialize<T[]>(line[(key.Length + 2)..]);
+            }
+
+            var names = Array<string>("Package Names");
+            var app = Array<long>("App Sizes");
+            var data = Array<long>("App Data Sizes");
+            var cache = Array<long>("Cache Sizes");
+            if (names is null || app is null || data is null) return result;
+
+            for (int i = 0; i < names.Length && i < app.Length && i < data.Length; i++)
+                result[names[i]] = (app[i], data[i], cache is not null && i < cache.Length ? cache[i] : 0);
+        }
+        catch (Exception ex) when (ex is System.Text.Json.JsonException or InvalidOperationException)
+        {
+            // Нет размеров — не критично.
+        }
+        return result;
+    }
+
+    /// <summary>
+    /// Включает приложение, остановленное системой как неиспользуемое (DISABLED_UNTIL_USED).
+    /// adb не может сменить это состояние через pm enable (SecurityException), но система
+    /// сама включает приложение при запуске — поэтому запускаем его activity и сразу закрываем.
+    /// </summary>
+    public async Task<AdbResult> WakeAsync(string serial, string package)
+    {
+        var resolve = await RunOnDeviceAsync(serial, "shell", "cmd", "package", "resolve-activity", "--brief",
+            "-a", "android.intent.action.MAIN", "-c", "android.intent.category.LAUNCHER", package);
+        var component = resolve.Output.Split('\n').Select(l => l.Trim()).LastOrDefault(l => l.Contains('/'));
+        if (component is null)
+            return new AdbResult(1, "", "У приложения нет экрана для запуска — откройте его на телефоне вручную.");
+
+        await RunOnDeviceAsync(serial, "shell", "am", "start", "-W", "-n", component);
+        await RunOnDeviceAsync(serial, "shell", "am", "force-stop", package);
+
+        var states = await GetDisabledStatesAsync(serial);
+        return states.TryGetValue(package, out var state) && state == PackageState.Unused
+            ? new AdbResult(1, "", "Приложение не включилось после запуска.")
+            : new AdbResult(0, "enabled", "");
     }
 
     /// <summary>
@@ -270,9 +356,13 @@ public sealed class AdbService
 
         // При успехе pm пишет «Package x new state: disabled-user / enabled».
         var expected = frozen ? "disabled" : "enabled";
-        return r.Output.Contains("new state: " + expected, StringComparison.OrdinalIgnoreCase)
-            ? r
-            : r with { ExitCode = r.ExitCode == 0 ? 1 : r.ExitCode };
+        if (r.Output.Contains("new state: " + expected, StringComparison.OrdinalIgnoreCase))
+            return r;
+
+        var error = r.Text.Contains("Shell cannot change component state", StringComparison.Ordinal)
+            ? "Android не разрешает adb менять состояние этого приложения."
+            : r.Text;
+        return new AdbResult(r.ExitCode == 0 ? 1 : r.ExitCode, "", error);
     }
 
     // Формат строки: package:/data/app/~~abc==/com.example-xyz==/base.apk=com.example
