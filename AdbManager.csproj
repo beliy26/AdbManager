@@ -1,0 +1,41 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows10.0.19041.0</TargetFramework>
+    <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
+    <RootNamespace>AdbManager</RootNamespace>
+    <AssemblyName>AdbManager</AssemblyName>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <Platforms>x86;x64;ARM64</Platforms>
+    <RuntimeIdentifiers>win-x86;win-x64;win-arm64</RuntimeIdentifiers>
+    <Platform Condition="'$(Platform)' == '' Or '$(Platform)' == 'AnyCPU'">x64</Platform>
+    <RuntimeIdentifier Condition="'$(RuntimeIdentifier)' == ''">win-$(Platform.ToLowerInvariant())</RuntimeIdentifier>
+    <UseWinUI>true</UseWinUI>
+    <!-- Неупакованное приложение: запускается как обычный .exe, без MSIX -->
+    <WindowsPackageType>None</WindowsPackageType>
+    <WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.WindowsAppSDK" Version="2.5.1" />
+  </ItemGroup>
+
+  <!--
+    В self-contained режиме Windows App SDK добавляет сотни своих DLL/winmd как элементы None
+    со ссылкой (Link), и IDE показывают их в дереве проекта (Rider игнорирует Visible=false
+    для элементов из таргетов). При design-time сборке IDE (BuildingProject != true) убираем их;
+    при настоящей сборке они остаются и копируются в выходную папку как обычно.
+  -->
+  <Target Name="HideWindowsAppSDKPayloadInIde"
+          AfterTargets="AddMicrosoftWindowsAppSDKPayloadFilesFromComponents"
+          Condition="'$(BuildingProject)' != 'true'">
+    <ItemGroup>
+      <None Remove="@(MicrosoftWindowsAppSDKFiles)" />
+    </ItemGroup>
+  </Target>
+
+</Project>

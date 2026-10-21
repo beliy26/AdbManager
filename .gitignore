@@ -1,0 +1,44 @@
+# Результаты сборки
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+artifacts/
+AppPackages/
+BundleArtifacts/
+*.appx
+*.msix
+*.msixbundle
+
+# Visual Studio
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+launchSettings.json
+
+# JetBrains Rider
+.idea/
+*.sln.iml
+
+# VS Code
+.vscode/
+
+# NuGet
+*.nupkg
+*.snupkg
+packages/
+
+# Тесты и покрытие
+TestResults/
+*.coverage
+*.coveragexml
+
+# Локальные настройки Claude Code
+.claude/settings.local.json
+
+# ОС
+Thumbs.db
+Desktop.ini
+.DS_Store
