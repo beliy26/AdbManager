@@ -24,7 +24,7 @@
         <!-- Заголовок окна -->
         <Grid x:Name="AppTitleBar" Padding="16,0,0,0">
             <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
-                <FontIcon Glyph="&#xE8EA;" FontSize="14" />
+                <Image Source="ms-appx:///Assets/AppIcon-64.png" Width="16" Height="16" />
                 <TextBlock Text="ADB Manager" Style="{StaticResource CaptionTextBlockStyle}" />
             </StackPanel>
         </Grid>
@@ -189,6 +189,18 @@
                                     <FontIcon Glyph="&#xE74D;" />
                                 </AppBarButton.Icon>
                             </AppBarButton>
+                            <AppBarButton x:Name="FreezeButton" Label="Заморозить" Click="Freeze_Click" IsEnabled="False"
+                                          ToolTipService.ToolTip="Отключить приложение (pm disable-user). Данные сохраняются.">
+                                <AppBarButton.Icon>
+                                    <FontIcon Glyph="&#xE769;" />
+                                </AppBarButton.Icon>
+                            </AppBarButton>
+                            <AppBarButton x:Name="UnfreezeButton" Label="Разморозить" Click="Unfreeze_Click" IsEnabled="False"
+                                          ToolTipService.ToolTip="Снова включить приложение (pm enable)">
+                                <AppBarButton.Icon>
+                                    <FontIcon Glyph="&#xE768;" />
+                                </AppBarButton.Icon>
+                            </AppBarButton>
                             <AppBarButton x:Name="RefreshPackagesButton" Label="Обновить" Click="RefreshPackages_Click" IsEnabled="False">
                                 <AppBarButton.Icon>
                                     <FontIcon Glyph="&#xE72C;" />
@@ -241,15 +253,28 @@
                                         </Grid.ColumnDefinitions>
                                         <controls:AppIconView Width="36" Height="36" VerticalAlignment="Center"
                                                               Icon="{x:Bind Icon, Mode=OneWay}"
-                                                              FallbackGlyph="{x:Bind Glyph}" />
+                                                              FallbackGlyph="{x:Bind Glyph}"
+                                                              Opacity="{x:Bind IconOpacity, Mode=OneWay}" />
                                         <StackPanel Grid.Column="1" VerticalAlignment="Center">
                                             <TextBlock Text="{x:Bind DisplayName, Mode=OneWay}" TextTrimming="CharacterEllipsis" />
                                             <TextBlock Text="{x:Bind Name}" Style="{StaticResource CaptionTextBlockStyle}"
                                                        Foreground="{ThemeResource TextFillColorSecondaryBrush}" TextTrimming="CharacterEllipsis" />
                                         </StackPanel>
-                                        <TextBlock Grid.Column="2" Text="{x:Bind KindText}" VerticalAlignment="Center"
-                                                   Style="{StaticResource CaptionTextBlockStyle}"
-                                                   Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                                        <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="12" VerticalAlignment="Center">
+                                            <Border Visibility="{x:Bind IsDisabled, Mode=OneWay}"
+                                                    Background="{ThemeResource SystemFillColorCautionBackgroundBrush}"
+                                                    CornerRadius="4" Padding="8,2">
+                                                <StackPanel Orientation="Horizontal" Spacing="4">
+                                                    <FontIcon Glyph="&#xE769;" FontSize="10"
+                                                              Foreground="{ThemeResource SystemFillColorCautionBrush}" />
+                                                    <TextBlock Text="Заморожено" Style="{StaticResource CaptionTextBlockStyle}"
+                                                               Foreground="{ThemeResource SystemFillColorCautionBrush}" />
+                                                </StackPanel>
+                                            </Border>
+                                            <TextBlock Text="{x:Bind KindText}" VerticalAlignment="Center"
+                                                       Style="{StaticResource CaptionTextBlockStyle}"
+                                                       Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                                        </StackPanel>
                                     </Grid>
                                 </DataTemplate>
                             </ListView.ItemTemplate>

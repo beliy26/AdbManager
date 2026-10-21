@@ -249,7 +249,30 @@ public sealed class AdbService
             list.AddRange(ParsePackages(system.Output, isSystem: true));
         }
 
+        // Замороженные (отключённые) пакеты.
+        var disabled = await RunOnDeviceAsync(serial, "shell", "pm", "list", "packages", "-d");
+        var disabledNames = ParsePackages(disabled.Output, isSystem: false).Select(p => p.Name).ToHashSet();
+        foreach (var p in list)
+            p.IsDisabled = disabledNames.Contains(p.Name);
+
         return list.OrderBy(p => p.Name, StringComparer.OrdinalIgnoreCase).ToList();
+    }
+
+    /// <summary>
+    /// Замораживает (<c>pm disable-user</c>) или размораживает (<c>pm enable</c>) приложение
+    /// для текущего пользователя. Данные приложения сохраняются.
+    /// </summary>
+    public async Task<AdbResult> SetFrozenAsync(string serial, string package, bool frozen)
+    {
+        var r = frozen
+            ? await RunOnDeviceAsync(serial, "shell", "pm", "disable-user", "--user", "0", package)
+            : await RunOnDeviceAsync(serial, "shell", "pm", "enable", "--user", "0", package);
+
+        // При успехе pm пишет «Package x new state: disabled-user / enabled».
+        var expected = frozen ? "disabled" : "enabled";
+        return r.Output.Contains("new state: " + expected, StringComparison.OrdinalIgnoreCase)
+            ? r
+            : r with { ExitCode = r.ExitCode == 0 ? 1 : r.ExitCode };
     }
 
     // Формат строки: package:/data/app/~~abc==/com.example-xyz==/base.apk=com.example

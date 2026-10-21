@@ -7,6 +7,7 @@
     <RootNamespace>AdbManager</RootNamespace>
     <AssemblyName>AdbManager</AssemblyName>
     <ApplicationManifest>app.manifest</ApplicationManifest>
+    <ApplicationIcon>Assets\AppIcon.ico</ApplicationIcon>
     <Platforms>x86;x64;ARM64</Platforms>
     <RuntimeIdentifiers>win-x86;win-x64;win-arm64</RuntimeIdentifiers>
     <Platform Condition="'$(Platform)' == '' Or '$(Platform)' == 'AnyCPU'">x64</Platform>
@@ -22,6 +23,13 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.WindowsAppSDK" Version="2.5.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Иконка окна и заголовка (иконка exe задаётся через ApplicationIcon) -->
+    <Content Include="Assets\AppIcon.ico" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="Assets\AppIcon-64.png" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="Assets\AppIcon.png" />
   </ItemGroup>
 
   <!--

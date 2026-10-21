@@ -7,6 +7,7 @@ public sealed class PackageInfo(string name, bool isSystem, string apkPath) : IN
 {
     private string? _label;
     private AppIcon? _icon;
+    private bool _isDisabled;
 
     public event PropertyChangedEventHandler? PropertyChanged;
 
@@ -35,6 +36,20 @@ public sealed class PackageInfo(string name, bool isSystem, string apkPath) : IN
             OnPropertyChanged(nameof(Icon));
         }
     }
+
+    /// <summary>Приложение заморожено (pm disable-user): не запускается и скрыто из лаунчера.</summary>
+    public bool IsDisabled
+    {
+        get => _isDisabled;
+        set
+        {
+            _isDisabled = value;
+            OnPropertyChanged(nameof(IsDisabled));
+            OnPropertyChanged(nameof(IconOpacity));
+        }
+    }
+
+    public double IconOpacity => IsDisabled ? 0.4 : 1.0;
 
     public string DisplayName => string.IsNullOrWhiteSpace(Label) ? Name : Label;
 

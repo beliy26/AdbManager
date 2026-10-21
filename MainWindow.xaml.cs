@@ -36,6 +36,7 @@ public sealed partial class MainWindow : Window
         ExtendsContentIntoTitleBar = true;
         SetTitleBar(AppTitleBar);
         AppWindow.Resize(new SizeInt32(1240, 820));
+        AppWindow.SetIcon(Path.Combine(AppContext.BaseDirectory, "Assets", "AppIcon.ico"));
 
         _adb.Log += msg => DispatcherQueue.TryEnqueue(() => AppendLog(msg));
 
@@ -432,19 +433,33 @@ public sealed partial class MainWindow : Window
         foreach (var p in filtered.Where(selected.Contains)) PackagesList.SelectedItems.Add(p);
 
         EmptyPackagesPanel.Visibility = Packages.Count == 0 ? Visibility.Visible : Visibility.Collapsed;
-        PackagesCountText.Text = _allPackages.Count == 0
-            ? ""
-            : query.Length == 0
-                ? $"Всего: {_allPackages.Count}"
-                : $"Найдено: {Packages.Count} из {_allPackages.Count}";
+        UpdatePackagesCountText();
         UpdatePackageButtons();
+    }
+
+    private void UpdatePackagesCountText()
+    {
+        if (_allPackages.Count == 0)
+        {
+            PackagesCountText.Text = "";
+            return;
+        }
+
+        var text = Packages.Count == _allPackages.Count
+            ? $"Всего: {_allPackages.Count}"
+            : $"Найдено: {Packages.Count} из {_allPackages.Count}";
+        var frozen = _allPackages.Count(p => p.IsDisabled);
+        PackagesCountText.Text = frozen > 0 ? $"{text} · заморожено: {frozen}" : text;
     }
 
     private void UpdatePackageButtons()
     {
-        var count = PackagesList.SelectedItems.Count;
+        var selected = PackagesList.SelectedItems.OfType<PackageInfo>().ToList();
+        var count = selected.Count;
         var online = SelectedDevice?.IsOnline == true;
         UninstallButton.IsEnabled = online && count > 0;
+        FreezeButton.IsEnabled = online && selected.Any(p => !p.IsDisabled);
+        UnfreezeButton.IsEnabled = online && selected.Any(p => p.IsDisabled);
         PullApkButton.IsEnabled = online && count == 1;
         CopyNameButton.IsEnabled = count > 0;
     }
@@ -661,6 +676,97 @@ public sealed partial class MainWindow : Window
                 ShowStatus(InfoBarSeverity.Success, "Удалено", string.Join(", ", removed.Select(p => p.Name)));
             else
                 ShowStatus(InfoBarSeverity.Error, $"Удалено: {removed.Count}, ошибок: {errors.Count}",
+                    string.Join(Environment.NewLine, errors));
+        });
+    }
+
+    // ----- Заморозка -----
+
+    private async void Freeze_Click(object sender, RoutedEventArgs e)
+    {
+        var selected = PackagesList.SelectedItems.OfType<PackageInfo>().Where(p => !p.IsDisabled).ToList();
+        if (selected.Count == 0) return;
+
+        var content = new StackPanel { Spacing = 8 };
+        content.Children.Add(new TextBlock
+        {
+            TextWrapping = TextWrapping.Wrap,
+            Text = "Замороженное приложение не запускается, не получает уведомлений и пропадает из меню. " +
+                   "Данные сохраняются — его можно разморозить в любой момент.",
+        });
+        content.Children.Add(new ScrollViewer
+        {
+            MaxHeight = 220,
+            Content = new TextBlock
+            {
+                Text = string.Join(Environment.NewLine, selected.Select(p => $"{p.DisplayName}  ({p.Name})")),
+                TextWrapping = TextWrapping.Wrap,
+            },
+        });
+        if (selected.Any(p => p.IsSystem))
+        {
+            content.Children.Add(new InfoBar
+            {
+                IsOpen = true,
+                IsClosable = false,
+                Severity = InfoBarSeverity.Warning,
+                Title = "Системные приложения",
+                Message = "Заморозка важных системных компонентов может нарушить работу телефона " +
+                          "(вплоть до циклической перезагрузки). Замораживайте только то, назначение чего знаете.",
+            });
+        }
+
+        var dialog = new ContentDialog
+        {
+            XamlRoot = Content.XamlRoot,
+            Title = selected.Count == 1 ? "Заморозить приложение?" : $"Заморозить приложения ({selected.Count})?",
+            PrimaryButtonText = "Заморозить",
+            CloseButtonText = "Отмена",
+            DefaultButton = ContentDialogButton.Close,
+            Content = content,
+        };
+        if (await dialog.ShowAsync() != ContentDialogResult.Primary) return;
+
+        await SetFrozenAsync(selected, frozen: true);
+    }
+
+    private async void Unfreeze_Click(object sender, RoutedEventArgs e)
+    {
+        var selected = PackagesList.SelectedItems.OfType<PackageInfo>().Where(p => p.IsDisabled).ToList();
+        if (selected.Count > 0) await SetFrozenAsync(selected, frozen: false);
+    }
+
+    private async Task SetFrozenAsync(List<PackageInfo> packages, bool frozen)
+    {
+        if (SelectedDevice is not { IsOnline: true } device) return;
+
+        await RunBusyAsync(async () =>
+        {
+            var errors = new List<string>();
+            var changed = new List<PackageInfo>();
+            foreach (var pkg in packages)
+            {
+                ShowStatus(InfoBarSeverity.Informational, frozen ? "Заморозка…" : "Разморозка…", pkg.DisplayName);
+                var r = await _adb.SetFrozenAsync(device.Serial, pkg.Name, frozen);
+                if (r.Success)
+                {
+                    pkg.IsDisabled = frozen;
+                    changed.Add(pkg);
+                }
+                else
+                {
+                    errors.Add($"{pkg.Name}: {LastLine(r.Text)}");
+                }
+            }
+
+            UpdatePackagesCountText();
+            UpdatePackageButtons();
+
+            var verb = frozen ? "Заморожено" : "Разморожено";
+            if (errors.Count == 0)
+                ShowStatus(InfoBarSeverity.Success, verb, string.Join(", ", changed.Select(p => p.DisplayName)));
+            else
+                ShowStatus(InfoBarSeverity.Error, $"{verb}: {changed.Count}, ошибок: {errors.Count}",
                     string.Join(Environment.NewLine, errors));
         });
     }
