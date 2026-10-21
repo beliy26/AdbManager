@@ -212,6 +212,12 @@
                                         <FontIcon Glyph="&#xE74E;" />
                                     </AppBarButton.Icon>
                                 </AppBarButton>
+                                <AppBarButton x:Name="CopyListButton" Label="Копировать список для LLM" Click="CopyListForLlm_Click" IsEnabled="False"
+                                              ToolTipService.ToolTip="Скопировать показанный список приложений (с учётом поиска и фильтров) в виде таблицы с запросом для консультации у ИИ">
+                                    <AppBarButton.Icon>
+                                        <FontIcon Glyph="&#xE8C8;" />
+                                    </AppBarButton.Icon>
+                                </AppBarButton>
                                 <AppBarButton x:Name="CopyNameButton" Label="Копировать имя пакета" Click="CopyName_Click" IsEnabled="False">
                                     <AppBarButton.Icon>
                                         <FontIcon Glyph="&#xE8C8;" />

@@ -382,6 +382,14 @@ public sealed class AdbService
         }
     }
 
+    /// <summary>Системное свойство устройства (<c>getprop</c>), например ro.build.version.release.</summary>
+    public async Task<string?> GetPropAsync(string serial, string property)
+    {
+        var r = await RunAsync(["-s", serial, "shell", "getprop", property], quiet: true);
+        var value = r.Output.Trim();
+        return value.Length == 0 ? null : value;
+    }
+
     /// <summary>Пути ко всем APK пакета (base + split), <c>pm path</c>.</summary>
     public async Task<IReadOnlyList<string>> GetApkPathsAsync(string serial, string package, CancellationToken ct = default)
     {

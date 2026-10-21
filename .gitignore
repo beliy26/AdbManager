@@ -37,6 +37,7 @@ TestResults/
 
 # Локальные настройки Claude Code
 .claude/settings.local.json
+CLAUDE.md
 
 # ОС
 Thumbs.db

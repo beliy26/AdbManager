@@ -568,6 +568,7 @@ public sealed partial class MainWindow : Window
         UnfreezeButton.IsEnabled = online && selected.Any(p => p.State != PackageState.Enabled);
         PullApkButton.IsEnabled = online && count == 1;
         CopyNameButton.IsEnabled = count > 0;
+        CopyListButton.IsEnabled = Packages.Count > 0;
     }
 
     private void SearchBox_TextChanged(AutoSuggestBox sender, AutoSuggestBoxTextChangedEventArgs args) => ApplyFilter();
@@ -601,6 +602,72 @@ public sealed partial class MainWindow : Window
         var package = new DataPackage();
         package.SetText(string.Join(Environment.NewLine, names));
         Clipboard.SetContent(package);
+    }
+
+    /// <summary>
+    /// Копирует показанный список приложений в виде Markdown-таблицы с запросом —
+    /// чтобы вставить в чат с LLM и спросить, что можно удалить или заморозить.
+    /// </summary>
+    private async void CopyListForLlm_Click(object sender, RoutedEventArgs e)
+    {
+        var items = Packages.ToList();
+        if (items.Count == 0) return;
+
+        var device = SelectedDevice;
+        string? android = null, manufacturer = null;
+        if (device is { IsOnline: true })
+        {
+            try
+            {
+                android = await _adb.GetPropAsync(device.Serial, "ro.build.version.release");
+                manufacturer = await _adb.GetPropAsync(device.Serial, "ro.product.manufacturer");
+            }
+            catch { /* без версии Android */ }
+        }
+
+        var phone = string.Join(" ", new[] { manufacturer, device?.DisplayName }.Where(s => !string.IsNullOrWhiteSpace(s)));
+        var sb = new System.Text.StringBuilder();
+        sb.AppendLine($"Ниже список приложений на моём Android-смартфоне{(phone.Length > 0 ? " " + phone : "")}" +
+                      $"{(android is null ? "" : $" (Android {android})")}.");
+        sb.AppendLine("Подскажи, какие из них можно безопасно удалить или заморозить, а какие трогать нельзя. " +
+                      "Для каждого рекомендуемого приложения кратко объясни, что оно делает и чем грозит его отключение. " +
+                      "Сгруппируй ответ: «можно удалить», «лучше заморозить», «не трогать».");
+        sb.AppendLine();
+        sb.AppendLine("Пояснения к таблице:");
+        sb.AppendLine("- Заморозка — `pm disable-user`: приложение не запускается, данные сохраняются, можно включить обратно.");
+        sb.AppendLine("- Удаление системных приложений — только для текущего пользователя (`pm uninstall --user 0`), " +
+                      "восстанавливается командой `cmd package install-existing`.");
+        sb.AppendLine("- Статус «Заморожено» — отключено вручную; «Не используется» — Android сам остановил давно не используемое приложение.");
+        sb.AppendLine("- Размер — приложение вместе с данными.");
+        sb.AppendLine();
+        sb.AppendLine($"Приложений в списке: {items.Count}" +
+                      (ShowSystemToggle.IsOn ? " (включая системные)" : " (только пользовательские)") +
+                      (SearchBox.Text.Trim().Length > 0 ? $", фильтр: «{SearchBox.Text.Trim()}»" : "") + ".");
+        sb.AppendLine();
+        sb.AppendLine("| Название | Пакет | Тип | Статус | Размер | Расположение |");
+        sb.AppendLine("|---|---|---|---|---|---|");
+        foreach (var p in items)
+        {
+            sb.AppendLine($"| {Md(p.DisplayName)} | `{p.Name}` | {p.KindText} | {(p.StatusText.Length > 0 ? p.StatusText : "Включено")} " +
+                          $"| {p.SizeText} | {Md(ApkLocation(p.ApkPath))} |");
+        }
+
+        var package = new DataPackage();
+        package.SetText(sb.ToString());
+        Clipboard.SetContent(package);
+        ShowStatus(InfoBarSeverity.Success, "Список скопирован",
+            $"Приложений: {items.Count}. Вставьте его в чат с ИИ (Ctrl+V).");
+
+        static string Md(string s) => s.Replace("|", "\\|").Replace("\r", " ").Replace("\n", " ");
+
+        // Каталог установки: /system/priv-app, /product/app, /data/app… — подсказка, насколько приложение системное.
+        static string ApkLocation(string apkPath)
+        {
+            if (string.IsNullOrEmpty(apkPath)) return "";
+            if (apkPath.StartsWith("/data/", StringComparison.Ordinal)) return "/data/app";
+            var parts = apkPath.Split('/', StringSplitOptions.RemoveEmptyEntries);
+            return parts.Length >= 2 ? $"/{parts[0]}/{parts[1]}" : apkPath;
+        }
     }
 
     // ----- Установка -----
