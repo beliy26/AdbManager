@@ -250,6 +250,25 @@
                                         <FontIcon Glyph="&#xE777;" />
                                     </AppBarButton.Icon>
                                 </AppBarButton>
+                                <AppBarButton x:Name="CheckDriftButton" Label="Проверить после обновления прошивки…" Click="CheckDrift_Click" IsEnabled="False"
+                                              ToolTipService.ToolTip="Обновление прошивки возвращает замороженное и удалённое — найти такие приложения и повторить">
+                                    <AppBarButton.Icon>
+                                        <FontIcon Glyph="&#xE895;" />
+                                    </AppBarButton.Icon>
+                                </AppBarButton>
+                                <AppBarSeparator />
+                                <AppBarButton x:Name="InstallLauncherButton" Label="Установить лаунчер Projectivy…" Click="InstallLauncher_Click" IsEnabled="False"
+                                              ToolTipService.ToolTip="Скачать с GitHub и установить Projectivy Launcher — главный экран для Android TV без рекламы">
+                                    <AppBarButton.Icon>
+                                        <FontIcon Glyph="&#xE80F;" />
+                                    </AppBarButton.Icon>
+                                </AppBarButton>
+                                <AppBarButton x:Name="PrivacyAuditButton" Label="Аудит приватности…" Click="PrivacyAudit_Click" IsEnabled="False"
+                                              ToolTipService.ToolTip="Голосовой ассистент, доступ к микрофону по истории AppOps, ACR и телеметрия">
+                                    <AppBarButton.Icon>
+                                        <FontIcon Glyph="&#xE720;" />
+                                    </AppBarButton.Icon>
+                                </AppBarButton>
                                 <AppBarButton x:Name="PrivateDnsButton" Label="Частный DNS (блокировка рекламы)…" Click="PrivateDns_Click" IsEnabled="False">
                                     <AppBarButton.Icon>
                                         <FontIcon Glyph="&#xE72E;" />
@@ -258,6 +277,11 @@
                                 <AppBarButton x:Name="OpenBackupsButton" Label="Открыть папку бэкапов и журнала" Click="OpenBackups_Click" IsEnabled="False">
                                     <AppBarButton.Icon>
                                         <FontIcon Glyph="&#xE838;" />
+                                    </AppBarButton.Icon>
+                                </AppBarButton>
+                                <AppBarButton x:Name="ScreenshotButton" Label="Снимок экрана устройства…" Click="Screenshot_Click" IsEnabled="False">
+                                    <AppBarButton.Icon>
+                                        <FontIcon Glyph="&#xE722;" />
                                     </AppBarButton.Icon>
                                 </AppBarButton>
                             </CommandBar.SecondaryCommands>

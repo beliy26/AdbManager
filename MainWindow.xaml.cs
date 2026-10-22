@@ -19,6 +19,7 @@ public sealed partial class MainWindow : Window
     private readonly Settings _settings = Settings.Load();
     private readonly PackageAdvisor _advisor = PackageAdvisor.Load();
     private readonly Dictionary<string, DeviceProps> _deviceProps = [];
+    private readonly HashSet<string> _insecureWarned = [];
     private CancellationTokenSource? _metadataCts;
     private readonly DispatcherQueueTimer _devicePollTimer;
     private List<PackageInfo> _allPackages = [];
@@ -348,6 +349,10 @@ public sealed partial class MainWindow : Window
         RestoreRemovedButton.IsEnabled = online;
         PrivateDnsButton.IsEnabled = online;
         OpenBackupsButton.IsEnabled = online;
+        CheckDriftButton.IsEnabled = online;
+        PrivacyAuditButton.IsEnabled = online;
+        InstallLauncherButton.IsEnabled = online;
+        ScreenshotButton.IsEnabled = online;
         EnableWifiButton.IsEnabled = online && !device!.IsWireless;
         var forget = device is { IsConnected: false, Kind: DeviceKind.Paired };
         DisconnectButton.IsEnabled = device is { IsConnected: true, IsWireless: true } || forget;
@@ -659,6 +664,30 @@ public sealed partial class MainWindow : Window
         var platforms = _advisor.DetectPlatforms(installed, props.Manufacturer, props.Brand);
         var ids = platforms.Select(p => p.Id).ToList();
         foreach (var p in packages) _advisor.Apply(p, ids);
+
+        // Защита по состоянию устройства (идеи CleanYourTV): единственный главный экран и входы ТВ.
+        var (home, homeHasAlternative, tvInputs) = await _adb.GetGuardsAsync(device.Serial);
+        foreach (var p in packages)
+        {
+            if (p.Name == home && !homeHasAlternative)
+            {
+                p.SetAdvice(PackageAdvice.Protected, "Главный экран",
+                    "Единственное приложение главного экрана: без него устройству нечего показать по кнопке Home. " +
+                    "Установите и выберите другой лаунчер — тогда защита снимется.");
+            }
+            else if (p.IsSystem && tvInputs.Contains(p.Name))
+            {
+                p.SetAdvice(PackageAdvice.Protected, "Входы ТВ (HDMI / AV / тюнер)",
+                    "Обслуживает входы телевизора. Если отключить, вход видит кабель, но показывает «Нет сигнала».");
+            }
+        }
+
+        if (props.AdbSecure == "0" && _insecureWarned.Add(device.Serial))
+        {
+            ShowStatus(InfoBarSeverity.Warning, "Отладка по сети без подтверждения",
+                $"{device.DisplayName} сообщает ro.adb.secure=0: порт adb 5555 даёт полный доступ к устройству любому в сети, " +
+                "без запроса «Разрешить отладку?». Закончив, выключите на устройстве отладку по USB и по сети и перезагрузите его.");
+        }
 
         var title = $"Приложения — {device.DisplayName}";
         if (platforms.Count > 0) title += " · " + string.Join(", ", platforms.Select(p => p.Name));
@@ -1147,12 +1176,18 @@ public sealed partial class MainWindow : Window
     {
         if (SelectedDevice is not { IsOnline: true } device) return;
         var marked = PackagesList.SelectedItems.OfType<PackageInfo>().ToList();
-        var selected = marked.Where(p => !p.IsBlocked).ToList();
-        if (selected.Count == 0) return;
+        var drivers = await FindTvInputDriversAsync(device, marked.Where(p => !p.IsBlocked).ToList());
+        var selected = marked.Where(p => !p.IsBlocked && !drivers.Contains(p)).ToList();
+        if (selected.Count == 0)
+        {
+            ShowTvInputDriversSkipped(drivers);
+            return;
+        }
 
         var keepData = new CheckBox { Content = "Сохранить данные и кэш (-k)" };
         var content = new StackPanel { Spacing = 8 };
         AddSkippedProtectedInfo(content, marked.Where(p => p.IsBlocked));
+        AddSkippedTvInputInfo(content, drivers);
         content.Children.Add(new TextBlock
         {
             Text = selected.Count == 1 ? "Удалить приложение?" : $"Удалить приложения ({selected.Count})?",
@@ -1231,12 +1266,19 @@ public sealed partial class MainWindow : Window
 
     private async void Freeze_Click(object sender, RoutedEventArgs e)
     {
+        if (SelectedDevice is not { IsOnline: true } device) return;
         var candidates = PackagesList.SelectedItems.OfType<PackageInfo>().Where(p => p.State == PackageState.Enabled).ToList();
-        var selected = candidates.Where(p => !p.IsBlocked).ToList();
-        if (selected.Count == 0) return;
+        var drivers = await FindTvInputDriversAsync(device, candidates.Where(p => !p.IsBlocked).ToList());
+        var selected = candidates.Where(p => !p.IsBlocked && !drivers.Contains(p)).ToList();
+        if (selected.Count == 0)
+        {
+            ShowTvInputDriversSkipped(drivers);
+            return;
+        }
 
         var content = new StackPanel { Spacing = 8 };
         AddSkippedProtectedInfo(content, candidates.Where(p => p.IsBlocked));
+        AddSkippedTvInputInfo(content, drivers);
         content.Children.Add(new TextBlock
         {
             TextWrapping = TextWrapping.Wrap,
@@ -1355,6 +1397,47 @@ public sealed partial class MainWindow : Window
         });
     }
 
+    private const string TvInputDriversMessage =
+        "Запрашивают android.permission.TV_INPUT_HARDWARE — это программная часть входов HDMI/AV/тюнера. " +
+        "Если их отключить, вход видит кабель, но показывает «Нет сигнала», и картинку возвращает только " +
+        "полное восстановление и холодная перезагрузка.";
+
+    /// <summary>Системные пакеты из списка, которые обслуживают входы ТВ (идея CleanYourTV), — их не трогаем.</summary>
+    private async Task<List<PackageInfo>> FindTvInputDriversAsync(DeviceInfo device, IReadOnlyCollection<PackageInfo> packages)
+    {
+        var system = packages.Where(p => p.IsSystem).Select(p => p.Name).ToList();
+        if (system.Count == 0) return [];
+
+        HashSet<string> found = [];
+        await RunBusyAsync(async () =>
+        {
+            ShowStatus(InfoBarSeverity.Informational, "Проверка…", "Проверяю, не обслуживают ли пакеты входы ТВ (HDMI/AV)");
+            found = await _adb.GetTvInputHardwarePackagesAsync(device.Serial, system);
+            StatusBar.IsOpen = false;
+        });
+        return packages.Where(p => found.Contains(p.Name)).ToList();
+    }
+
+    private static void AddSkippedTvInputInfo(StackPanel content, IReadOnlyCollection<PackageInfo> skipped)
+    {
+        if (skipped.Count == 0) return;
+        content.Children.Add(new InfoBar
+        {
+            IsOpen = true,
+            IsClosable = false,
+            Severity = InfoBarSeverity.Warning,
+            Title = $"Пропущено — входы ТВ: {skipped.Count}",
+            Message = string.Join(", ", skipped.Select(p => p.DisplayName)) + ". " + TvInputDriversMessage,
+        });
+    }
+
+    private void ShowTvInputDriversSkipped(IReadOnlyCollection<PackageInfo> skipped)
+    {
+        if (skipped.Count > 0)
+            ShowStatus(InfoBarSeverity.Warning, "Пропущено — входы ТВ",
+                string.Join(", ", skipped.Select(p => p.DisplayName)) + ". " + TvInputDriversMessage);
+    }
+
     // ----- Откат изменений (идея ЧистогоТВ) -----
 
     /// <summary>Диалог со списком-чекбоксами (всё отмечено). Возвращает выбранное или null при отмене.</summary>
@@ -1411,6 +1494,8 @@ public sealed partial class MainWindow : Window
             "freeze" => $"Разморозить: {e.Label} ({e.Package}) — заморожено {e.Time:dd.MM HH:mm}",
             "uninstall" => $"Вернуть: {e.Label} ({e.Package}) — удалено {e.Time:dd.MM HH:mm}",
             "dns" => $"Частный DNS: вернуть прежнюю настройку ({DescribeDns(e.OldValue)}) — изменено {e.Time:dd.MM HH:mm}",
+            "home" => $"Главный экран: вернуть {e.OldValue?.Split('/')[0] ?? "прежний"} — изменено {e.Time:dd.MM HH:mm}",
+            "install" => $"Удалить установленное программой: {e.Label} ({e.Package}) — установлено {e.Time:dd.MM HH:mm}",
             _ => e.Package,
         };
 
@@ -1423,7 +1508,8 @@ public sealed partial class MainWindow : Window
         {
             var errors = new List<string>();
             int ok = 0;
-            foreach (var entry in chosen)
+            // Сначала главный экран — потом можно удалять лаунчер, который им был.
+            foreach (var entry in chosen.OrderBy(c => c.Action == "home" ? 0 : 1))
             {
                 ShowStatus(InfoBarSeverity.Informational, "Возвращаю…", entry.Label ?? entry.Package);
                 AdbResult r = entry.Action switch
@@ -1431,6 +1517,10 @@ public sealed partial class MainWindow : Window
                     "freeze" => await _adb.SetFrozenAsync(device.Serial, entry.Package, frozen: false),
                     "uninstall" => await _adb.InstallExistingAsync(device.Serial, entry.Package),
                     "dns" => await RestoreDnsAsync(device, entry.OldValue),
+                    "home" => string.IsNullOrEmpty(entry.OldValue)
+                        ? new AdbResult(1, "", "прежний главный экран неизвестен — выберите его на устройстве")
+                        : await _adb.SetHomeActivityAsync(device.Serial, entry.OldValue),
+                    "install" => await _adb.UninstallAsync(device.Serial, new PackageInfo(entry.Package, false, ""), keepData: false),
                     _ => new AdbResult(1, "", "неизвестное действие"),
                 };
                 if (r.Success)
@@ -1516,6 +1606,341 @@ public sealed partial class MainWindow : Window
         {
             ShowStatus(InfoBarSeverity.Error, "Не удалось открыть папку", ex.Message);
         }
+    }
+
+    // ----- После обновления прошивки (идея CleanYourTV) -----
+
+    /// <summary>
+    /// Обновление прошивки ставится поверх: замороженные и удалённые системные приложения возвращаются.
+    /// Сравниваем журнал с устройством и предлагаем повторить то, что откатилось.
+    /// </summary>
+    private async void CheckDrift_Click(object sender, RoutedEventArgs e)
+    {
+        if (SelectedDevice is not { IsOnline: true } device) return;
+
+        ChangeJournal? journal = null;
+        List<JournalEntry> drifted = [];
+        var appliedCount = 0;
+        await RunBusyAsync(async () =>
+        {
+            ShowStatus(InfoBarSeverity.Informational, "Проверка…", "Сравниваю журнал изменений с устройством");
+            journal = await GetJournalAsync(device);
+            var applied = journal.GetRestorable().Where(j => j.Action is "freeze" or "uninstall").ToList();
+            appliedCount = applied.Count;
+            if (applied.Count == 0) return;
+
+            var installed = await _adb.GetInstalledNamesAsync(device.Serial);
+            var disabled = await _adb.GetDisabledStatesAsync(device.Serial);
+            drifted = applied.Where(j => installed.Contains(j.Package) && (j.Action == "uninstall" || !disabled.ContainsKey(j.Package))).ToList();
+        });
+        if (journal is null) return;
+
+        if (drifted.Count == 0)
+        {
+            ShowStatus(InfoBarSeverity.Success, appliedCount == 0 ? "Нечего проверять" : "Всё на месте",
+                appliedCount == 0
+                    ? "Программа ещё ничего не замораживала и не удаляла на этом устройстве."
+                    : $"Всё, что программа замораживала и удаляла на этом устройстве ({appliedCount}), по-прежнему заморожено и удалено.");
+            return;
+        }
+
+        static string Describe(JournalEntry j) => j.Action == "freeze"
+            ? $"Заморозить снова: {j.Label} ({j.Package}) — снова включено"
+            : $"Удалить снова: {j.Label} ({j.Package}) — снова установлено";
+        var chosen = await ShowChecklistAsync("После обновления прошивки",
+            "Эти приложения программа замораживала или удаляла, но сейчас они снова работают — обычно так бывает после обновления прошивки. " +
+            "Отмеченные будут заморожены или удалены заново.",
+            drifted.Select(j => (Describe(j), j)).ToList(), "Повторить");
+        if (chosen is not { Count: > 0 }) return;
+
+        await RunBusyAsync(async () =>
+        {
+            await journal.EnsureBackupAsync(_adb, device.Serial);
+            var errors = new List<string>();
+            int ok = 0;
+            foreach (var j in chosen)
+            {
+                ShowStatus(InfoBarSeverity.Informational, "Повторяю…", j.Label ?? j.Package);
+                var r = j.Action == "freeze"
+                    ? await _adb.SetFrozenAsync(device.Serial, j.Package, frozen: true)
+                    : await _adb.UninstallAsync(device.Serial, new PackageInfo(j.Package, j.System, ""), keepData: false);
+                if (r.Success && (j.Action == "freeze" || r.Text.Contains("Success")))
+                {
+                    ok++;
+                    journal.Add(j with { Time = DateTime.Now });
+                }
+                else
+                {
+                    errors.Add($"{j.Package}: {LastLine(r.Text)}");
+                }
+            }
+
+            await ReloadPackagesCoreAsync(device);
+            if (errors.Count == 0)
+                ShowStatus(InfoBarSeverity.Success, "Повторено", $"Приложений: {ok}");
+            else
+                ShowStatus(InfoBarSeverity.Error, $"Повторено: {ok}, ошибок: {errors.Count}", string.Join(Environment.NewLine, errors));
+        });
+    }
+
+    // ----- Лаунчер Projectivy -----
+
+    private async void InstallLauncher_Click(object sender, RoutedEventArgs e)
+    {
+        if (SelectedDevice is not { IsOnline: true } device) return;
+
+        LauncherRelease? release = null;
+        string? installedVersion = null;
+        var isTv = true;
+        string? currentHome = null;
+        await RunBusyAsync(async () =>
+        {
+            ShowStatus(InfoBarSeverity.Informational, ProjectivyLauncher.Name, "Узнаю последнюю версию на GitHub…");
+            release = await ProjectivyLauncher.GetLatestAsync();
+            if ((await _adb.GetInstalledNamesAsync(device.Serial)).Contains(ProjectivyLauncher.Package))
+                installedVersion = await _adb.GetVersionAsync(device.Serial, ProjectivyLauncher.Package) ?? "?";
+            isTv = await _adb.IsTvAsync(device.Serial);
+            (currentHome, _) = await _adb.GetHomeActivitiesAsync(device.Serial);
+            StatusBar.IsOpen = false;
+        });
+        if (release is null) return;
+
+        var alreadyHome = currentHome?.StartsWith(ProjectivyLauncher.Package + "/", StringComparison.Ordinal) == true;
+        var makeHome = new CheckBox { Content = "Сделать главным экраном (кнопка Home)", IsChecked = !alreadyHome, IsEnabled = !alreadyHome };
+        var content = new StackPanel { Spacing = 10, MaxWidth = 560 };
+        content.Children.Add(new TextBlock
+        {
+            TextWrapping = TextWrapping.Wrap,
+            Text = "Бесплатный лаунчер для Android TV без рекламы и рекомендаций: свои категории, обои, " +
+                   "скрытие приложений. Сторонний проект, APK скачивается с GitHub автора.",
+        });
+        content.Children.Add(new TextBlock
+        {
+            TextWrapping = TextWrapping.Wrap,
+            Text = $"Последняя версия: {release.Version} ({PackageInfo.FormatSize(release.Size)})" + Environment.NewLine +
+                   $"На устройстве: {(installedVersion is null ? "не установлен" : installedVersion)}" +
+                   (alreadyHome ? " — уже главный экран" : ""),
+        });
+        content.Children.Add(new HyperlinkButton { Content = "Страница выпуска на GitHub", NavigateUri = new Uri(release.PageUrl), Padding = new Thickness(0) });
+        if (!isTv)
+        {
+            content.Children.Add(new InfoBar
+            {
+                IsOpen = true, IsClosable = false, Severity = InfoBarSeverity.Warning,
+                Title = "Это не Android TV",
+                Message = "Projectivy рассчитан на телевизоры и приставки; на телефоне им неудобно пользоваться.",
+            });
+        }
+        content.Children.Add(makeHome);
+        content.Children.Add(new TextBlock
+        {
+            TextWrapping = TextWrapping.Wrap,
+            Foreground = (Microsoft.UI.Xaml.Media.Brush)Application.Current.Resources["TextFillColorSecondaryBrush"],
+            Text = "Стандартный лаунчер останется. Если кнопка Home всё равно открывает его (так бывает на Google TV), " +
+                   "заморозьте его в таблице — защита снимется, когда появится второй лаунчер. " +
+                   "Отменить установку и смену главного экрана — «… → Вернуть как было».",
+        });
+
+        var dialog = new ContentDialog
+        {
+            XamlRoot = Content.XamlRoot,
+            Title = ProjectivyLauncher.Name,
+            PrimaryButtonText = installedVersion is null ? "Скачать и установить"
+                : installedVersion == release.Version ? "Переустановить" : "Обновить",
+            CloseButtonText = "Отмена",
+            DefaultButton = ContentDialogButton.Primary,
+            Content = content,
+        };
+        if (await dialog.ShowAsync() != ContentDialogResult.Primary) return;
+        var setHome = makeHome.IsChecked == true && !alreadyHome;
+
+        await RunBusyAsync(async () =>
+        {
+            ShowStatus(InfoBarSeverity.Informational, "Загрузка…", release.ApkName);
+            BusyBar.IsIndeterminate = false;
+            string apk;
+            try
+            {
+                apk = await ProjectivyLauncher.DownloadAsync(release, new Progress<double>(p => BusyBar.Value = p * 100));
+            }
+            finally
+            {
+                BusyBar.IsIndeterminate = true;
+            }
+
+            var journal = await GetJournalAsync(device);
+            await journal.EnsureBackupAsync(_adb, device.Serial);
+
+            ShowStatus(InfoBarSeverity.Informational, "Установка…", release.ApkName);
+            var r = await _adb.InstallAsync(device.Serial, [apk], allowDowngrade: false, grantPermissions: false);
+            if (!r.Success || !r.Text.Contains("Success"))
+            {
+                ShowStatus(InfoBarSeverity.Error, "Не удалось установить", LastLine(r.Text));
+                return;
+            }
+            // В журнал — только новая установка: «вернуть» обновление значило бы удалить лаунчер целиком.
+            if (installedVersion is null)
+                journal.Add(new JournalEntry(DateTime.Now, "install", ProjectivyLauncher.Package, ProjectivyLauncher.Name, false));
+
+            var message = $"Версия {release.Version} установлена.";
+            if (setHome)
+            {
+                var (before, candidates) = await _adb.GetHomeActivitiesAsync(device.Serial);
+                var component = candidates.FirstOrDefault(c => c.StartsWith(ProjectivyLauncher.Package + "/", StringComparison.Ordinal));
+                var h = component is null
+                    ? new AdbResult(1, "", "лаунчер не объявил activity главного экрана")
+                    : await _adb.SetHomeActivityAsync(device.Serial, component);
+                if (h.Success)
+                {
+                    journal.Add(new JournalEntry(DateTime.Now, "home", ChangeJournal.HomeKey, "Главный экран", false, before));
+                    message += " Теперь это главный экран — нажмите Home на пульте.";
+                }
+                else
+                {
+                    message += " Сделать главным экраном не удалось: " + LastLine(h.Text) +
+                               ". Выберите его на устройстве: Настройки → Приложения → Приложения по умолчанию → Главный экран.";
+                }
+            }
+
+            await ReloadPackagesCoreAsync(device);
+            ShowStatus(InfoBarSeverity.Success, ProjectivyLauncher.Name, message);
+        });
+    }
+
+    // ----- Аудит приватности (идея CleanYourTV) -----
+
+    /// <summary>Известные пакеты с понятной ролью (из отчётов CleanYourTV), а не догадки по имени.</summary>
+    private static readonly Dictionary<string, (string Category, string Note)> PrivacyCatalog = new()
+    {
+        ["com.google.android.katniss"] = ("voice", "Google Ассистент и голосовой поиск; без него перестанут работать кнопка микрофона на пульте и голосовой поиск в приложениях"),
+        ["com.google.android.speech.pumpkin"] = ("voice", "офлайн-модель для фразы-активации, не нужна без ассистента"),
+        ["org.droidtv.amazonalexa"] = ("voice", "Amazon Alexa на ТВ Philips; микрофон — в пульте"),
+        ["tv.inscape.tvclient.inscapeacr"] = ("acr", "Inscape ACR: распознаёт, что на экране (включая HDMI), по картинке — микрофон не нужен"),
+        ["com.skyworth.aisense"] = ("acr", "ACR Coocaa/Skyworth для таргетинга рекламы"),
+        ["tv.alphonso.alphonso_eula"] = ("acr", "Alphonso: рекламный трекинг, читает статистику использования приложений"),
+        ["org.droidtv.candeebug"] = ("telemetry", "аналитика «DAC» на ТВ Philips"),
+        ["org.droidtv.gel"] = ("telemetry", "аналитика «GEL» на ТВ Philips (работает в процессе candeebug)"),
+        ["org.droidtv.usagelogger"] = ("telemetry", "статистика загрузок, нажатий пульта и телеметрия панели"),
+        ["org.droidtv.tv.frameworklogger"] = ("telemetry", "журналирование фреймворка и перезагрузок"),
+        ["com.google.android.feedback"] = ("telemetry", "отправка отзывов и отчётов в Google"),
+        ["com.miui.tv.analytics"] = ("telemetry", "аналитика Xiaomi: журналы и статистика использования"),
+        ["com.xiaomi.statistic"] = ("telemetry", "статистика Xiaomi"),
+        ["com.tcl.bi"] = ("telemetry", "аналитика TCL"),
+        ["com.tcl.logkit"] = ("telemetry", "сбор журналов TCL"),
+    };
+
+    private async void PrivacyAudit_Click(object sender, RoutedEventArgs e)
+    {
+        if (SelectedDevice is not { IsOnline: true } device) return;
+
+        Dictionary<string, List<string>> voice = [];
+        List<(string Package, string Ago, bool Running)> mic = [];
+        HashSet<string> installed = [];
+        var failed = true;
+        await RunBusyAsync(async () =>
+        {
+            ShowStatus(InfoBarSeverity.Informational, "Аудит приватности…", "Читаю настройки ассистента и историю доступа к микрофону (AppOps)");
+            (voice, mic) = await _adb.GetPrivacyAuditAsync(device.Serial);
+            installed = await _adb.GetInstalledNamesAsync(device.Serial);
+            StatusBar.IsOpen = false;
+            failed = false;
+        });
+        if (failed) return;
+
+        string Name(string package) =>
+            _allPackages.FirstOrDefault(p => p.Name == package) is { Label: { Length: > 0 } label } ? $"{label} ({package})" : package;
+
+        var found = new HashSet<string>();
+        var text = new System.Text.StringBuilder();
+        void Section(string title, IEnumerable<string> lines)
+        {
+            var list = lines.ToList();
+            text.AppendLine(title);
+            text.AppendLine(list.Count == 0 ? "  — не найдено" : string.Join(Environment.NewLine, list.Select(l => "  • " + l)));
+            text.AppendLine();
+        }
+
+        Section("Голосовой ассистент (назначен в настройках системы)", voice.Select(v =>
+        {
+            found.Add(v.Key);
+            var note = PrivacyCatalog.TryGetValue(v.Key, out var c) ? " — " + c.Note : "";
+            return $"{Name(v.Key)}{note}";
+        }));
+
+        Section("Обращались к микрофону (история AppOps)", mic.OrderByDescending(m => m.Running).Select(m =>
+        {
+            found.Add(m.Package);
+            return $"{Name(m.Package)} — {(m.Running ? "использует сейчас" : FormatAgo(m.Ago))}";
+        }));
+
+        foreach (var (category, title) in new[] { ("acr", "Распознавание контента на экране (ACR) — микрофон не нужен"), ("telemetry", "Телеметрия и аналитика") })
+        {
+            Section(title, PrivacyCatalog.Where(c => c.Value.Category == category && installed.Contains(c.Key)).Select(c =>
+            {
+                found.Add(c.Key);
+                return $"{Name(c.Key)} — {c.Value.Note}";
+            }));
+        }
+        text.Append("Аудит не доказывает, что звук или данные уходят с устройства: AppOps показывает только факт обращения. " +
+                    "Отключая ассистент, вы теряете кнопку микрофона и голосовой поиск.");
+
+        var markable = Packages.Where(p => found.Contains(p.Name) && !p.IsBlocked).ToList();
+        var dialog = new ContentDialog
+        {
+            XamlRoot = Content.XamlRoot,
+            Title = "Аудит приватности — " + device.DisplayName,
+            CloseButtonText = "Закрыть",
+            PrimaryButtonText = markable.Count > 0 ? $"Отметить в таблице ({markable.Count})" : "",
+            DefaultButton = ContentDialogButton.Close,
+            Content = new ScrollViewer
+            {
+                MaxHeight = 480,
+                Content = new TextBlock { Text = text.ToString(), TextWrapping = TextWrapping.Wrap, IsTextSelectionEnabled = true },
+            },
+        };
+        if (await dialog.ShowAsync() == ContentDialogResult.Primary)
+        {
+            SetMarked(markable);
+            ShowStatus(InfoBarSeverity.Informational, $"Отмечено: {markable.Count}",
+                "Проверьте список и нажмите «Заморозить» — заморозку можно отменить в любой момент.");
+        }
+    }
+
+    /// <summary>«2d18h40m39s429ms» из AppOps → «2 д 18 ч назад» (две старшие единицы).</summary>
+    private static string FormatAgo(string ago)
+    {
+        var parts = System.Text.RegularExpressions.Regex.Matches(ago, @"(\d+)(d|h|ms|m|s)")
+            .Where(m => m.Groups[2].Value != "ms")
+            .Select(m => m.Groups[1].Value + " " + m.Groups[2].Value switch { "d" => "д", "h" => "ч", "m" => "мин", _ => "с" })
+            .Take(2)
+            .ToList();
+        return parts.Count == 0 ? "недавно" : string.Join(" ", parts) + " назад";
+    }
+
+    // ----- Снимок экрана -----
+
+    private async void Screenshot_Click(object sender, RoutedEventArgs e)
+    {
+        if (SelectedDevice is not { IsOnline: true } device) return;
+
+        byte[] png = [];
+        await RunBusyAsync(async () => png = await _adb.ScreenshotAsync(device.Serial));
+        // Сигнатура PNG: иначе на экране защищённое содержимое или команда не поддерживается.
+        if (png.Length < 8 || png[0] != 0x89 || png[1] != (byte)'P')
+        {
+            ShowStatus(InfoBarSeverity.Error, "Не удалось сделать снимок экрана",
+                "Устройство не вернуло изображение. На некоторых экранах (видео с защитой, банковские приложения) снимок запрещён.");
+            return;
+        }
+
+        var picker = new FileSavePicker { SuggestedFileName = $"{device.DisplayName.Replace(' ', '-')}-{DateTime.Now:yyyyMMdd-HHmmss}" };
+        picker.FileTypeChoices.Add("PNG", [".png"]);
+        WinRT.Interop.InitializeWithWindow.Initialize(picker, WinRT.Interop.WindowNative.GetWindowHandle(this));
+        var file = await picker.PickSaveFileAsync();
+        if (file is null) return;
+
+        await File.WriteAllBytesAsync(file.Path, png);
+        ShowStatus(InfoBarSeverity.Success, "Снимок экрана сохранён", file.Path);
     }
 
     // ----- Частный DNS (идея ЧистогоТВ) -----

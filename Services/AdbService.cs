@@ -15,7 +15,8 @@ public sealed record AdbResult(int ExitCode, string Output, string Error)
 }
 
 /// <summary>Свойства устройства из getprop.</summary>
-public sealed record DeviceProps(string Manufacturer, string Brand, string Model, string Android, int Sdk, string SerialNo)
+/// <param name="AdbSecure">ro.adb.secure: «0» — adb по сети пускает любого без запроса «Разрешить отладку?».</param>
+public sealed record DeviceProps(string Manufacturer, string Brand, string Model, string Android, int Sdk, string SerialNo, string AdbSecure)
 {
     /// <summary>Стабильный ключ устройства (одинаковый по USB и Wi-Fi) — для журнала и бэкапов.</summary>
     public string Key => $"{Manufacturer}-{Model}-{SerialNo}";
@@ -273,7 +274,7 @@ public sealed class AdbService
     /// «остановлено системой как неиспользуемое», поэтому для каждого отключённого пакета
     /// читаем enabled=N из dumpsys (одним вызовом adb).
     /// </summary>
-    private async Task<Dictionary<string, PackageState>> GetDisabledStatesAsync(string serial)
+    public async Task<Dictionary<string, PackageState>> GetDisabledStatesAsync(string serial)
     {
         const string script =
             "for p in $(pm list packages -d | cut -d: -f2); do " +
@@ -393,13 +394,145 @@ public sealed class AdbService
     public async Task<DeviceProps> GetDevicePropsAsync(string serial)
     {
         string[] keys = ["ro.product.manufacturer", "ro.product.brand", "ro.product.model",
-            "ro.build.version.release", "ro.build.version.sdk", "ro.serialno"];
+            "ro.build.version.release", "ro.build.version.sdk", "ro.serialno", "ro.adb.secure"];
         var script = string.Join("; ", keys.Select(k => "getprop " + k));
         var r = await RunAsync(["-s", serial, "shell", script], quiet: true);
         var lines = r.Output.Replace("\r", "").Split('\n');
         string V(int i) => i < lines.Length ? lines[i].Trim() : "";
-        return new DeviceProps(V(0), V(1), V(2), V(3), int.TryParse(V(4), out var sdk) ? sdk : 0, V(5));
+        return new DeviceProps(V(0), V(1), V(2), V(3), int.TryParse(V(4), out var sdk) ? sdk : 0, V(5), V(6));
     }
+
+    // ---------- Защита: главный экран и входы ТВ (идеи CleanYourTV) ----------
+
+    private static readonly System.Text.RegularExpressions.Regex PackageNameRe =
+        new(@"^[A-Za-z_][A-Za-z0-9_]*(\.[A-Za-z0-9_]+)+$", System.Text.RegularExpressions.RegexOptions.CultureInvariant);
+
+    // Отвечают на HOME, но лаунчером не являются: мастер настройки (на Google TV, получив Home, уводит
+    // систему в цикл падений), настройки, заглушки FallbackHome и заводские тесты.
+    private static readonly System.Text.RegularExpressions.Regex NotALauncherRe = new(
+        @"^(com\.google\.android\.tungsten\.setupwraith|com\.android\.tv\.settings|com\.android\.settings|com\.android\.provision)/|" +
+        @"/\S*FallbackHome$|factorytest|factory_test|factorymode",
+        System.Text.RegularExpressions.RegexOptions.IgnoreCase | System.Text.RegularExpressions.RegexOptions.CultureInvariant);
+
+    /// <summary>
+    /// Кто сейчас главный экран (Home) и есть ли ему замена — другой включённый лаунчер, а также пакеты,
+    /// которые обслуживают входы ТВ (TvInputService). Одним вызовом adb.
+    /// </summary>
+    public async Task<(string? Home, bool HomeHasAlternative, HashSet<string> TvInputs)> GetGuardsAsync(string serial)
+    {
+        const string intent = "-a android.intent.action.MAIN -c android.intent.category.HOME";
+        var script = $"cmd package resolve-activity --brief {intent} 2>/dev/null; echo ---; " +
+                     $"cmd package query-activities --brief {intent} 2>/dev/null; echo ---; " +
+                     "pm query-services --components -a android.media.tv.TvInputService 2>/dev/null";
+        var r = await RunAsync(["-s", serial, "shell", script], quiet: true);
+        var parts = r.Output.Replace("\r", "").Split("---\n");
+
+        static IEnumerable<string> Components(string? text) => (text ?? "").Split('\n')
+            .Select(l => l.Trim()).Where(l => l.Contains('/') && PackageNameRe.IsMatch(l.Split('/')[0]));
+
+        // Если лаунчеров несколько и ни один не выбран, отвечает ResolverActivity пакета android.
+        var home = Components(parts.ElementAtOrDefault(0)).LastOrDefault()?.Split('/')[0];
+        if (home == "android") home = null;
+
+        var alternative = Components(parts.ElementAtOrDefault(1))
+            .Where(c => !NotALauncherRe.IsMatch(c))
+            .Select(c => c.Split('/')[0])
+            .Any(p => p != home);
+
+        var inputs = Components(parts.ElementAtOrDefault(2)).Select(c => c.Split('/')[0]).ToHashSet();
+        return (home, alternative, inputs);
+    }
+
+    /// <summary>
+    /// Текущий главный экран (компонент или null, если выбор не сделан) и все activity, отвечающие на HOME.
+    /// </summary>
+    public async Task<(string? Current, List<string> Candidates)> GetHomeActivitiesAsync(string serial)
+    {
+        const string intent = "-a android.intent.action.MAIN -c android.intent.category.HOME";
+        var r = await RunAsync(["-s", serial, "shell",
+            $"cmd package resolve-activity --brief {intent} 2>/dev/null; echo ---; cmd package query-activities --brief {intent} 2>/dev/null"], quiet: true);
+        var parts = r.Output.Replace("\r", "").Split("---\n");
+
+        static List<string> Components(string? text) => (text ?? "").Split('\n')
+            .Select(l => l.Trim()).Where(l => l.Contains('/') && PackageNameRe.IsMatch(l.Split('/')[0])).ToList();
+
+        var current = Components(parts.ElementAtOrDefault(0)).LastOrDefault();
+        if (current?.StartsWith("android/", StringComparison.Ordinal) == true) current = null; // окно выбора лаунчера
+        return (current, Components(parts.ElementAtOrDefault(1)));
+    }
+
+    /// <summary>Делает activity главным экраном (<c>cmd package set-home-activity</c>, Android 7+).</summary>
+    public async Task<AdbResult> SetHomeActivityAsync(string serial, string component)
+    {
+        var r = await RunOnDeviceAsync(serial, "shell", "cmd", "package", "set-home-activity", component);
+        return r.Output.Contains("Success", StringComparison.OrdinalIgnoreCase) ? r : new AdbResult(r.ExitCode == 0 ? 1 : r.ExitCode, "", r.Text);
+    }
+
+    /// <summary>Android TV / Google TV (<c>android.software.leanback</c>).</summary>
+    public async Task<bool> IsTvAsync(string serial)
+    {
+        var r = await RunAsync(["-s", serial, "shell", "pm", "has-feature", "android.software.leanback"], quiet: true);
+        return r.Output.Trim() == "true";
+    }
+
+    /// <summary>
+    /// Пакеты, запрашивающие android.permission.TV_INPUT_HARDWARE, — программная часть входов HDMI/AV/тюнера.
+    /// Если отключить такой пакет, вход видит кабель, но показывает «Нет сигнала», и вернуть картинку
+    /// помогает только полное восстановление и холодная перезагрузка (опыт CleanYourTV).
+    /// </summary>
+    public async Task<HashSet<string>> GetTvInputHardwarePackagesAsync(string serial, IEnumerable<string> packages)
+    {
+        var names = packages.Where(p => PackageNameRe.IsMatch(p)).ToList();
+        if (names.Count == 0) return [];
+        // Только собственный блок «requested permissions»: иначе пакет с общим UID совпадёт по чужим разрешениям.
+        var script = $"for p in {string.Join(' ', names)}; do dumpsys package $p 2>/dev/null | " +
+                     "sed -n -E '/requested permissions:/,/(install|runtime) permissions:|User [0-9]+:/p' | " +
+                     "grep -q TV_INPUT_HARDWARE && echo $p; done; true";
+        var r = await RunAsync(["-s", serial, "shell", script], quiet: true);
+        return r.Output.Split('\n').Select(l => l.Trim()).Where(names.Contains).ToHashSet();
+    }
+
+    // ---------- Аудит приватности (идея CleanYourTV) ----------
+
+    /// <summary>
+    /// Что устройство само называет голосовым ассистентом (secure-настройки) и какие пакеты по истории
+    /// AppOps обращались к микрофону: пакет → «время назад» и признак «сейчас».
+    /// </summary>
+    public async Task<(Dictionary<string, List<string>> Voice, List<(string Package, string Ago, bool Running)> Microphone)>
+        GetPrivacyAuditAsync(string serial)
+    {
+        string[] keys = ["voice_interaction_service", "voice_recognition_service", "assistant"];
+        var settings = string.Join("; ", keys.Select(k => $"echo \"{k}=$(settings get secure {k})\""));
+        var mic = "for p in $(pm list packages | cut -d: -f2); do " +
+                  "r=$(appops get $p RECORD_AUDIO 2>/dev/null | grep -m1 'time='); " +
+                  "[ -n \"$r\" ] && echo \"mic|$p|$r\"; done; true";
+        var r = await RunAsync(["-s", serial, "shell", settings + "; " + mic], quiet: true);
+
+        var voice = new Dictionary<string, List<string>>();
+        var microphone = new List<(string, string, bool)>();
+        foreach (var raw in r.Output.Replace("\r", "").Split('\n'))
+        {
+            var line = raw.Trim();
+            if (line.StartsWith("mic|", StringComparison.Ordinal))
+            {
+                var parts = line.Split('|', 3);
+                if (parts.Length < 3) continue;
+                var ago = System.Text.RegularExpressions.Regex.Match(parts[2], @"time=\+(\S+) ago");
+                microphone.Add((parts[1], ago.Success ? ago.Groups[1].Value : "", parts[2].Contains("(running)")));
+                continue;
+            }
+            var eq = line.IndexOf('=');
+            if (eq <= 0) continue;
+            var package = line[(eq + 1)..].Split('/')[0];
+            if (!PackageNameRe.IsMatch(package)) continue;
+            if (!voice.TryGetValue(package, out var list)) voice[package] = list = [];
+            list.Add(line[..eq]);
+        }
+        return (voice, microphone);
+    }
+
+    /// <summary>Снимок экрана устройства (PNG).</summary>
+    public Task<byte[]> ScreenshotAsync(string serial) => ExecOutAsync(serial, "screencap -p");
 
     /// <summary>Имена всех установленных для пользователя пакетов (<c>pm list packages</c>).</summary>
     public async Task<HashSet<string>> GetInstalledNamesAsync(string serial)

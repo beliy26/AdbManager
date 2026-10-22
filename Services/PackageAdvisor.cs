@@ -69,12 +69,14 @@ public sealed partial class PackageAdvisor
 
     /// <summary>
     /// База ЧистогоТВ (в основном телевизоры) + свой список рекламы и телеметрии на телефонах
-    /// (phone-packages.json). При совпадении пакета приоритет у первой базы.
+    /// (phone-packages.json) + списки отключения CleanYourTV для 200+ моделей ТВ
+    /// (cleanyourtv-packages.json, собирается tools/import-cleanyourtv.py). При совпадении пакета
+    /// приоритет у базы, загруженной раньше.
     /// </summary>
     public static PackageAdvisor Load()
     {
         var merged = new Db();
-        foreach (var file in new[] { "chistytv-packages.json", "phone-packages.json" })
+        foreach (var file in new[] { "chistytv-packages.json", "phone-packages.json", "cleanyourtv-packages.json" })
         {
             try
             {

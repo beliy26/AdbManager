@@ -3,8 +3,8 @@ using System.Text.Json;
 namespace AdbManager.Services;
 
 /// <summary>Запись журнала изменений на устройстве.</summary>
-/// <param name="Action">freeze, uninstall, enable, restore, dns.</param>
-/// <param name="OldValue">Для dns — прежние настройки «режим|сервер».</param>
+/// <param name="Action">freeze, uninstall, enable, restore, dns, install (установлено программой), home (смена главного экрана).</param>
+/// <param name="OldValue">Для dns — прежние настройки «режим|сервер», для home — прежний компонент главного экрана.</param>
 public sealed record JournalEntry(DateTime Time, string Action, string Package, string? Label, bool System, string? OldValue = null);
 
 /// <summary>
@@ -15,6 +15,7 @@ public sealed record JournalEntry(DateTime Time, string Action, string Package, 
 public sealed class ChangeJournal
 {
     public const string DnsKey = "private_dns";
+    public const string HomeKey = "home_activity";
 
     private static readonly HashSet<string> BackedUpThisSession = [];
     private static readonly JsonSerializerOptions JsonOptions = new() { WriteIndented = false };
@@ -50,8 +51,9 @@ public sealed class ChangeJournal
     }
 
     /// <summary>
-    /// Что можно вернуть: для каждого пакета берётся последнее действие. Заморозку и изменение DNS
-    /// можно отменить всегда, удаление — только у системных приложений (install-existing).
+    /// Что можно вернуть: для каждого пакета берётся последнее действие. Заморозку, изменение DNS,
+    /// смену главного экрана и установку программой можно отменить всегда, удаление — только у
+    /// системных приложений (install-existing).
     /// </summary>
     public List<JournalEntry> GetRestorable()
     {
@@ -60,11 +62,11 @@ public sealed class ChangeJournal
         {
             var entries = group.ToList();
             var last = entries[^1];
-            if (!(last.Action is "freeze" or "dns" || (last.Action == "uninstall" && last.System))) continue;
+            if (!(last.Action is "freeze" or "dns" or "home" or "install" || (last.Action == "uninstall" && last.System))) continue;
 
-            if (last.Action == "dns")
+            if (last.Action is "dns" or "home")
             {
-                // Несколько смен DNS подряд: возвращаем настройку, которая была до первой из них.
+                // Несколько смен подряд: возвращаем настройку, которая была до первой из них.
                 var start = entries.FindLastIndex(e => e.Action == "restore") + 1;
                 last = last with { OldValue = entries[start].OldValue };
             }
