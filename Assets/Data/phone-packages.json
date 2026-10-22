@@ -1,0 +1,54 @@
+{
+  "comment": "Рекламные и шпионские предустановки на телефонах. Формат — как у chistytv-packages.json. disable — реклама, телеметрия, скрытые установщики; ask — партнёрские приложения, которыми могут пользоваться.",
+  "platforms": [],
+  "packages": [
+    { "id": "com.facebook.appmanager", "platform": "any", "action": "disable", "title": "Facebook App Manager", "note": "Предустановка: фоном обновляет и ставит приложения Facebook, даже если их нет" },
+    { "id": "com.facebook.services", "platform": "any", "action": "disable", "title": "Facebook Services", "note": "Предустановка: фоновая служба Facebook, передаёт данные об устройстве" },
+    { "id": "com.facebook.system", "platform": "any", "action": "disable", "title": "Facebook App Installer", "note": "Предустановка: скрытый установщик приложений Facebook" },
+    { "id": "com.facebook.katana", "platform": "any", "action": "ask", "title": "Facebook", "note": "Если не пользуетесь — можно удалить" },
+    { "id": "com.facebook.orca", "platform": "any", "action": "ask", "title": "Messenger", "note": "Если не пользуетесь — можно удалить" },
+
+    { "id": "com.aura.oobe.samsung", "platform": "any", "action": "disable", "title": "AppCloud (ironSource Aura)", "note": "Рекламный установщик: предлагает и ставит партнёрские приложения" },
+    { "id": "com.aura.oobe.samsung.gl", "platform": "any", "action": "disable", "title": "AppCloud (ironSource Aura)", "note": "Рекламный установщик: предлагает и ставит партнёрские приложения" },
+    { "id": "com.ironsource.appcloud.oobe.huawei", "platform": "any", "action": "disable", "title": "AppCloud (ironSource)", "note": "Рекламный установщик: предлагает и ставит партнёрские приложения" },
+    { "id": "com.glance.internet", "platform": "any", "action": "disable", "title": "Glance", "note": "Рекламная лента и обои на экране блокировки" },
+    { "id": "com.netflix.partner.activation", "platform": "any", "action": "disable", "title": "Netflix Partner Activation", "note": "Партнёрская служба активации Netflix, само приложение работает без неё" },
+
+    { "id": "com.samsung.android.app.spage", "platform": "any", "action": "disable", "title": "Samsung Free", "note": "Лента новостей и рекламы слева от главного экрана" },
+    { "id": "com.samsung.sree", "platform": "any", "action": "disable", "title": "Samsung Global Goals", "note": "Обои и уведомления с рекламой" },
+    { "id": "com.samsung.android.ipsgeofence", "platform": "any", "action": "disable", "title": "Samsung Visit In", "note": "Отслеживает посещение мест для рекламных предложений" },
+    { "id": "com.samsung.android.rubin.app", "platform": "any", "action": "disable", "title": "Customization Service", "note": "Собирает данные об использовании для персонализированной рекламы и рекомендаций" },
+    { "id": "com.samsung.android.dqagent", "platform": "any", "action": "disable", "title": "Device Quality Agent", "note": "Телеметрия: отправляет в Samsung данные о работе устройства" },
+    { "id": "com.samsung.android.diagmonagent", "platform": "any", "action": "disable", "title": "Samsung DiagMonAgent", "note": "Телеметрия: диагностика и отчёты об ошибках в Samsung" },
+    { "id": "com.sec.android.diagmonagent", "platform": "any", "action": "disable", "title": "Samsung DiagMonAgent", "note": "Телеметрия: диагностика и отчёты об ошибках в Samsung" },
+
+    { "id": "com.miui.msa.global", "platform": "any", "action": "disable", "title": "MIUI System Ads (MSA)", "note": "Системная реклама Xiaomi в приложениях и при установке" },
+    { "id": "com.miui.systemAdSolution", "platform": "any", "action": "disable", "title": "MIUI System Ad Solution", "note": "Системная реклама Xiaomi" },
+    { "id": "com.miui.analytics", "platform": "any", "action": "disable", "title": "MIUI Analytics", "note": "Телеметрия Xiaomi" },
+    { "id": "com.miui.daemon", "platform": "any", "action": "disable", "title": "MIUI Daemon", "note": "Сбор статистики использования Xiaomi" },
+    { "id": "com.miui.hybrid", "platform": "any", "action": "disable", "title": "Quick Apps", "note": "Мини-приложения с рекламой Xiaomi" },
+    { "id": "com.miui.hybrid.accessory", "platform": "any", "action": "disable", "title": "Quick Apps Accessory", "note": "Дополнение к Quick Apps" },
+    { "id": "com.miui.android.fashiongallery", "platform": "any", "action": "disable", "title": "Карусель обоев", "note": "Обои с рекламой на экране блокировки Xiaomi" },
+    { "id": "com.xiaomi.mipicks", "platform": "any", "action": "disable", "title": "GetApps", "note": "Магазин приложений Xiaomi с рекламой" },
+    { "id": "com.xiaomi.glgm", "platform": "any", "action": "disable", "title": "Xiaomi Games", "note": "Каталог игр с рекламой" },
+
+    { "id": "com.opos.ads", "platform": "any", "action": "disable", "title": "OPPO Ads", "note": "Системная реклама OPPO / realme / OnePlus" },
+    { "id": "com.nearme.statistics.rom", "platform": "any", "action": "disable", "title": "OPPO Statistics", "note": "Телеметрия OPPO / realme" },
+
+    { "id": "com.cleanmaster.mguard", "platform": "any", "action": "disable", "title": "Clean Master", "note": "«Очиститель» с агрессивной рекламой, пользы нет" },
+    { "id": "com.cleanmaster.security", "platform": "any", "action": "disable", "title": "CM Security", "note": "«Антивирус» с агрессивной рекламой" },
+    { "id": "com.lenovo.anyshare.gps", "platform": "any", "action": "ask", "title": "SHAREit", "note": "Много рекламы; файлы можно передавать штатными средствами (Quick Share, Nearby Share)" },
+    { "id": "com.UCMobile.intl", "platform": "any", "action": "ask", "title": "UC Browser", "note": "Браузер с рекламой" },
+
+    { "id": "com.microsoft.skydrive", "platform": "any", "action": "ask", "title": "OneDrive", "note": "Партнёрская предустановка; если не пользуетесь — можно удалить" },
+    { "id": "com.microsoft.office.officehubrow", "platform": "any", "action": "ask", "title": "Microsoft 365 (Office)", "note": "Партнёрская предустановка" },
+    { "id": "com.linkedin.android", "platform": "any", "action": "ask", "title": "LinkedIn", "note": "Партнёрская предустановка" },
+    { "id": "com.netflix.mediaclient", "platform": "any", "action": "ask", "title": "Netflix", "note": "Партнёрская предустановка" },
+    { "id": "com.spotify.music", "platform": "any", "action": "ask", "title": "Spotify", "note": "Партнёрская предустановка" },
+    { "id": "com.booking", "platform": "any", "action": "ask", "title": "Booking.com", "note": "Партнёрская предустановка" },
+    { "id": "com.alibaba.aliexpresshd", "platform": "any", "action": "ask", "title": "AliExpress", "note": "Партнёрская предустановка" },
+    { "id": "com.amazon.mShop.android.shopping", "platform": "any", "action": "ask", "title": "Amazon Shopping", "note": "Партнёрская предустановка" },
+    { "id": "com.zhiliaoapp.musically", "platform": "any", "action": "ask", "title": "TikTok", "note": "Партнёрская предустановка" },
+    { "id": "com.king.candycrushsaga", "platform": "any", "action": "ask", "title": "Candy Crush Saga", "note": "Партнёрская предустановка" }
+  ]
+}

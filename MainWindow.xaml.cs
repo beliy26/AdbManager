@@ -17,6 +17,8 @@ public sealed partial class MainWindow : Window
     private readonly AdbService _adb = new();
     private readonly AppMetadataService _metadata;
     private readonly Settings _settings = Settings.Load();
+    private readonly PackageAdvisor _advisor = PackageAdvisor.Load();
+    private readonly Dictionary<string, DeviceProps> _deviceProps = [];
     private CancellationTokenSource? _metadataCts;
     private readonly DispatcherQueueTimer _devicePollTimer;
     private List<PackageInfo> _allPackages = [];
@@ -164,31 +166,147 @@ public sealed partial class MainWindow : Window
     }
 
     // ======================= Устройства =======================
+    //
+    // В списке: подключённые по USB и по сети (adb devices), найденные кнопкой «Найти в сети»
+    // и сопряжённые по коду. Работаем с одним устройством: при выборе устройства остальные
+    // сетевые подключения разрываются (USB через adb не отключить — такое просто не выбрано).
 
-    private async Task RefreshDevicesAsync(bool quiet = false)
+    /// <summary>Найденное в сети за этот сеанс: адрес и серийный номер из mDNS (если есть).</summary>
+    private sealed record NetworkDevice(string Address, string? Serial, bool Tls);
+
+    private readonly List<NetworkDevice> _found = [];
+    private bool _rebuildingDevices;
+    private string? _shownDeviceKey;
+
+    private async Task RefreshDevicesAsync(bool quiet = false, string? select = null)
     {
-        var devices = await _adb.GetDevicesAsync(quiet);
-        var selectedSerial = SelectedDevice?.Serial;
+        var adbDevices = await _adb.GetDevicesAsync(quiet);
+        var mdns = _settings.PairedDevices.Count > 0 ? await _adb.GetMdnsDevicesAsync() : null;
+        UpdatePairedAddresses(mdns);
 
-        static string Key(DeviceInfo d) => $"{d.Serial}|{d.State}|{d.Model}";
-        if (!devices.Select(Key).SequenceEqual(Devices.Select(Key)))
+        var selectedSerial = select ?? SelectedDevice?.Serial;
+        var list = BuildDeviceList(adbDevices, mdns);
+
+        // Активное устройство — выбранное; если выбранного нет, первое подключённое.
+        var active = list.FirstOrDefault(d => d.Serial.Equals(selectedSerial, StringComparison.OrdinalIgnoreCase))
+                     ?? list.FirstOrDefault(d => d.IsOnline);
+
+        // Одно устройство за раз: остальные сетевые подключения разрываем.
+        if (active is { IsOnline: true })
         {
-            Devices.Clear();
-            foreach (var d in devices) Devices.Add(d);
+            var others = list.Where(d => d.IsConnected && d.IsWireless && d != active).ToList();
+            if (others.Count > 0)
+            {
+                foreach (var d in others) await _adb.DisconnectAsync(d.Serial);
+                list = BuildDeviceList(await _adb.GetDevicesAsync(quiet: true), mdns);
+                active = list.FirstOrDefault(d => d.Serial.Equals(active.Serial, StringComparison.OrdinalIgnoreCase));
+            }
+        }
 
-            var toSelect = Devices.FirstOrDefault(d => d.Serial == selectedSerial)
-                           ?? (Devices.Count == 1 ? Devices[0] : null);
-            // Смена выделения вызовет SelectionChanged и перечитает пакеты
-            // (в т.ч. когда устройство сменило состояние, например после разрешения отладки).
-            DevicesList.SelectedItem = toSelect;
+        static string Key(DeviceInfo d) => $"{d.Serial}|{d.State}|{d.Model}|{d.Kind}";
+        if (!list.Select(Key).SequenceEqual(Devices.Select(Key)))
+        {
+            _rebuildingDevices = true;
+            try
+            {
+                Devices.Clear();
+                foreach (var d in list) Devices.Add(d);
+            }
+            finally
+            {
+                _rebuildingDevices = false;
+            }
+            DevicesList.SelectedItem = Devices.FirstOrDefault(d => d.Serial == active?.Serial);
+            await OnDeviceChangedAsync();
+        }
+        else if (SelectedDevice?.Serial != active?.Serial)
+        {
+            DevicesList.SelectedItem = Devices.FirstOrDefault(d => d.Serial == active?.Serial);
         }
 
         NoDevicesText.Visibility = Devices.Count == 0 ? Visibility.Visible : Visibility.Collapsed;
     }
 
+    /// <summary>Подключённые устройства, затем сопряжённые и найденные в сети, которые сейчас не подключены.</summary>
+    private List<DeviceInfo> BuildDeviceList(IReadOnlyList<DeviceInfo> adbDevices, List<(string Name, string Address, bool Tls)>? mdns)
+    {
+        var list = new List<DeviceInfo>();
+        var connectedAddresses = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        var connectedSerials = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+        foreach (var d in adbDevices)
+        {
+            var tlsSerial = DeviceInfo.SerialFromServiceName(d.Serial);
+            var paired = tlsSerial is not null || _settings.PairedDevices.Any(p => p.Host == d.Host && p.Address == d.Serial);
+            var device = paired ? new DeviceInfo(d.Serial, d.State, d.Model, d.Product, DeviceKind.Paired) : d;
+            list.Add(device);
+
+            if (d.Host is { } host) connectedAddresses.Add(d.Serial);
+            if (tlsSerial is not null) connectedSerials.Add(tlsSerial);
+            RememberName(d.Kind == DeviceKind.Usb ? d.Serial : d.Host ?? tlsSerial, d.Model);
+
+            // Подключённое по адресу остаётся в списке и после отключения.
+            if (d.Host is not null && !paired && _found.All(f => f.Address != d.Serial))
+                _found.Add(new NetworkDevice(d.Serial, null, false));
+        }
+
+        foreach (var p in _settings.PairedDevices)
+        {
+            if (p.Serial is not null && connectedSerials.Contains(p.Serial)) continue;
+            if (p.Address is not null && connectedAddresses.Contains(p.Address)) continue;
+            var seen = mdns is null || mdns.Any(m => m.Tls && (m.Address.StartsWith(p.Host + ":", StringComparison.Ordinal) ||
+                                                               DeviceInfo.SerialFromServiceName(m.Name) == p.Serial));
+            list.Add(DeviceInfo.Available(p.Address ?? p.Host, NameFor(p.Serial, p.Host), DeviceKind.Paired, missing: !seen));
+        }
+
+        foreach (var f in _found)
+        {
+            if (connectedAddresses.Contains(f.Address) || (f.Serial is not null && connectedSerials.Contains(f.Serial))) continue;
+            if (list.Any(d => d.Serial == f.Address)) continue;
+            var host = f.Address.Split(':')[0];
+            list.Add(DeviceInfo.Available(f.Address, NameFor(f.Serial, host), f.Tls ? DeviceKind.Paired : DeviceKind.Network));
+        }
+        return list;
+    }
+
+    private string? NameFor(string? serial, string? host) =>
+        (serial is not null ? _settings.DeviceNames.GetValueOrDefault(serial) : null)
+        ?? (host is not null ? _settings.DeviceNames.GetValueOrDefault(host) : null)
+        ?? serial;
+
+    private void RememberName(string? key, string? model)
+    {
+        if (string.IsNullOrEmpty(key) || string.IsNullOrEmpty(model)) return;
+        if (_settings.DeviceNames.GetValueOrDefault(key) == model) return;
+        _settings.DeviceNames[key] = model;
+        _settings.Save();
+    }
+
+    /// <summary>Порт беспроводной отладки меняется при каждом включении — берём свежий из mDNS.</summary>
+    private void UpdatePairedAddresses(List<(string Name, string Address, bool Tls)>? mdns)
+    {
+        if (mdns is null) return;
+        var changed = false;
+        foreach (var p in _settings.PairedDevices)
+        {
+            var m = mdns.FirstOrDefault(x => x.Tls && (DeviceInfo.SerialFromServiceName(x.Name) is { } s && s == p.Serial ||
+                                                       p.Serial is null && x.Address.StartsWith(p.Host + ":", StringComparison.Ordinal)));
+            if (m.Address is null) continue;
+            if (p.Address != m.Address || p.Serial is null)
+            {
+                p.Address = m.Address;
+                p.Serial ??= DeviceInfo.SerialFromServiceName(m.Name);
+                p.Host = m.Address.Split(':')[0];
+                changed = true;
+            }
+        }
+        if (changed) _settings.Save();
+    }
+
     private async Task PollDevicesAsync()
     {
-        if (_polling || _adb.AdbPath is null) return;
+        // Во время подключения и других операций список обновит сама операция.
+        if (_polling || _busyCount > 0 || _adb.AdbPath is null) return;
         _polling = true;
         try { await RefreshDevicesAsync(quiet: true); }
         catch { /* фоновый опрос не должен мешать */ }
@@ -198,8 +316,26 @@ public sealed partial class MainWindow : Window
     private async void RefreshDevices_Click(object sender, RoutedEventArgs e) =>
         await RunBusyAsync(() => RefreshDevicesAsync());
 
-    private async void DevicesList_SelectionChanged(object sender, SelectionChangedEventArgs e) =>
-        await OnDeviceChangedAsync();
+    private async void DevicesList_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        if (!_rebuildingDevices) await OnDeviceChangedAsync();
+    }
+
+    /// <summary>Клик: неподключённое устройство — подключаемся, подключённое — делаем активным.</summary>
+    private async void DevicesList_ItemClick(object sender, ItemClickEventArgs e)
+    {
+        if (e.ClickedItem is not DeviceInfo device) return;
+        // С IsItemClickEnabled клик сам не выделяет элемент.
+        DevicesList.SelectedItem = device;
+
+        if (!device.IsConnected)
+        {
+            await ConnectToAsync(device.Serial, device.Kind == DeviceKind.Paired);
+            return;
+        }
+        if (Devices.Any(d => d.IsConnected && d.IsWireless && d != device))
+            await RunBusyAsync(() => RefreshDevicesAsync(select: device.Serial));
+    }
 
     private async Task OnDeviceChangedAsync()
     {
@@ -208,8 +344,24 @@ public sealed partial class MainWindow : Window
 
         InstallButton.IsEnabled = online;
         RefreshPackagesButton.IsEnabled = online;
+        RestoreButton.IsEnabled = online;
+        RestoreRemovedButton.IsEnabled = online;
+        PrivateDnsButton.IsEnabled = online;
+        OpenBackupsButton.IsEnabled = online;
         EnableWifiButton.IsEnabled = online && !device!.IsWireless;
-        DisconnectButton.IsEnabled = device?.IsWireless == true;
+        var forget = device is { IsConnected: false, Kind: DeviceKind.Paired };
+        DisconnectButton.IsEnabled = device is { IsConnected: true, IsWireless: true } || forget;
+        DisconnectButtonText.Text = forget ? "Забыть" : "Отключить";
+
+        // Тот же выбор после обновления списка — приложения не перечитываем.
+        var key = device is null ? null : $"{device.Serial}|{device.State}";
+        if (key == _shownDeviceKey) return;
+        _shownDeviceKey = key;
+
+        // Другое устройство — сразу очищаем список приложений прежнего.
+        CancelMetadataLoading();
+        _allPackages = [];
+        ApplyFilter();
         PackagesHeader.Text = device is null ? "Приложения" : $"Приложения — {device.DisplayName}";
 
         if (online)
@@ -218,12 +370,12 @@ public sealed partial class MainWindow : Window
         }
         else
         {
-            CancelMetadataLoading();
-            _allPackages = [];
-            ApplyFilter();
-            EmptyPackagesText.Text = device is null
-                ? "Выберите устройство слева"
-                : $"Устройство недоступно: {device.StateText}";
+            EmptyPackagesText.Text = device switch
+            {
+                null => "Выберите устройство слева",
+                { IsConnected: false } => "Устройство не подключено — нажмите на него в списке слева",
+                _ => $"Устройство недоступно: {device.StateText}",
+            };
         }
     }
 
@@ -239,19 +391,78 @@ public sealed partial class MainWindow : Window
         var address = ConnectAddressBox.Text.Trim();
         if (address.Length == 0) return;
         if (!address.Contains(':')) address += ":5555";
+        await ConnectToAsync(address, paired: false);
+    }
 
+    /// <summary>
+    /// Подключение по адресу. Список приложений прежнего устройства очищается, остальные
+    /// сетевые подключения разрываются (см. <see cref="RefreshDevicesAsync"/>).
+    /// </summary>
+    private async Task ConnectToAsync(string address, bool paired)
+    {
         await RunBusyAsync(async () =>
         {
+            ShowStatus(InfoBarSeverity.Informational, "Подключение…", address);
             var r = await _adb.ConnectAsync(address);
             var ok = r.Output.Contains("connected to", StringComparison.OrdinalIgnoreCase);
+            var message = r.Text;
+            if (!ok && NetworkScanner.GetVirtualRouteAdapter(address) is { } vpn)
+            {
+                message += Environment.NewLine + $"Трафик к устройству идёт через «{vpn}» — VPN на компьютере закрывает доступ " +
+                           "к домашней сети. Выключите его или разрешите в нём доступ к локальной сети.";
+            }
+            else if (!ok && paired)
+            {
+                message += Environment.NewLine + "Включите на телефоне «Беспроводную отладку». Если не поможет — выполните сопряжение по коду заново.";
+            }
             ShowStatus(ok ? InfoBarSeverity.Success : InfoBarSeverity.Error,
-                ok ? "Подключено" : "Не удалось подключиться", r.Text);
-            if (ok)
+                ok ? "Подключено" : "Не удалось подключиться", message);
+
+            if (ok && !paired)
             {
                 _settings.LastConnectAddress = address;
                 _settings.Save();
             }
-            await RefreshDevicesAsync();
+            await RefreshDevicesAsync(select: ok ? address : null);
+        });
+    }
+
+    /// <summary>
+    /// Поиск устройств с отладкой по сети: скан порта 5555 в домашних подсетях (как в ЧистомТВ)
+    /// и устройства с беспроводной отладкой Android 11+, которые adb видит по mDNS. Найденные
+    /// добавляются в список устройств.
+    /// </summary>
+    private async void FindInNetwork_Click(object sender, RoutedEventArgs e)
+    {
+        await RunBusyAsync(async () =>
+        {
+            ShowStatus(InfoBarSeverity.Informational, "Поиск в сети…", "Проверяю порт 5555 в домашней сети и беспроводную отладку (mDNS)");
+            var scanTask = NetworkScanner.ScanAsync();
+            var mdnsTask = _adb.GetMdnsDevicesAsync();
+            await Task.WhenAll(scanTask, mdnsTask);
+
+            var found = new List<NetworkDevice>();
+            // Имя mDNS-сервиса вида adb-<серийный номер>-xxxx помогает узнать устройство.
+            foreach (var (name, address, tls) in mdnsTask.Result.DistinctBy(m => m.Address))
+                found.Add(new NetworkDevice(address, DeviceInfo.SerialFromServiceName(name), tls));
+            foreach (var ip in scanTask.Result.Where(ip => found.All(f => !f.Address.StartsWith(ip + ":", StringComparison.Ordinal))))
+                found.Add(new NetworkDevice($"{ip}:5555", null, false));
+
+            _found.Clear();
+            _found.AddRange(found);
+            await RefreshDevicesAsync(quiet: true);
+
+            if (found.Count == 0)
+            {
+                ShowStatus(InfoBarSeverity.Warning, "Устройства не найдены",
+                    "Проверьте, что устройство в той же Wi-Fi сети и на нём включена отладка по сети (или «Беспроводная отладка» на Android 11+). " +
+                    "Для беспроводной отладки без сопряжения используйте «Сопряжение по коду». VPN на компьютере может закрывать доступ к домашней сети.");
+            }
+            else
+            {
+                ShowStatus(InfoBarSeverity.Success, $"Найдено устройств: {found.Count}",
+                    "Они добавлены в список слева — нажмите на устройство, чтобы подключиться.");
+            }
         });
     }
 
@@ -295,36 +506,44 @@ public sealed partial class MainWindow : Window
         var connectAddress = connectBox.Text.Trim();
         if (pairAddress.Length == 0 || code.Length == 0) return;
 
+        string? address = null;
         await RunBusyAsync(async () =>
         {
             var r = await _adb.PairAsync(pairAddress, code);
-            var ok = r.Output.Contains("Successfully paired", StringComparison.OrdinalIgnoreCase);
-            if (!ok)
+            if (!r.Output.Contains("Successfully paired", StringComparison.OrdinalIgnoreCase))
             {
                 ShowStatus(InfoBarSeverity.Error, "Сопряжение не удалось", r.Text);
                 return;
             }
 
-            if (connectAddress.Length > 0)
-            {
-                ConnectAddressBox.Text = connectAddress;
-                var c = await _adb.ConnectAsync(connectAddress);
-                ShowStatus(InfoBarSeverity.Success, "Сопряжение выполнено", c.Text);
-            }
-            else
+            // Запоминаем устройство; адрес подключения и серийный номер уточняем по mDNS.
+            var host = pairAddress.Split(':')[0];
+            await Task.Delay(1000);
+            var m = (await _adb.GetMdnsDevicesAsync()).FirstOrDefault(x => x.Tls && x.Address.StartsWith(host + ":", StringComparison.Ordinal));
+            address = connectAddress.Length > 0 ? connectAddress : m.Address;
+
+            var paired = _settings.PairedDevices.FirstOrDefault(p => p.Host == host);
+            if (paired is null) _settings.PairedDevices.Add(paired = new PairedDevice { Host = host });
+            paired.Address = address ?? paired.Address;
+            paired.Serial = DeviceInfo.SerialFromServiceName(m.Name) ?? paired.Serial;
+            _settings.Save();
+
+            if (address is null)
             {
                 ShowStatus(InfoBarSeverity.Success, "Сопряжение выполнено",
-                    "Устройство должно подключиться автоматически. Если нет — введите адрес и нажмите «Подключить».");
+                    "Устройство появится в списке, когда телефон объявит адрес подключения. Если нет — введите адрес с экрана «Беспроводной отладки».");
+                await RefreshDevicesAsync();
             }
-            await Task.Delay(1000);
-            await RefreshDevicesAsync();
         });
+
+        if (address is not null) await ConnectToAsync(address, paired: true);
     }
 
     private async void EnableWifi_Click(object sender, RoutedEventArgs e)
     {
         if (SelectedDevice is not { } device) return;
 
+        string? address = null;
         await RunBusyAsync(async () =>
         {
             var ip = await _adb.GetWifiIpAsync(device.Serial);
@@ -342,13 +561,15 @@ public sealed partial class MainWindow : Window
                 return;
             }
 
-            ConnectAddressBox.Text = ip + ":5555";
+            address = ip + ":5555";
+            ConnectAddressBox.Text = address;
             await Task.Delay(2000); // adbd перезапускается на телефоне
-            var c = await _adb.ConnectAsync(ip + ":5555");
-            ShowStatus(InfoBarSeverity.Success, "Wi-Fi режим",
-                c.Text + Environment.NewLine + "Теперь USB-кабель можно отключить.");
-            await RefreshDevicesAsync();
         });
+
+        if (address is null) return;
+        await ConnectToAsync(address, paired: false);
+        if (SelectedDevice?.Serial == address)
+            StatusBar.Message += Environment.NewLine + "Теперь USB-кабель можно отключить.";
     }
 
     private async void Disconnect_Click(object sender, RoutedEventArgs e)
@@ -356,7 +577,18 @@ public sealed partial class MainWindow : Window
         if (SelectedDevice is not { } device) return;
         await RunBusyAsync(async () =>
         {
-            await _adb.DisconnectAsync(device.Serial);
+            if (device.IsConnected)
+            {
+                await _adb.DisconnectAsync(device.Serial);
+            }
+            else if (device.Kind == DeviceKind.Paired)
+            {
+                // Забыть: убираем из списка. Ключ сопряжения на телефоне удаляется там же,
+                // в «Беспроводной отладке» → «Сопряжённые устройства».
+                _settings.PairedDevices.RemoveAll(p => p.Address == device.Serial || p.Host == device.Serial);
+                _settings.Save();
+                _found.RemoveAll(f => f.Address == device.Serial);
+            }
             await RefreshDevicesAsync();
         });
     }
@@ -385,6 +617,7 @@ public sealed partial class MainWindow : Window
         var cts = _metadataCts = new CancellationTokenSource();
 
         var packages = await _adb.GetPackagesAsync(device.Serial, ShowSystemToggle.IsOn);
+        await ApplyAdviceAsync(device, packages);
         var cached = await Task.Run(() => packages.Select(p => _metadata.LoadCached(device.Serial, p)).ToList());
 
         var missing = new List<PackageInfo>();
@@ -398,6 +631,38 @@ public sealed partial class MainWindow : Window
         ApplyFilter();
 
         _ = LoadMetadataAsync(device.Serial, missing, cts);
+    }
+
+    /// <summary>Свойства устройства (кэшируются на время работы программы).</summary>
+    private async Task<DeviceProps> GetPropsAsync(DeviceInfo device)
+    {
+        if (!_deviceProps.TryGetValue(device.Serial, out var props))
+        {
+            _deviceProps[device.Serial] = props = await _adb.GetDevicePropsAsync(device.Serial);
+            RememberName(props.SerialNo, device.Model); // чтобы узнать устройство среди найденных по mDNS
+        }
+        return props;
+    }
+
+    /// <summary>Журнал изменений устройства — по стабильному ключу (модель + серийный номер).</summary>
+    private async Task<ChangeJournal> GetJournalAsync(DeviceInfo device)
+    {
+        var props = await GetPropsAsync(device);
+        return new ChangeJournal(string.IsNullOrEmpty(props.SerialNo) ? device.Serial : props.Key);
+    }
+
+    /// <summary>Советы из базы ЧистогоТВ и защита критичных пакетов; платформа определяется по всем пакетам.</summary>
+    private async Task ApplyAdviceAsync(DeviceInfo device, IReadOnlyList<PackageInfo> packages)
+    {
+        var props = await GetPropsAsync(device);
+        var installed = await _adb.GetInstalledNamesAsync(device.Serial);
+        var platforms = _advisor.DetectPlatforms(installed, props.Manufacturer, props.Brand);
+        var ids = platforms.Select(p => p.Id).ToList();
+        foreach (var p in packages) _advisor.Apply(p, ids);
+
+        var title = $"Приложения — {device.DisplayName}";
+        if (platforms.Count > 0) title += " · " + string.Join(", ", platforms.Select(p => p.Name));
+        PackagesHeader.Text = title;
     }
 
     private void CancelMetadataLoading()
@@ -459,21 +724,29 @@ public sealed partial class MainWindow : Window
             .ToList();
         filtered = SortPackages(filtered);
 
+        // Отметки сохраняются при фильтрации и пересортировке (у скрытых фильтром — снимаются).
         var selected = PackagesList.SelectedItems.OfType<PackageInfo>().ToHashSet();
-        Packages.Clear();
-        foreach (var p in filtered) Packages.Add(p);
-        foreach (var p in filtered.Where(selected.Contains)) PackagesList.SelectedItems.Add(p);
+        _bulkSelecting = true;
+        try
+        {
+            Packages.Clear();
+            foreach (var p in filtered) Packages.Add(p);
+            foreach (var p in filtered.Where(selected.Contains)) PackagesList.SelectedItems.Add(p);
+        }
+        finally
+        {
+            _bulkSelecting = false;
+        }
 
         EmptyPackagesPanel.Visibility = Packages.Count == 0 ? Visibility.Visible : Visibility.Collapsed;
         PackagesHeaderRow.Visibility = Packages.Count == 0 ? Visibility.Collapsed : Visibility.Visible;
         UpdateSortArrows();
-        UpdatePackagesCountText();
-        UpdatePackageButtons();
+        OnMarkedChanged();
     }
 
     // ----- Сортировка -----
 
-    private enum SortColumn { Name, Package, Status, Kind, Size }
+    private enum SortColumn { Name, Package, Status, Advice, Kind, Size }
 
     private SortColumn _sortColumn = SortColumn.Name;
     private bool _sortDescending;
@@ -485,6 +758,7 @@ public sealed partial class MainWindow : Window
         {
             SortColumn.Package => Order(items, p => p.Name, StringComparer.OrdinalIgnoreCase),
             SortColumn.Status => Order(items, p => p.State, Comparer<PackageState>.Create((a, b) => StatusRank(a).CompareTo(StatusRank(b)))),
+            SortColumn.Advice => Order(items, p => AdviceRank(p.Advice), Comparer<int>.Default),
             SortColumn.Kind => Order(items, p => p.IsSystem, Comparer<bool>.Default),
             // Приложения без данных о размере — всегда в конце.
             SortColumn.Size => items.OrderBy(p => p.TotalSize is null)
@@ -502,6 +776,16 @@ public sealed partial class MainWindow : Window
             PackageState.Enabled => 0,
             PackageState.Unused => 1,
             _ => 2,
+        };
+
+        // Сначала то, что советуют отключить, в конце — то, что трогать нельзя.
+        static int AdviceRank(PackageAdvice a) => a switch
+        {
+            PackageAdvice.Disable => 0,
+            PackageAdvice.Optional => 1,
+            PackageAdvice.None => 2,
+            PackageAdvice.Keep => 3,
+            _ => 4,
         };
     }
 
@@ -533,11 +817,12 @@ public sealed partial class MainWindow : Window
             [SortColumn.Name] = SortByNameArrow,
             [SortColumn.Package] = SortByPackageArrow,
             [SortColumn.Status] = SortByStatusArrow,
+            [SortColumn.Advice] = SortByAdviceArrow,
             [SortColumn.Kind] = SortByKindArrow,
             [SortColumn.Size] = SortBySizeArrow,
         };
         foreach (var (column, arrow) in arrows)
-            arrow.Glyph = column != _sortColumn ? "" : _sortDescending ? "" : ""; // вниз / вверх
+            arrow.Glyph = column != _sortColumn ? "" : _sortDescending ? "\uE70D" : "\uE70E"; // вниз / вверх
     }
 
     private void UpdatePackagesCountText()
@@ -555,7 +840,80 @@ public sealed partial class MainWindow : Window
         var unused = _allPackages.Count(p => p.IsUnused);
         if (frozen > 0) text += $" · заморожено: {frozen}";
         if (unused > 0) text += $" · не используется: {unused}";
+        var marked = PackagesList.SelectedItems.Count;
+        if (marked > 0) text += $" · отмечено: {marked}";
         PackagesCountText.Text = text;
+    }
+
+    // ----- Отметка (чекбоксы) -----
+
+    // Массовое изменение отметки: SelectionChanged срабатывает на каждый элемент — обновляем UI один раз в конце.
+    private bool _bulkSelecting;
+
+    private void SetMarked(IEnumerable<PackageInfo> toMark)
+    {
+        var set = toMark.ToHashSet();
+        _bulkSelecting = true;
+        try
+        {
+            foreach (var p in PackagesList.SelectedItems.OfType<PackageInfo>().Where(p => !set.Contains(p)).ToList())
+                PackagesList.SelectedItems.Remove(p);
+            var already = PackagesList.SelectedItems.OfType<PackageInfo>().ToHashSet();
+            foreach (var p in Packages.Where(p => set.Contains(p) && !already.Contains(p)))
+                PackagesList.SelectedItems.Add(p);
+        }
+        finally
+        {
+            _bulkSelecting = false;
+        }
+        OnMarkedChanged();
+    }
+
+    private void OnMarkedChanged()
+    {
+        UpdatePackageButtons();
+        UpdatePackagesCountText();
+
+        var marked = PackagesList.SelectedItems.Count;
+        SelectAllCheckBox.IsChecked = marked == 0 ? false : marked == Packages.Count ? true : null;
+    }
+
+    private void SelectAllCheckBox_Click(object sender, RoutedEventArgs e)
+    {
+        // Если отмечены не все — отмечаем все показанные, иначе снимаем отметку.
+        var allMarked = Packages.Count > 0 && PackagesList.SelectedItems.Count == Packages.Count;
+        SetMarked(allMarked ? [] : Packages);
+    }
+
+    private void Mark_Click(object sender, RoutedEventArgs e)
+    {
+        if (sender is not FrameworkElement { Tag: string tag }) return;
+        var marked = PackagesList.SelectedItems.OfType<PackageInfo>().ToHashSet();
+
+        IEnumerable<PackageInfo> target = tag switch
+        {
+            "All" => Packages,
+            "Enabled" => Packages.Where(p => p.State == PackageState.Enabled),
+            "Frozen" => Packages.Where(p => p.IsFrozen),
+            "Unused" => Packages.Where(p => p.IsUnused),
+            "User" => Packages.Where(p => !p.IsSystem),
+            "System" => Packages.Where(p => p.IsSystem),
+            "Recommended" => Packages.Where(p => p.IsAdviceDisable && p.State == PackageState.Enabled),
+            "Invert" => Packages.Where(p => !marked.Contains(p)),
+            _ => [],
+        };
+        SetMarked(target);
+
+        if (tag == "Recommended")
+        {
+            var count = PackagesList.SelectedItems.Count;
+            ShowStatus(count > 0 ? InfoBarSeverity.Informational : InfoBarSeverity.Success,
+                count > 0 ? $"Рекомендуемых к отключению: {count}" : "Рекомендуемых к отключению нет",
+                count > 0
+                    ? "Проверьте список и нажмите «Заморозить». Пояснения — в подсказке колонки «Совет»."
+                    : "Среди показанных включённых приложений не найдено известной рекламы и мусора. " +
+                      "Включите «Системные», если они скрыты.");
+        }
     }
 
     private void UpdatePackageButtons()
@@ -563,10 +921,10 @@ public sealed partial class MainWindow : Window
         var selected = PackagesList.SelectedItems.OfType<PackageInfo>().ToList();
         var count = selected.Count;
         var online = SelectedDevice?.IsOnline == true;
-        UninstallButton.IsEnabled = online && count > 0;
-        FreezeButton.IsEnabled = online && selected.Any(p => p.State == PackageState.Enabled);
+        UninstallButton.IsEnabled = online && selected.Any(p => !p.IsBlocked);
+        FreezeButton.IsEnabled = online && selected.Any(p => p.State == PackageState.Enabled && !p.IsBlocked);
         UnfreezeButton.IsEnabled = online && selected.Any(p => p.State != PackageState.Enabled);
-        PullApkButton.IsEnabled = online && count == 1;
+        PullApkButton.IsEnabled = online && count > 0;
         CopyNameButton.IsEnabled = count > 0;
         CopyListButton.IsEnabled = Packages.Count > 0;
     }
@@ -579,7 +937,8 @@ public sealed partial class MainWindow : Window
 
     private async void PackagesList_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
-        UpdatePackageButtons();
+        if (_bulkSelecting) return;
+        OnMarkedChanged();
 
         // Для одного выбранного приложения показываем версию.
         if (PackagesList.SelectedItems.Count == 1 &&
@@ -639,17 +998,21 @@ public sealed partial class MainWindow : Window
                       "восстанавливается командой `cmd package install-existing`.");
         sb.AppendLine("- Статус «Заморожено» — отключено вручную; «Не используется» — Android сам остановил давно не используемое приложение.");
         sb.AppendLine("- Размер — приложение вместе с данными.");
+        sb.AppendLine("- Совет — из базы проекта ЧистыйТВ (в основном Android TV), списка рекламных предустановок телефонов и встроенной защиты " +
+                      "критичных системных пакетов; «Защищено» и «Не трогать» программа отключать не даёт.");
         sb.AppendLine();
         sb.AppendLine($"Приложений в списке: {items.Count}" +
                       (ShowSystemToggle.IsOn ? " (включая системные)" : " (только пользовательские)") +
                       (SearchBox.Text.Trim().Length > 0 ? $", фильтр: «{SearchBox.Text.Trim()}»" : "") + ".");
         sb.AppendLine();
-        sb.AppendLine("| Название | Пакет | Тип | Статус | Размер | Расположение |");
-        sb.AppendLine("|---|---|---|---|---|---|");
+        sb.AppendLine("| Название | Пакет | Тип | Статус | Совет | Размер | Расположение |");
+        sb.AppendLine("|---|---|---|---|---|---|---|");
         foreach (var p in items)
         {
+            var advice = p.Advice == PackageAdvice.None ? "" : p.AdviceText +
+                (string.IsNullOrWhiteSpace(p.AdviceNote) ? "" : ": " + p.AdviceNote);
             sb.AppendLine($"| {Md(p.DisplayName)} | `{p.Name}` | {p.KindText} | {(p.StatusText.Length > 0 ? p.StatusText : "Включено")} " +
-                          $"| {p.SizeText} | {Md(ApkLocation(p.ApkPath))} |");
+                          $"| {Md(advice)} | {p.SizeText} | {Md(ApkLocation(p.ApkPath))} |");
         }
 
         var package = new DataPackage();
@@ -783,11 +1146,13 @@ public sealed partial class MainWindow : Window
     private async void Uninstall_Click(object sender, RoutedEventArgs e)
     {
         if (SelectedDevice is not { IsOnline: true } device) return;
-        var selected = PackagesList.SelectedItems.OfType<PackageInfo>().ToList();
+        var marked = PackagesList.SelectedItems.OfType<PackageInfo>().ToList();
+        var selected = marked.Where(p => !p.IsBlocked).ToList();
         if (selected.Count == 0) return;
 
         var keepData = new CheckBox { Content = "Сохранить данные и кэш (-k)" };
         var content = new StackPanel { Spacing = 8 };
+        AddSkippedProtectedInfo(content, marked.Where(p => p.IsBlocked));
         content.Children.Add(new TextBlock
         {
             Text = selected.Count == 1 ? "Удалить приложение?" : $"Удалить приложения ({selected.Count})?",
@@ -812,7 +1177,7 @@ public sealed partial class MainWindow : Window
                 Title = "Системные приложения",
                 Message = "Будут удалены только для текущего пользователя (pm uninstall --user 0). " +
                           "Удаление важных системных компонентов может нарушить работу телефона. " +
-                          "Вернуть: adb shell cmd package install-existing <пакет>.",
+                          "Вернуть можно через «… → Вернуть как было» или «Восстановить удалённые системные».",
             });
         }
         content.Children.Add(keepData);
@@ -830,6 +1195,10 @@ public sealed partial class MainWindow : Window
 
         await RunBusyAsync(async () =>
         {
+            var journal = await GetJournalAsync(device);
+            ShowStatus(InfoBarSeverity.Informational, "Бэкап…", "Сохраняю состояние устройства перед изменениями");
+            await journal.EnsureBackupAsync(_adb, device.Serial);
+
             var errors = new List<string>();
             var removed = new List<PackageInfo>();
             foreach (var pkg in selected)
@@ -837,9 +1206,14 @@ public sealed partial class MainWindow : Window
                 ShowStatus(InfoBarSeverity.Informational, "Удаление…", pkg.Name);
                 var r = await _adb.UninstallAsync(device.Serial, pkg, keepData.IsChecked == true);
                 if (r.Success && r.Text.Contains("Success"))
+                {
                     removed.Add(pkg);
+                    journal.Add(new JournalEntry(DateTime.Now, "uninstall", pkg.Name, pkg.DisplayName, pkg.IsSystem));
+                }
                 else
+                {
                     errors.Add($"{pkg.Name}: {LastLine(r.Text)}");
+                }
             }
 
             _allPackages = _allPackages.Except(removed).ToList();
@@ -857,10 +1231,12 @@ public sealed partial class MainWindow : Window
 
     private async void Freeze_Click(object sender, RoutedEventArgs e)
     {
-        var selected = PackagesList.SelectedItems.OfType<PackageInfo>().Where(p => p.State == PackageState.Enabled).ToList();
+        var candidates = PackagesList.SelectedItems.OfType<PackageInfo>().Where(p => p.State == PackageState.Enabled).ToList();
+        var selected = candidates.Where(p => !p.IsBlocked).ToList();
         if (selected.Count == 0) return;
 
         var content = new StackPanel { Spacing = 8 };
+        AddSkippedProtectedInfo(content, candidates.Where(p => p.IsBlocked));
         content.Children.Add(new TextBlock
         {
             TextWrapping = TextWrapping.Wrap,
@@ -915,6 +1291,13 @@ public sealed partial class MainWindow : Window
 
         await RunBusyAsync(async () =>
         {
+            var journal = await GetJournalAsync(device);
+            if (frozen)
+            {
+                ShowStatus(InfoBarSeverity.Informational, "Бэкап…", "Сохраняю состояние устройства перед изменениями");
+                await journal.EnsureBackupAsync(_adb, device.Serial);
+            }
+
             var errors = new List<string>();
             var changed = new List<PackageInfo>();
             foreach (var pkg in packages)
@@ -936,6 +1319,7 @@ public sealed partial class MainWindow : Window
                 {
                     pkg.State = frozen ? PackageState.Frozen : PackageState.Enabled;
                     changed.Add(pkg);
+                    journal.Add(new JournalEntry(DateTime.Now, frozen ? "freeze" : "enable", pkg.Name, pkg.DisplayName, pkg.IsSystem));
                 }
                 else
                 {
@@ -955,13 +1339,334 @@ public sealed partial class MainWindow : Window
         });
     }
 
+    /// <summary>Сообщение в диалоге о пакетах, которые пропущены из-за защиты.</summary>
+    private static void AddSkippedProtectedInfo(StackPanel content, IEnumerable<PackageInfo> skipped)
+    {
+        var list = skipped.ToList();
+        if (list.Count == 0) return;
+        content.Children.Add(new InfoBar
+        {
+            IsOpen = true,
+            IsClosable = false,
+            Severity = InfoBarSeverity.Informational,
+            Title = $"Пропущено защищённых: {list.Count}",
+            Message = "Эти пакеты не будут затронуты — без них устройство может перестать работать: " +
+                      string.Join(", ", list.Select(p => p.DisplayName)),
+        });
+    }
+
+    // ----- Откат изменений (идея ЧистогоТВ) -----
+
+    /// <summary>Диалог со списком-чекбоксами (всё отмечено). Возвращает выбранное или null при отмене.</summary>
+    private async Task<List<T>?> ShowChecklistAsync<T>(string title, string intro, IReadOnlyList<(string Text, T Value)> items, string primary)
+    {
+        var texts = items.Select(i => i.Text).ToList();
+        var list = new ListView { SelectionMode = ListViewSelectionMode.Multiple, ItemsSource = texts, MaxHeight = 360 };
+        var content = new StackPanel { Spacing = 8, MinWidth = 520 };
+        content.Children.Add(new TextBlock { Text = intro, TextWrapping = TextWrapping.Wrap });
+        content.Children.Add(list);
+        list.Loaded += (_, _) => list.SelectAll();
+
+        var dialog = new ContentDialog
+        {
+            XamlRoot = Content.XamlRoot,
+            Title = title,
+            PrimaryButtonText = primary,
+            CloseButtonText = "Отмена",
+            DefaultButton = ContentDialogButton.Primary,
+            Content = content,
+        };
+        if (await dialog.ShowAsync() != ContentDialogResult.Primary) return null;
+
+        var chosen = list.SelectedItems.OfType<string>().ToHashSet();
+        return items.Where(i => chosen.Contains(i.Text)).Select(i => i.Value).ToList();
+    }
+
+    private async void Restore_Click(object sender, RoutedEventArgs e)
+    {
+        if (SelectedDevice is not { IsOnline: true } device) return;
+
+        ChangeJournal journal;
+        List<JournalEntry> restorable;
+        try
+        {
+            journal = await GetJournalAsync(device);
+            restorable = journal.GetRestorable();
+        }
+        catch (Exception ex)
+        {
+            ShowStatus(InfoBarSeverity.Error, "Ошибка", ex.Message);
+            return;
+        }
+
+        if (restorable.Count == 0)
+        {
+            ShowStatus(InfoBarSeverity.Informational, "Нечего возвращать",
+                "В журнале нет изменений этой программы, которые можно отменить.");
+            return;
+        }
+
+        static string Describe(JournalEntry e) => e.Action switch
+        {
+            "freeze" => $"Разморозить: {e.Label} ({e.Package}) — заморожено {e.Time:dd.MM HH:mm}",
+            "uninstall" => $"Вернуть: {e.Label} ({e.Package}) — удалено {e.Time:dd.MM HH:mm}",
+            "dns" => $"Частный DNS: вернуть прежнюю настройку ({DescribeDns(e.OldValue)}) — изменено {e.Time:dd.MM HH:mm}",
+            _ => e.Package,
+        };
+
+        var chosen = await ShowChecklistAsync("Вернуть как было",
+            "Изменения, сделанные этой программой на устройстве. Снимите отметку с того, что возвращать не нужно.",
+            restorable.Select(r => (Describe(r), r)).ToList(), "Вернуть");
+        if (chosen is not { Count: > 0 }) return;
+
+        await RunBusyAsync(async () =>
+        {
+            var errors = new List<string>();
+            int ok = 0;
+            foreach (var entry in chosen)
+            {
+                ShowStatus(InfoBarSeverity.Informational, "Возвращаю…", entry.Label ?? entry.Package);
+                AdbResult r = entry.Action switch
+                {
+                    "freeze" => await _adb.SetFrozenAsync(device.Serial, entry.Package, frozen: false),
+                    "uninstall" => await _adb.InstallExistingAsync(device.Serial, entry.Package),
+                    "dns" => await RestoreDnsAsync(device, entry.OldValue),
+                    _ => new AdbResult(1, "", "неизвестное действие"),
+                };
+                if (r.Success)
+                {
+                    ok++;
+                    journal.Add(new JournalEntry(DateTime.Now, "restore", entry.Package, entry.Label, entry.System));
+                }
+                else
+                {
+                    errors.Add($"{entry.Package}: {LastLine(r.Text)}");
+                }
+            }
+
+            await ReloadPackagesCoreAsync(device);
+            if (errors.Count == 0)
+                ShowStatus(InfoBarSeverity.Success, "Возвращено", $"Изменений отменено: {ok}. Перезагрузите устройство, если что-то работало неправильно.");
+            else
+                ShowStatus(InfoBarSeverity.Error, $"Возвращено: {ok}, ошибок: {errors.Count}", string.Join(Environment.NewLine, errors));
+        });
+    }
+
+    private async void RestoreRemoved_Click(object sender, RoutedEventArgs e)
+    {
+        if (SelectedDevice is not { IsOnline: true } device) return;
+
+        List<PackageInfo> removed = [];
+        await RunBusyAsync(async () => removed = await _adb.GetRemovedSystemPackagesAsync(device.Serial));
+        if (removed.Count == 0)
+        {
+            ShowStatus(InfoBarSeverity.Informational, "Удалённых системных приложений нет",
+                "Все системные приложения установлены для текущего пользователя.");
+            return;
+        }
+
+        // Названия — из кэша иконок, если приложение уже встречалось.
+        foreach (var p in removed)
+            if (_metadata.LoadCached(device.Serial, p) is { } meta) p.Apply(meta);
+
+        var chosen = await ShowChecklistAsync("Восстановить удалённые системные приложения",
+            "Эти системные приложения удалены для текущего пользователя (pm uninstall --user 0), но остались в прошивке. " +
+            "Отмеченные будут возвращены командой cmd package install-existing.",
+            removed.Select(p => (p.Label is null ? p.Name : $"{p.Label} ({p.Name})", p)).ToList(), "Восстановить");
+        if (chosen is not { Count: > 0 }) return;
+
+        await RunBusyAsync(async () =>
+        {
+            var journal = await GetJournalAsync(device);
+            var errors = new List<string>();
+            int ok = 0;
+            foreach (var p in chosen)
+            {
+                ShowStatus(InfoBarSeverity.Informational, "Восстановление…", p.DisplayName);
+                var r = await _adb.InstallExistingAsync(device.Serial, p.Name);
+                if (r.Success)
+                {
+                    ok++;
+                    journal.Add(new JournalEntry(DateTime.Now, "restore", p.Name, p.DisplayName, true));
+                }
+                else
+                {
+                    errors.Add($"{p.Name}: {LastLine(r.Text)}");
+                }
+            }
+
+            await ReloadPackagesCoreAsync(device);
+            if (errors.Count == 0)
+                ShowStatus(InfoBarSeverity.Success, "Восстановлено", $"Приложений: {ok}");
+            else
+                ShowStatus(InfoBarSeverity.Error, $"Восстановлено: {ok}, ошибок: {errors.Count}", string.Join(Environment.NewLine, errors));
+        });
+    }
+
+    private async void OpenBackups_Click(object sender, RoutedEventArgs e)
+    {
+        if (SelectedDevice is not { } device) return;
+        try
+        {
+            var journal = await GetJournalAsync(device);
+            Directory.CreateDirectory(journal.Directory);
+            System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(journal.Directory) { UseShellExecute = true });
+        }
+        catch (Exception ex)
+        {
+            ShowStatus(InfoBarSeverity.Error, "Не удалось открыть папку", ex.Message);
+        }
+    }
+
+    // ----- Частный DNS (идея ЧистогоТВ) -----
+
+    private static readonly (string Title, string? Host, string Mode)[] DnsPresets =
+    [
+        ("Автоматически (по умолчанию Android)", null, "opportunistic"),
+        ("Выключен", null, "off"),
+        ("AdGuard — блокировка рекламы и трекеров", "dns.adguard-dns.com", "hostname"),
+        ("AdGuard Семейный — плюс взрослый контент", "family.adguard-dns.com", "hostname"),
+    ];
+
+    private static string DescribeDns(string? value)
+    {
+        var parts = (value ?? "").Split('|');
+        var mode = parts.ElementAtOrDefault(0) ?? "";
+        var host = parts.ElementAtOrDefault(1) ?? "";
+        return mode switch
+        {
+            "hostname" => host,
+            "off" => "выключен",
+            _ => "автоматически",
+        };
+    }
+
+    private async Task<AdbResult> RestoreDnsAsync(DeviceInfo device, string? oldValue)
+    {
+        var parts = (oldValue ?? "").Split('|');
+        var mode = string.IsNullOrEmpty(parts.ElementAtOrDefault(0)) ? "opportunistic" : parts[0];
+        var host = parts.ElementAtOrDefault(1) ?? "";
+        if (host.Length > 0) await _adb.PutSettingAsync(device.Serial, "global", "private_dns_specifier", host);
+        return await _adb.PutSettingAsync(device.Serial, "global", "private_dns_mode", mode);
+    }
+
+    private async void PrivateDns_Click(object sender, RoutedEventArgs e)
+    {
+        if (SelectedDevice is not { IsOnline: true } device) return;
+
+        DeviceProps props;
+        string mode, host;
+        try
+        {
+            props = await GetPropsAsync(device);
+            mode = await _adb.GetSettingAsync(device.Serial, "global", "private_dns_mode");
+            host = await _adb.GetSettingAsync(device.Serial, "global", "private_dns_specifier");
+        }
+        catch (Exception ex)
+        {
+            ShowStatus(InfoBarSeverity.Error, "Ошибка", ex.Message);
+            return;
+        }
+
+        if (props.Sdk is > 0 and < 28)
+        {
+            ShowStatus(InfoBarSeverity.Warning, "Частный DNS недоступен", "Нужен Android 9 или новее.");
+            return;
+        }
+
+        var radios = new RadioButtons();
+        foreach (var preset in DnsPresets) radios.Items.Add(preset.Title);
+        radios.Items.Add("Свой сервер");
+        var customBox = new TextBox { PlaceholderText = "dns.example.com", IsEnabled = false };
+
+        var currentIndex = Array.FindIndex(DnsPresets, p => p.Mode == (mode.Length == 0 ? "opportunistic" : mode) &&
+                                                            (p.Host is null || p.Host.Equals(host, StringComparison.OrdinalIgnoreCase)));
+        if (currentIndex < 0 && mode == "hostname")
+        {
+            currentIndex = DnsPresets.Length;
+            customBox.Text = host;
+        }
+        radios.SelectedIndex = Math.Max(0, currentIndex);
+        customBox.IsEnabled = radios.SelectedIndex == DnsPresets.Length;
+        radios.SelectionChanged += (_, _) => customBox.IsEnabled = radios.SelectedIndex == DnsPresets.Length;
+
+        var dialog = new ContentDialog
+        {
+            XamlRoot = Content.XamlRoot,
+            Title = "Частный DNS",
+            PrimaryButtonText = "Применить",
+            CloseButtonText = "Отмена",
+            DefaultButton = ContentDialogButton.Primary,
+            Content = new StackPanel
+            {
+                Spacing = 10,
+                Children =
+                {
+                    new TextBlock
+                    {
+                        TextWrapping = TextWrapping.Wrap,
+                        Text = $"Сейчас: {DescribeDns($"{mode}|{host}")}. Блокирующий DNS убирает рекламу и трекеры во всех приложениях " +
+                               "и браузере, но не рекламу внутри YouTube. Если какой-то сайт или приложение перестанет работать — " +
+                               "верните «Автоматически».",
+                    },
+                    radios,
+                    customBox,
+                },
+            },
+        };
+        if (await dialog.ShowAsync() != ContentDialogResult.Primary) return;
+
+        string newMode, newHost;
+        if (radios.SelectedIndex == DnsPresets.Length)
+        {
+            newHost = customBox.Text.Trim();
+            if (!System.Text.RegularExpressions.Regex.IsMatch(newHost, @"^[A-Za-z0-9]([A-Za-z0-9\-\.]*[A-Za-z0-9])?$"))
+            {
+                ShowStatus(InfoBarSeverity.Warning, "Неверный адрес", "Укажите имя DNS-over-TLS сервера, например dns.adguard-dns.com.");
+                return;
+            }
+            newMode = "hostname";
+        }
+        else
+        {
+            var preset = DnsPresets[Math.Max(0, radios.SelectedIndex)];
+            newMode = preset.Mode;
+            newHost = preset.Host ?? "";
+        }
+
+        await RunBusyAsync(async () =>
+        {
+            var journal = await GetJournalAsync(device);
+            await journal.EnsureBackupAsync(_adb, device.Serial);
+
+            if (newHost.Length > 0) await _adb.PutSettingAsync(device.Serial, "global", "private_dns_specifier", newHost);
+            var r = await _adb.PutSettingAsync(device.Serial, "global", "private_dns_mode", newMode);
+            var applied = await _adb.GetSettingAsync(device.Serial, "global", "private_dns_mode");
+            if (!r.Success || applied != newMode)
+            {
+                ShowStatus(InfoBarSeverity.Error, "Не удалось изменить DNS", r.Text);
+                return;
+            }
+
+            journal.Add(new JournalEntry(DateTime.Now, "dns", ChangeJournal.DnsKey, "Частный DNS", true, $"{mode}|{host}"));
+            ShowStatus(InfoBarSeverity.Success, "Частный DNS", $"Установлено: {DescribeDns($"{newMode}|{newHost}")}.");
+        });
+    }
+
     // ----- Скачивание APK -----
 
     private async void PullApk_Click(object sender, RoutedEventArgs e)
     {
-        if (SelectedDevice is not { IsOnline: true } device || PackagesList.SelectedItem is not PackageInfo pkg) return;
-        if (string.IsNullOrEmpty(pkg.ApkPath)) return;
+        if (SelectedDevice is not { IsOnline: true } device) return;
+        var selected = PackagesList.SelectedItems.OfType<PackageInfo>().Where(p => !string.IsNullOrEmpty(p.ApkPath)).ToList();
+        if (selected.Count == 0) return;
+        if (selected.Count > 1)
+        {
+            await PullApksToFolderAsync(device, selected);
+            return;
+        }
 
+        var pkg = selected[0];
         var picker = new FileSavePicker { SuggestedFileName = pkg.Name };
         picker.FileTypeChoices.Add("Android package", [".apk"]);
         WinRT.Interop.InitializeWithWindow.Initialize(picker, WinRT.Interop.WindowNative.GetWindowHandle(this));
@@ -973,6 +1678,33 @@ public sealed partial class MainWindow : Window
             var r = await _adb.PullApkAsync(device.Serial, pkg, file.Path);
             ShowStatus(r.Success ? InfoBarSeverity.Success : InfoBarSeverity.Error,
                 r.Success ? "APK сохранён" : "Ошибка", r.Success ? file.Path : r.Text);
+        });
+    }
+
+    /// <summary>Несколько отмеченных приложений — в выбранную папку, файлы называются по имени пакета.</summary>
+    private async Task PullApksToFolderAsync(DeviceInfo device, List<PackageInfo> packages)
+    {
+        var picker = new FolderPicker { SuggestedStartLocation = PickerLocationId.Downloads };
+        picker.FileTypeFilter.Add("*");
+        WinRT.Interop.InitializeWithWindow.Initialize(picker, WinRT.Interop.WindowNative.GetWindowHandle(this));
+        var folder = await picker.PickSingleFolderAsync();
+        if (folder is null) return;
+
+        await RunBusyAsync(async () =>
+        {
+            var failed = new List<string>();
+            for (int i = 0; i < packages.Count; i++)
+            {
+                var pkg = packages[i];
+                ShowStatus(InfoBarSeverity.Informational, $"Сохранение APK: {i + 1} из {packages.Count}", pkg.DisplayName);
+                var r = await _adb.PullApkAsync(device.Serial, pkg, Path.Combine(folder.Path, pkg.Name + ".apk"));
+                if (!r.Success) failed.Add($"{pkg.DisplayName}: {r.Text}");
+            }
+
+            var saved = packages.Count - failed.Count;
+            ShowStatus(failed.Count == 0 ? InfoBarSeverity.Success : InfoBarSeverity.Warning,
+                $"Сохранено APK: {saved} из {packages.Count}",
+                failed.Count == 0 ? folder.Path : folder.Path + Environment.NewLine + "Не удалось:" + Environment.NewLine + string.Join(Environment.NewLine, failed));
         });
     }
 

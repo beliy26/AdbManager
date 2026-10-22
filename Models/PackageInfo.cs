@@ -2,6 +2,20 @@ using System.ComponentModel;
 
 namespace AdbManager.Models;
 
+/// <summary>Совет по пакету (база ЧистогоТВ и встроенная защита).</summary>
+public enum PackageAdvice
+{
+    None,
+    /// <summary>Реклама, телеметрия, мусор — безопасно отключить.</summary>
+    Disable,
+    /// <summary>Приложение, которым пользуются не все, — на усмотрение пользователя.</summary>
+    Optional,
+    /// <summary>В базе помечено «не трогать».</summary>
+    Keep,
+    /// <summary>Критичный системный компонент (встроенный список защиты).</summary>
+    Protected,
+}
+
 /// <summary>Состояние пакета (PackageManager COMPONENT_ENABLED_STATE_*).</summary>
 public enum PackageState
 {
@@ -125,6 +139,42 @@ public sealed class PackageInfo(string name, bool isSystem, string apkPath) : IN
         PackageState.Unused => "Не используется",
         _ => "",
     };
+
+    // ----- Совет из базы ЧистогоТВ / защита -----
+
+    public PackageAdvice Advice { get; private set; }
+    public string? AdviceTitle { get; private set; }
+    public string? AdviceNote { get; private set; }
+
+    /// <summary>Заморозка и удаление запрещены: критичный системный пакет или «не трогать» в базе.</summary>
+    public bool IsBlocked => Advice is PackageAdvice.Protected or PackageAdvice.Keep;
+
+    public bool IsAdviceDisable => Advice == PackageAdvice.Disable;
+    public bool IsAdviceOptional => Advice == PackageAdvice.Optional;
+    public bool IsAdviceBlocked => IsBlocked;
+
+    public string AdviceText => Advice switch
+    {
+        PackageAdvice.Disable => "Можно отключить",
+        PackageAdvice.Optional => "По желанию",
+        PackageAdvice.Keep => "Не трогать",
+        PackageAdvice.Protected => "Защищено",
+        _ => "",
+    };
+
+    public string? AdviceToolTip => Advice == PackageAdvice.None
+        ? null
+        : string.Join(Environment.NewLine, new[] { AdviceTitle, AdviceNote }.Where(s => !string.IsNullOrWhiteSpace(s)));
+
+    public void SetAdvice(PackageAdvice advice, string? title, string? note)
+    {
+        Advice = advice;
+        AdviceTitle = title;
+        AdviceNote = note;
+        foreach (var p in new[] { nameof(Advice), nameof(IsBlocked), nameof(IsAdviceDisable), nameof(IsAdviceOptional),
+                     nameof(IsAdviceBlocked), nameof(AdviceText), nameof(AdviceToolTip) })
+            OnPropertyChanged(p);
+    }
 
     public string DisplayName => string.IsNullOrWhiteSpace(Label) ? Name : Label;
 

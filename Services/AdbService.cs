@@ -14,6 +14,13 @@ public sealed record AdbResult(int ExitCode, string Output, string Error)
         new[] { Output.Trim(), Error.Trim() }.Where(s => s.Length > 0));
 }
 
+/// <summary>Свойства устройства из getprop.</summary>
+public sealed record DeviceProps(string Manufacturer, string Brand, string Model, string Android, int Sdk, string SerialNo)
+{
+    /// <summary>Стабильный ключ устройства (одинаковый по USB и Wi-Fi) — для журнала и бэкапов.</summary>
+    public string Key => $"{Manufacturer}-{Model}-{SerialNo}";
+}
+
 /// <summary>Тонкая обёртка над adb.exe.</summary>
 public sealed class AdbService
 {
@@ -380,6 +387,84 @@ public sealed class AdbService
             else
                 yield return new PackageInfo(line[(eq + 1)..], isSystem, line[..eq]);
         }
+    }
+
+    /// <summary>Основные свойства устройства одним вызовом adb.</summary>
+    public async Task<DeviceProps> GetDevicePropsAsync(string serial)
+    {
+        string[] keys = ["ro.product.manufacturer", "ro.product.brand", "ro.product.model",
+            "ro.build.version.release", "ro.build.version.sdk", "ro.serialno"];
+        var script = string.Join("; ", keys.Select(k => "getprop " + k));
+        var r = await RunAsync(["-s", serial, "shell", script], quiet: true);
+        var lines = r.Output.Replace("\r", "").Split('\n');
+        string V(int i) => i < lines.Length ? lines[i].Trim() : "";
+        return new DeviceProps(V(0), V(1), V(2), V(3), int.TryParse(V(4), out var sdk) ? sdk : 0, V(5));
+    }
+
+    /// <summary>Имена всех установленных для пользователя пакетов (<c>pm list packages</c>).</summary>
+    public async Task<HashSet<string>> GetInstalledNamesAsync(string serial)
+    {
+        var r = await RunAsync(["-s", serial, "shell", "pm", "list", "packages"], quiet: true);
+        return ParsePackages(r.Output, isSystem: false).Select(p => p.Name).ToHashSet();
+    }
+
+    /// <summary>
+    /// Системные пакеты, удалённые для текущего пользователя (<c>pm uninstall --user 0</c>):
+    /// они остались в прошивке и возвращаются через <c>cmd package install-existing</c>.
+    /// </summary>
+    public async Task<List<PackageInfo>> GetRemovedSystemPackagesAsync(string serial)
+    {
+        var installed = await GetInstalledNamesAsync(serial);
+        var r = await RunAsync(["-s", serial, "shell", "pm", "list", "packages", "-u", "-f"], quiet: true);
+        return ParsePackages(r.Output, isSystem: true)
+            .Where(p => !installed.Contains(p.Name))
+            // -u показывает и пользовательские приложения, удалённые с -k: их APK уже нет
+            // (путь «null» или в /data) — вернуть нельзя.
+            .Where(p => p.ApkPath.StartsWith('/') && !p.ApkPath.StartsWith("/data/", StringComparison.Ordinal))
+            .OrderBy(p => p.Name, StringComparer.OrdinalIgnoreCase)
+            .ToList();
+    }
+
+    public async Task<AdbResult> InstallExistingAsync(string serial, string package)
+    {
+        var r = await RunOnDeviceAsync(serial, "shell", "cmd", "package", "install-existing", package);
+        return r.Output.Contains("installed for user", StringComparison.OrdinalIgnoreCase)
+            ? r
+            : new AdbResult(r.ExitCode == 0 ? 1 : r.ExitCode, "", r.Text);
+    }
+
+    public async Task<string> GetSettingAsync(string serial, string ns, string key)
+    {
+        var r = await RunAsync(["-s", serial, "shell", "settings", "get", ns, key], quiet: true);
+        var value = r.Output.Trim();
+        return value == "null" ? "" : value;
+    }
+
+    public Task<AdbResult> PutSettingAsync(string serial, string ns, string key, string value) =>
+        RunOnDeviceAsync(serial, "shell", "settings", "put", ns, key, value);
+
+    /// <summary>
+    /// Устройства, которые adb видит по mDNS: беспроводная отладка Android 11+ (<c>_adb-tls-connect</c>)
+    /// и отладка по сети на порту 5555 (<c>_adb</c>). Имя сервиса, адрес <c>IP:порт</c> и признак беспроводной отладки.
+    /// </summary>
+    public async Task<List<(string Name, string Address, bool Tls)>> GetMdnsDevicesAsync()
+    {
+        var result = new List<(string, string, bool)>();
+        try
+        {
+            var r = await RunAsync(["mdns", "services"], quiet: true);
+            foreach (var line in r.Output.Split('\n'))
+            {
+                var parts = line.Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries);
+                if (parts.Length < 3 || !parts[^1].Contains(':')) continue;
+                if (parts[1].StartsWith("_adb-tls-connect", StringComparison.Ordinal))
+                    result.Add((parts[0], parts[^1], true));
+                else if (parts[1].StartsWith("_adb._tcp", StringComparison.Ordinal))
+                    result.Add((parts[0], parts[^1], false));
+            }
+        }
+        catch (InvalidOperationException) { /* adb не найден */ }
+        return result;
     }
 
     /// <summary>Системное свойство устройства (<c>getprop</c>), например ro.build.version.release.</summary>

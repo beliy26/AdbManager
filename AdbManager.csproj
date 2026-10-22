@@ -6,7 +6,7 @@
     <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
     <RootNamespace>AdbManager</RootNamespace>
     <AssemblyName>AdbManager</AssemblyName>
-    <Version>1.1.0</Version>
+    <Version>1.2.0</Version>
     <Product>ADB Manager</Product>
     <Description>Управление приложениями Android по ADB</Description>
     <ApplicationManifest>app.manifest</ApplicationManifest>
@@ -41,6 +41,11 @@
     <Content Include="Assets\AppIcon.ico" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="Assets\AppIcon-64.png" CopyToOutputDirectory="PreserveNewest" />
     <None Include="Assets\AppIcon.png" />
+    <!-- База пакетов ЧистогоТВ (MIT, см. THIRD-PARTY-NOTICES.md) -->
+    <Content Include="Assets\Data\chistytv-packages.json" CopyToOutputDirectory="PreserveNewest" />
+    <!-- Свой список рекламы и телеметрии на телефонах -->
+    <Content Include="Assets\Data\phone-packages.json" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="THIRD-PARTY-NOTICES.md" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
   <!--

@@ -1,0 +1,34 @@
+# Сторонние компоненты
+
+## ЧистыйТВ — база пакетов и правила защиты
+
+Файл `Assets/Data/chistytv-packages.json` и список защищённых пакетов в `Services/PackageAdvisor.cs`
+взяты из проекта [ЧистыйТВ](https://github.com/by-sonic/chistytv)
+(коммит `3ca906bf24da52423462ec88cd5b1c43c3826eaf`). Источники данных базы перечислены в
+[docs/SOURCES.md](https://github.com/by-sonic/chistytv/blob/main/docs/SOURCES.md) проекта.
+
+```
+MIT License
+
+Copyright (c) 2026 by-sonic
+Portions (PROMPT.md approach and package research) derived from CleanYourTV,
+Copyright (c) 2026 Gathin, https://github.com/Gathin23/cleanyourtv, MIT License.
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+```
