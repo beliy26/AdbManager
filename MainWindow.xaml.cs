@@ -950,8 +950,8 @@ public sealed partial class MainWindow : Window
         var selected = PackagesList.SelectedItems.OfType<PackageInfo>().ToList();
         var count = selected.Count;
         var online = SelectedDevice?.IsOnline == true;
-        UninstallButton.IsEnabled = online && selected.Any(p => !p.IsBlocked);
-        FreezeButton.IsEnabled = online && selected.Any(p => p.State == PackageState.Enabled && !p.IsBlocked);
+        UninstallButton.IsEnabled = online && selected.Any(p => !IsLocked(p));
+        FreezeButton.IsEnabled = online && selected.Any(p => p.State == PackageState.Enabled && !IsLocked(p));
         UnfreezeButton.IsEnabled = online && selected.Any(p => p.State != PackageState.Enabled);
         PullApkButton.IsEnabled = online && count > 0;
         CopyNameButton.IsEnabled = count > 0;
@@ -1176,8 +1176,8 @@ public sealed partial class MainWindow : Window
     {
         if (SelectedDevice is not { IsOnline: true } device) return;
         var marked = PackagesList.SelectedItems.OfType<PackageInfo>().ToList();
-        var drivers = await FindTvInputDriversAsync(device, marked.Where(p => !p.IsBlocked).ToList());
-        var selected = marked.Where(p => !p.IsBlocked && !drivers.Contains(p)).ToList();
+        var drivers = await FindTvInputDriversAsync(device, marked.Where(p => !IsLocked(p)).ToList());
+        var selected = marked.Where(p => !IsLocked(p) && (_expertMode || !drivers.Contains(p))).ToList();
         if (selected.Count == 0)
         {
             ShowTvInputDriversSkipped(drivers);
@@ -1186,8 +1186,8 @@ public sealed partial class MainWindow : Window
 
         var keepData = new CheckBox { Content = "Сохранить данные и кэш (-k)" };
         var content = new StackPanel { Spacing = 8 };
-        AddSkippedProtectedInfo(content, marked.Where(p => p.IsBlocked));
-        AddSkippedTvInputInfo(content, drivers);
+        AddSkippedProtectedInfo(content, marked.Where(IsLocked));
+        if (!_expertMode) AddSkippedTvInputInfo(content, drivers);
         content.Children.Add(new TextBlock
         {
             Text = selected.Count == 1 ? "Удалить приложение?" : $"Удалить приложения ({selected.Count})?",
@@ -1226,6 +1226,7 @@ public sealed partial class MainWindow : Window
             DefaultButton = ContentDialogButton.Close,
             Content = content,
         };
+        AddExpertRiskConfirmation(dialog, content, selected.Where(p => p.IsBlocked || drivers.Contains(p)).ToList());
         if (await dialog.ShowAsync() != ContentDialogResult.Primary) return;
 
         await RunBusyAsync(async () =>
@@ -1268,8 +1269,8 @@ public sealed partial class MainWindow : Window
     {
         if (SelectedDevice is not { IsOnline: true } device) return;
         var candidates = PackagesList.SelectedItems.OfType<PackageInfo>().Where(p => p.State == PackageState.Enabled).ToList();
-        var drivers = await FindTvInputDriversAsync(device, candidates.Where(p => !p.IsBlocked).ToList());
-        var selected = candidates.Where(p => !p.IsBlocked && !drivers.Contains(p)).ToList();
+        var drivers = await FindTvInputDriversAsync(device, candidates.Where(p => !IsLocked(p)).ToList());
+        var selected = candidates.Where(p => !IsLocked(p) && (_expertMode || !drivers.Contains(p))).ToList();
         if (selected.Count == 0)
         {
             ShowTvInputDriversSkipped(drivers);
@@ -1277,8 +1278,8 @@ public sealed partial class MainWindow : Window
         }
 
         var content = new StackPanel { Spacing = 8 };
-        AddSkippedProtectedInfo(content, candidates.Where(p => p.IsBlocked));
-        AddSkippedTvInputInfo(content, drivers);
+        AddSkippedProtectedInfo(content, candidates.Where(IsLocked));
+        if (!_expertMode) AddSkippedTvInputInfo(content, drivers);
         content.Children.Add(new TextBlock
         {
             TextWrapping = TextWrapping.Wrap,
@@ -1316,6 +1317,7 @@ public sealed partial class MainWindow : Window
             DefaultButton = ContentDialogButton.Close,
             Content = content,
         };
+        AddExpertRiskConfirmation(dialog, content, selected.Where(p => p.IsBlocked || drivers.Contains(p)).ToList());
         if (await dialog.ShowAsync() != ContentDialogResult.Primary) return;
 
         await SetFrozenAsync(selected, frozen: true);
@@ -1395,6 +1397,78 @@ public sealed partial class MainWindow : Window
             Message = "Эти пакеты не будут затронуты — без них устройство может перестать работать: " +
                       string.Join(", ", list.Select(p => p.DisplayName)),
         });
+    }
+
+    // ----- Экспертный режим -----
+
+    private bool _expertMode;
+
+    /// <summary>Пакет заблокирован защитой (в экспертном режиме — ничего).</summary>
+    private bool IsLocked(PackageInfo p) => p.IsBlocked && !_expertMode;
+
+    private async void ExpertMode_Click(object sender, RoutedEventArgs e)
+    {
+        if (ExpertModeButton.IsChecked != true)
+        {
+            SetExpertMode(false);
+            return;
+        }
+
+        var dialog = new ContentDialog
+        {
+            XamlRoot = Content.XamlRoot,
+            Title = "Включить экспертный режим?",
+            PrimaryButtonText = "Включить",
+            CloseButtonText = "Отмена",
+            DefaultButton = ContentDialogButton.Close,
+            Content = new TextBlock
+            {
+                TextWrapping = TextWrapping.Wrap,
+                MaxWidth = 520,
+                Text = "Защита будет снята: можно заморозить и удалить любые системные приложения — системный интерфейс, " +
+                       "телефонию, Wi-Fi, установщик, Google Play, главный экран, входы ТВ." + Environment.NewLine + Environment.NewLine +
+                       "Удаление системного приложения выполняется только для текущего пользователя (pm uninstall --user 0): " +
+                       "оно остаётся в прошивке, и его можно вернуть через «Вернуть как было» или «Восстановить удалённые системные». " +
+                       "Но без критичного компонента устройство может зависнуть на загрузке, потерять сеть или экран — тогда " +
+                       "вернуть пакет можно по adb (он обычно работает и при зависшем интерфейсе), в крайнем случае поможет только сброс к заводским настройкам." +
+                       Environment.NewLine + Environment.NewLine +
+                       "Режим действует до закрытия программы.",
+            },
+        };
+        SetExpertMode(await dialog.ShowAsync() == ContentDialogResult.Primary);
+    }
+
+    private void DisableExpertMode_Click(object sender, RoutedEventArgs e) => SetExpertMode(false);
+
+    private void SetExpertMode(bool on)
+    {
+        _expertMode = on;
+        ExpertModeButton.IsChecked = on;
+        ExpertModeBar.IsOpen = on;
+        UpdatePackageButtons();
+    }
+
+    /// <summary>
+    /// Экспертный режим: в списке есть защищённые пакеты — предупреждение и галочка подтверждения,
+    /// без которой кнопка действия неактивна.
+    /// </summary>
+    private static void AddExpertRiskConfirmation(ContentDialog dialog, StackPanel content, IReadOnlyCollection<PackageInfo> risky)
+    {
+        if (risky.Count == 0) return;
+        content.Children.Add(new InfoBar
+        {
+            IsOpen = true,
+            IsClosable = false,
+            Severity = InfoBarSeverity.Error,
+            Title = $"Экспертный режим: защищённых пакетов — {risky.Count}",
+            Message = string.Join(", ", risky.Select(p => p.DisplayName)) + ". Без них устройство может перестать загружаться, " +
+                      "потерять сеть, экран, звук или входы ТВ. Вернуть: «… → Вернуть как было» или «Восстановить удалённые системные».",
+        });
+        var confirm = new CheckBox { Content = "Я понимаю риск и знаю, что делаю" };
+        confirm.Checked += (_, _) => dialog.IsPrimaryButtonEnabled = true;
+        confirm.Unchecked += (_, _) => dialog.IsPrimaryButtonEnabled = false;
+        content.Children.Add(confirm);
+        dialog.IsPrimaryButtonEnabled = false;
     }
 
     private const string TvInputDriversMessage =

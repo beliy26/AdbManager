@@ -284,6 +284,13 @@
                                         <FontIcon Glyph="&#xE722;" />
                                     </AppBarButton.Icon>
                                 </AppBarButton>
+                                <AppBarSeparator />
+                                <AppBarToggleButton x:Name="ExpertModeButton" Label="Экспертный режим" Click="ExpertMode_Click"
+                                                    ToolTipService.ToolTip="Снять защиту: разрешить заморозку и удаление любых системных приложений, включая критичные">
+                                    <AppBarToggleButton.Icon>
+                                        <FontIcon Glyph="&#xE7BA;" />
+                                    </AppBarToggleButton.Icon>
+                                </AppBarToggleButton>
                             </CommandBar.SecondaryCommands>
                         </CommandBar>
                     </Grid>
@@ -326,6 +333,13 @@
 
                     <StackPanel Grid.Row="2" Spacing="4">
                         <ProgressBar x:Name="BusyBar" IsIndeterminate="True" Visibility="Collapsed" />
+                        <InfoBar x:Name="ExpertModeBar" IsOpen="False" IsClosable="False" Severity="Error"
+                                 Title="Экспертный режим"
+                                 Message="Защита отключена: можно заморозить и удалить любые системные приложения, включая критичные. Выключить — «… → Экспертный режим».">
+                            <InfoBar.ActionButton>
+                                <Button Content="Выключить" Click="DisableExpertMode_Click" />
+                            </InfoBar.ActionButton>
+                        </InfoBar>
                         <InfoBar x:Name="StatusBar" IsOpen="False" IsClosable="True" />
                     </StackPanel>
 
