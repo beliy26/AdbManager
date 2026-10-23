@@ -204,7 +204,7 @@ public sealed partial class MainWindow : Window
             }
         }
 
-        static string Key(DeviceInfo d) => $"{d.Serial}|{d.State}|{d.Model}|{d.Kind}";
+        static string Key(DeviceInfo d) => $"{d.Serial}|{d.State}|{d.Model}|{d.Kind}|{d.Type}";
         if (!list.Select(Key).SequenceEqual(Devices.Select(Key)))
         {
             _rebuildingDevices = true;
@@ -239,12 +239,12 @@ public sealed partial class MainWindow : Window
         {
             var tlsSerial = DeviceInfo.SerialFromServiceName(d.Serial);
             var paired = tlsSerial is not null || _settings.PairedDevices.Any(p => p.Host == d.Host && p.Address == d.Serial);
-            var device = paired ? new DeviceInfo(d.Serial, d.State, d.Model, d.Product, DeviceKind.Paired) : d;
-            list.Add(device);
+            var key = d.Kind == DeviceKind.Usb ? d.Serial : d.Host ?? tlsSerial;
+            list.Add(d.WithKindAndType(paired ? DeviceKind.Paired : d.Kind, TypeFor(tlsSerial ?? d.Serial, key)));
 
             if (d.Host is { } host) connectedAddresses.Add(d.Serial);
             if (tlsSerial is not null) connectedSerials.Add(tlsSerial);
-            RememberName(d.Kind == DeviceKind.Usb ? d.Serial : d.Host ?? tlsSerial, d.Model);
+            RememberName(key, d.Model);
 
             // Подключённое по адресу остаётся в списке и после отключения.
             if (d.Host is not null && !paired && _found.All(f => f.Address != d.Serial))
@@ -257,7 +257,8 @@ public sealed partial class MainWindow : Window
             if (p.Address is not null && connectedAddresses.Contains(p.Address)) continue;
             var seen = mdns is null || mdns.Any(m => m.Tls && (m.Address.StartsWith(p.Host + ":", StringComparison.Ordinal) ||
                                                                DeviceInfo.SerialFromServiceName(m.Name) == p.Serial));
-            list.Add(DeviceInfo.Available(p.Address ?? p.Host, NameFor(p.Serial, p.Host), DeviceKind.Paired, missing: !seen));
+            list.Add(DeviceInfo.Available(p.Address ?? p.Host, NameFor(p.Serial, p.Host), DeviceKind.Paired,
+                TypeFor(p.Serial, p.Host), missing: !seen));
         }
 
         foreach (var f in _found)
@@ -265,9 +266,29 @@ public sealed partial class MainWindow : Window
             if (connectedAddresses.Contains(f.Address) || (f.Serial is not null && connectedSerials.Contains(f.Serial))) continue;
             if (list.Any(d => d.Serial == f.Address)) continue;
             var host = f.Address.Split(':')[0];
-            list.Add(DeviceInfo.Available(f.Address, NameFor(f.Serial, host), f.Tls ? DeviceKind.Paired : DeviceKind.Network));
+            list.Add(DeviceInfo.Available(f.Address, NameFor(f.Serial, host), f.Tls ? DeviceKind.Paired : DeviceKind.Network,
+                TypeFor(f.Serial, host)));
         }
         return list;
+    }
+
+    private DeviceType TypeFor(string? serial, string? host) =>
+        serial is not null && _settings.DeviceTypes.TryGetValue(serial, out var t) ? t
+        : host is not null && _settings.DeviceTypes.TryGetValue(host, out t) ? t
+        : DeviceType.Unknown;
+
+    /// <summary>Запоминает тип по ключам устройства; true — если что-то изменилось.</summary>
+    private bool RememberType(DeviceType type, params string?[] keys)
+    {
+        var changed = false;
+        foreach (var key in keys)
+        {
+            if (string.IsNullOrEmpty(key) || _settings.DeviceTypes.GetValueOrDefault(key) == type) continue;
+            _settings.DeviceTypes[key] = type;
+            changed = true;
+        }
+        if (changed) _settings.Save();
+        return changed;
     }
 
     private string? NameFor(string? serial, string? host) =>
@@ -351,7 +372,7 @@ public sealed partial class MainWindow : Window
         OpenBackupsButton.IsEnabled = online;
         CheckDriftButton.IsEnabled = online;
         PrivacyAuditButton.IsEnabled = online;
-        InstallLauncherButton.IsEnabled = online;
+        UpdateLauncherButton();
         ScreenshotButton.IsEnabled = online;
         EnableWifiButton.IsEnabled = online && !device!.IsWireless;
         var forget = device is { IsConnected: false, Kind: DeviceKind.Paired };
@@ -645,8 +666,42 @@ public sealed partial class MainWindow : Window
         {
             _deviceProps[device.Serial] = props = await _adb.GetDevicePropsAsync(device.Serial);
             RememberName(props.SerialNo, device.Model); // чтобы узнать устройство среди найденных по mDNS
+            var key = device.Kind == DeviceKind.Usb ? device.Serial : device.Host ?? DeviceInfo.SerialFromServiceName(device.Serial);
+            RememberType(props.Type, props.SerialNo, key);
+            if (device.Type != props.Type) ReplaceDeviceType(device, props.Type);
         }
         return props;
+    }
+
+    /// <summary>Тип стал известен после подключения — обновляем иконку в списке, не перечитывая приложения.</summary>
+    private void ReplaceDeviceType(DeviceInfo device, DeviceType type)
+    {
+        var i = Devices.IndexOf(device);
+        if (i < 0) return;
+        var wasSelected = SelectedDevice == device;
+        var updated = device.WithKindAndType(device.Kind, type);
+        _rebuildingDevices = true;
+        try
+        {
+            Devices[i] = updated;
+            if (wasSelected) DevicesList.SelectedItem = updated;
+        }
+        finally
+        {
+            _rebuildingDevices = false;
+        }
+        UpdateLauncherButton();
+    }
+
+    /// <summary>Projectivy — лаунчер для Android TV: на телефонах и планшетах пункт неактивен.</summary>
+    private void UpdateLauncherButton()
+    {
+        var device = SelectedDevice;
+        var phone = device?.Type is DeviceType.Phone or DeviceType.Tablet;
+        InstallLauncherButton.IsEnabled = device?.IsOnline == true && !phone;
+        ToolTipService.SetToolTip(InstallLauncherButton, phone
+            ? "Projectivy Launcher — главный экран для Android TV; на телефонах и планшетах не устанавливается"
+            : "Скачать с GitHub и установить Projectivy Launcher — главный экран для Android TV без рекламы");
     }
 
     /// <summary>Журнал изменений устройства — по стабильному ключу (модель + серийный номер).</summary>
@@ -945,6 +1000,362 @@ public sealed partial class MainWindow : Window
         }
     }
 
+    // ----- Пресеты отметки -----
+
+    /// <summary>Пресет, который применится после перезагрузки списка с системными приложениями.</summary>
+    private SelectionPreset? _pendingPreset;
+
+    private static Microsoft.UI.Xaml.Media.Brush ThemeBrush(string key) =>
+        (Microsoft.UI.Xaml.Media.Brush)Application.Current.Resources[key];
+
+    private SelectionPreset? FindPreset(string name) =>
+        _settings.Presets.FirstOrDefault(p => string.Equals(p.Name, name, StringComparison.CurrentCultureIgnoreCase));
+
+    private List<SelectionPreset> SortedPresets() =>
+        _settings.Presets.OrderBy(p => p.Name, StringComparer.CurrentCultureIgnoreCase).ToList();
+
+    private void MarkFlyout_Opening(object sender, object e)
+    {
+        // Меню пресетов собирается при каждом открытии — список меняется в диалогах.
+        PresetsMenu.Items.Clear();
+        foreach (var preset in SortedPresets())
+        {
+            var item = new MenuFlyoutItem { Text = preset.Name, Tag = preset };
+            ToolTipService.SetToolTip(item,
+                (preset.Description.Length > 0 ? preset.Description : "Без описания") +
+                Environment.NewLine + $"Приложений: {preset.Packages.Count}");
+            item.Click += PresetItem_Click;
+            PresetsMenu.Items.Add(item);
+        }
+        if (_settings.Presets.Count > 0) PresetsMenu.Items.Add(new MenuFlyoutSeparator());
+
+        var save = new MenuFlyoutItem
+        {
+            Text = "Сохранить отмеченные как пресет…",
+            Icon = new SymbolIcon(Symbol.Save),
+            IsEnabled = PackagesList.SelectedItems.Count > 0,
+        };
+        save.Click += SavePreset_Click;
+        PresetsMenu.Items.Add(save);
+
+        var manage = new MenuFlyoutItem
+        {
+            Text = "Управление пресетами…",
+            Icon = new SymbolIcon(Symbol.Edit),
+            IsEnabled = _settings.Presets.Count > 0,
+        };
+        manage.Click += ManagePresets_Click;
+        PresetsMenu.Items.Add(manage);
+
+        PresetsMenu.Items.Add(new MenuFlyoutSeparator());
+        var import = new MenuFlyoutItem { Text = "Импорт из файла…", Icon = new SymbolIcon(Symbol.OpenFile) };
+        ToolTipService.SetToolTip(import, "Пресеты ADB Manager (*.json) или список имён пакетов (*.txt, по одному в строке)");
+        import.Click += ImportPresets_Click;
+        PresetsMenu.Items.Add(import);
+    }
+
+    private async Task ExportPresetsAsync(List<SelectionPreset> presets, string suggestedName)
+    {
+        var picker = new FileSavePicker
+        {
+            SuggestedFileName = PresetFile.SafeFileName(suggestedName),
+            SuggestedStartLocation = PickerLocationId.Downloads,
+        };
+        picker.FileTypeChoices.Add("Пресеты ADB Manager", [".json"]);
+        WinRT.Interop.InitializeWithWindow.Initialize(picker, WinRT.Interop.WindowNative.GetWindowHandle(this));
+        var file = await picker.PickSaveFileAsync();
+        if (file is null) return;
+
+        try
+        {
+            await PresetFile.ExportAsync(file.Path, presets);
+            ShowStatus(InfoBarSeverity.Success, $"Экспортировано пресетов: {presets.Count}", file.Path);
+        }
+        catch (Exception ex)
+        {
+            ShowStatus(InfoBarSeverity.Error, "Не удалось сохранить файл", ex.Message);
+        }
+    }
+
+    private async void ImportPresets_Click(object sender, RoutedEventArgs e)
+    {
+        var picker = CreateOpenPicker();
+        picker.FileTypeFilter.Add(".json");
+        picker.FileTypeFilter.Add(".txt");
+        var files = await picker.PickMultipleFilesAsync();
+        if (files is not { Count: > 0 }) return;
+
+        var added = new List<string>();
+        var skipped = 0;
+        var errors = new List<string>();
+        foreach (var file in files)
+        {
+            List<SelectionPreset> imported;
+            try
+            {
+                imported = await PresetFile.ImportAsync(file.Path);
+            }
+            catch (Exception ex)
+            {
+                errors.Add($"{file.Name}: {ex.Message}");
+                continue;
+            }
+            if (imported.Count == 0) errors.Add($"{file.Name}: нет имён пакетов");
+
+            foreach (var preset in imported)
+            {
+                if (preset.Name.Length == 0) preset.Name = Path.GetFileNameWithoutExtension(file.Name);
+                // Тот же пресет уже есть — пропускаем; другой с тем же названием — добавляем с номером.
+                if (FindPreset(preset.Name) is { } same && same.Packages.Order(StringComparer.Ordinal).SequenceEqual(preset.Packages))
+                {
+                    skipped++;
+                    continue;
+                }
+                var name = preset.Name;
+                for (var n = 2; FindPreset(name) is not null; n++) name = $"{preset.Name} ({n})";
+                preset.Name = name;
+                _settings.Presets.Add(preset);
+                added.Add(name);
+            }
+        }
+        if (added.Count > 0) _settings.Save();
+
+        var lines = new List<string>();
+        if (added.Count > 0) lines.Add("Добавлены: " + string.Join(", ", added.Select(n => $"«{n}»")));
+        if (skipped > 0) lines.Add($"Уже были: {skipped}");
+        lines.AddRange(errors);
+        ShowStatus(errors.Count > 0 ? InfoBarSeverity.Warning : added.Count > 0 ? InfoBarSeverity.Success : InfoBarSeverity.Informational,
+            $"Импортировано пресетов: {added.Count}", string.Join(Environment.NewLine, lines));
+    }
+
+    private void PresetItem_Click(object sender, RoutedEventArgs e)
+    {
+        if (sender is FrameworkElement { Tag: SelectionPreset preset }) ApplyPreset(preset);
+    }
+
+    private void ApplyPreset(SelectionPreset preset)
+    {
+        if (_allPackages.Count == 0)
+        {
+            ShowStatus(InfoBarSeverity.Warning, "Список приложений пуст", "Сначала подключите устройство и дождитесь загрузки списка.");
+            return;
+        }
+
+        var names = preset.Packages.ToHashSet(StringComparer.Ordinal);
+        var loaded = _allPackages.Select(p => p.Name).ToHashSet(StringComparer.Ordinal);
+
+        // Пакетов нет в списке — возможно, это скрытые системные: показываем их и применяем пресет после загрузки.
+        if (!ShowSystemToggle.IsOn && names.Any(n => !loaded.Contains(n)))
+        {
+            _pendingPreset = preset;
+            ShowSystemToggle.IsOn = true;
+            return;
+        }
+
+        // Поиск скрыл бы часть пакетов пресета.
+        if (SearchBox.Text.Length > 0)
+        {
+            SearchBox.Text = "";
+            ApplyFilter();
+        }
+
+        SetMarked(Packages.Where(p => names.Contains(p.Name)));
+
+        var found = PackagesList.SelectedItems.Count;
+        var missing = names.Where(n => !loaded.Contains(n)).Order(StringComparer.Ordinal).ToList();
+        var message = preset.Description;
+        if (missing.Count > 0)
+        {
+            message += (message.Length > 0 ? Environment.NewLine : "") +
+                       $"Нет на устройстве ({missing.Count}): " + string.Join(", ", missing.Take(5)) +
+                       (missing.Count > 5 ? $" и ещё {missing.Count - 5}" : "");
+        }
+        ShowStatus(found > 0 ? InfoBarSeverity.Informational : InfoBarSeverity.Warning,
+            $"Пресет «{preset.Name}»: отмечено {found} из {names.Count}", message);
+    }
+
+    private async void SavePreset_Click(object sender, RoutedEventArgs e)
+    {
+        var packages = PackagesList.SelectedItems.OfType<PackageInfo>()
+            .Select(p => p.Name).Order(StringComparer.Ordinal).ToList();
+        if (packages.Count == 0) return;
+
+        var nameBox = new TextBox { Header = "Название", PlaceholderText = "Например: Реклама Xiaomi" };
+        var descriptionBox = new TextBox
+        {
+            Header = "Описание",
+            PlaceholderText = "Что входит в пресет и для чего он нужен",
+            AcceptsReturn = true,
+            TextWrapping = TextWrapping.Wrap,
+            MinHeight = 80,
+            MaxHeight = 160,
+        };
+        var replaceBar = new InfoBar
+        {
+            IsClosable = false,
+            Severity = InfoBarSeverity.Warning,
+            Title = "Пресет с таким названием уже есть",
+            Message = "Его список приложений и описание будут заменены.",
+        };
+        var content = new StackPanel { Spacing = 12, MinWidth = 400 };
+        content.Children.Add(new TextBlock
+        {
+            Text = $"Отмеченных приложений: {packages.Count}. Пресет можно загрузить на любом устройстве: «Отметить → Пресеты».",
+            TextWrapping = TextWrapping.Wrap,
+        });
+        content.Children.Add(nameBox);
+        content.Children.Add(descriptionBox);
+        content.Children.Add(replaceBar);
+
+        var dialog = new ContentDialog
+        {
+            XamlRoot = Content.XamlRoot,
+            Title = "Новый пресет",
+            PrimaryButtonText = "Сохранить",
+            CloseButtonText = "Отмена",
+            DefaultButton = ContentDialogButton.Primary,
+            IsPrimaryButtonEnabled = false,
+            Content = content,
+        };
+
+        // При совпадении названия подставляем описание существующего пресета, если своё ещё не введено.
+        var autoDescription = "";
+        nameBox.TextChanged += (_, _) =>
+        {
+            var existing = FindPreset(nameBox.Text.Trim());
+            dialog.IsPrimaryButtonEnabled = nameBox.Text.Trim().Length > 0;
+            dialog.PrimaryButtonText = existing is null ? "Сохранить" : "Заменить";
+            replaceBar.IsOpen = existing is not null;
+            if (descriptionBox.Text == autoDescription)
+                descriptionBox.Text = autoDescription = existing?.Description ?? "";
+        };
+
+        if (await dialog.ShowAsync() != ContentDialogResult.Primary) return;
+
+        var name = nameBox.Text.Trim();
+        _settings.Presets.RemoveAll(p => string.Equals(p.Name, name, StringComparison.CurrentCultureIgnoreCase));
+        _settings.Presets.Add(new SelectionPreset
+        {
+            Name = name,
+            Description = descriptionBox.Text.Trim(),
+            Packages = packages,
+            Created = DateTime.Now,
+        });
+        _settings.Save();
+        ShowStatus(InfoBarSeverity.Success, "Пресет сохранён",
+            $"«{name}» — приложений: {packages.Count}. Загрузить: «Отметить → Пресеты».");
+    }
+
+    private async void ManagePresets_Click(object sender, RoutedEventArgs e)
+    {
+        var rows = new List<(SelectionPreset Preset, TextBox Name, TextBox Description)>();
+        var list = new StackPanel { Spacing = 8 };
+        foreach (var preset in SortedPresets())
+        {
+            var nameBox = new TextBox { Text = preset.Name, PlaceholderText = "Название" };
+            var descriptionBox = new TextBox
+            {
+                Text = preset.Description,
+                PlaceholderText = "Описание",
+                AcceptsReturn = true,
+                TextWrapping = TextWrapping.Wrap,
+                MaxHeight = 120,
+            };
+            var fields = new StackPanel { Spacing = 6 };
+            fields.Children.Add(nameBox);
+            fields.Children.Add(descriptionBox);
+            fields.Children.Add(new TextBlock
+            {
+                Text = $"Приложений: {preset.Packages.Count} · создан {preset.Created:dd.MM.yyyy HH:mm}",
+                Foreground = ThemeBrush("TextFillColorSecondaryBrush"),
+                FontSize = 12,
+            });
+
+            var delete = new Button { Content = new SymbolIcon(Symbol.Delete) };
+            ToolTipService.SetToolTip(delete, "Удалить пресет");
+            var export = new Button { Content = new SymbolIcon(Symbol.Share) };
+            ToolTipService.SetToolTip(export, "Экспорт в файл");
+            export.Click += async (_, _) =>
+            {
+                // В файл — с правками из полей, даже если диалог ещё не сохранён.
+                var copy = new SelectionPreset
+                {
+                    Name = nameBox.Text.Trim().Length > 0 ? nameBox.Text.Trim() : preset.Name,
+                    Description = descriptionBox.Text.Trim(),
+                    Packages = preset.Packages,
+                    Created = preset.Created,
+                };
+                await ExportPresetsAsync([copy], copy.Name);
+            };
+            var buttons = new StackPanel { Spacing = 6 };
+            buttons.Children.Add(export);
+            buttons.Children.Add(delete);
+
+            var grid = new Grid { ColumnSpacing = 8 };
+            grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+            grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
+            grid.Children.Add(fields);
+            Grid.SetColumn(buttons, 1);
+            grid.Children.Add(buttons);
+
+            var card = new Border
+            {
+                Child = grid,
+                Padding = new Thickness(12),
+                CornerRadius = new CornerRadius(8),
+                BorderThickness = new Thickness(1),
+                Background = ThemeBrush("CardBackgroundFillColorDefaultBrush"),
+                BorderBrush = ThemeBrush("CardStrokeColorDefaultBrush"),
+            };
+            var row = (preset, nameBox, descriptionBox);
+            delete.Click += (_, _) =>
+            {
+                rows.Remove(row);
+                list.Children.Remove(card);
+            };
+            rows.Add(row);
+            list.Children.Add(card);
+        }
+
+        var errorBar = new InfoBar { IsClosable = false, Severity = InfoBarSeverity.Error, Title = "Проверьте названия" };
+        var content = new StackPanel { Spacing = 12, MinWidth = 440 };
+        content.Children.Add(new ScrollViewer { Content = list, MaxHeight = 420 });
+        content.Children.Add(errorBar);
+
+        var dialog = new ContentDialog
+        {
+            XamlRoot = Content.XamlRoot,
+            Title = "Пресеты",
+            PrimaryButtonText = "Сохранить",
+            CloseButtonText = "Отмена",
+            DefaultButton = ContentDialogButton.Primary,
+            Content = content,
+        };
+        dialog.PrimaryButtonClick += (_, args) =>
+        {
+            var names = rows.Select(r => r.Name.Text.Trim()).ToList();
+            string? error = names.Any(n => n.Length == 0) ? "Название пресета не может быть пустым."
+                : names.GroupBy(n => n, StringComparer.CurrentCultureIgnoreCase).FirstOrDefault(g => g.Count() > 1) is { } dup
+                    ? $"Название «{dup.Key}» повторяется."
+                    : null;
+            errorBar.Message = error ?? "";
+            errorBar.IsOpen = error is not null;
+            args.Cancel = error is not null;
+        };
+        if (await dialog.ShowAsync() != ContentDialogResult.Primary) return;
+
+        var removed = _settings.Presets.Count - rows.Count;
+        foreach (var (preset, nameBox, descriptionBox) in rows)
+        {
+            preset.Name = nameBox.Text.Trim();
+            preset.Description = descriptionBox.Text.Trim();
+        }
+        _settings.Presets = rows.Select(r => r.Preset).ToList();
+        _settings.Save();
+        ShowStatus(InfoBarSeverity.Success, "Пресеты сохранены",
+            $"Пресетов: {rows.Count}" + (removed > 0 ? $", удалено: {removed}" : "") + ".");
+    }
+
     private void UpdatePackageButtons()
     {
         var selected = PackagesList.SelectedItems.OfType<PackageInfo>().ToList();
@@ -960,7 +1371,15 @@ public sealed partial class MainWindow : Window
 
     private void SearchBox_TextChanged(AutoSuggestBox sender, AutoSuggestBoxTextChangedEventArgs args) => ApplyFilter();
 
-    private async void ShowSystemToggle_Toggled(object sender, RoutedEventArgs e) => await LoadPackagesAsync();
+    private async void ShowSystemToggle_Toggled(object sender, RoutedEventArgs e)
+    {
+        await LoadPackagesAsync();
+        if (_pendingPreset is { } preset)
+        {
+            _pendingPreset = null;
+            if (ShowSystemToggle.IsOn) ApplyPreset(preset);
+        }
+    }
 
     private async void RefreshPackages_Click(object sender, RoutedEventArgs e) => await LoadPackagesAsync();
 
@@ -1773,7 +2192,7 @@ public sealed partial class MainWindow : Window
             release = await ProjectivyLauncher.GetLatestAsync();
             if ((await _adb.GetInstalledNamesAsync(device.Serial)).Contains(ProjectivyLauncher.Package))
                 installedVersion = await _adb.GetVersionAsync(device.Serial, ProjectivyLauncher.Package) ?? "?";
-            isTv = await _adb.IsTvAsync(device.Serial);
+            isTv = (await GetPropsAsync(device)).Type == DeviceType.Tv;
             (currentHome, _) = await _adb.GetHomeActivitiesAsync(device.Serial);
             StatusBar.IsOpen = false;
         });

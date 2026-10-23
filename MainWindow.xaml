@@ -98,7 +98,7 @@
                                             <ColumnDefinition Width="*" />
                                         </Grid.ColumnDefinitions>
                                         <FontIcon Glyph="{x:Bind Glyph}" FontSize="20" VerticalAlignment="Center"
-                                                  ToolTipService.ToolTip="{x:Bind KindText}" />
+                                                  ToolTipService.ToolTip="{x:Bind TypeText}" />
                                         <StackPanel Grid.Column="1">
                                             <TextBlock Text="{x:Bind DisplayName}" Style="{StaticResource BodyStrongTextBlockStyle}" TextTrimming="CharacterEllipsis" />
                                             <TextBlock Text="{x:Bind SubtitleText}" Style="{StaticResource CaptionTextBlockStyle}"
@@ -310,7 +310,7 @@
                                 <TextBlock Text="Отметить" />
                             </StackPanel>
                             <DropDownButton.Flyout>
-                                <MenuFlyout Placement="BottomEdgeAlignedRight">
+                                <MenuFlyout Placement="BottomEdgeAlignedRight" Opening="MarkFlyout_Opening">
                                     <MenuFlyoutItem Text="Все" Tag="All" Click="Mark_Click" />
                                     <MenuFlyoutItem Text="Включённые" Tag="Enabled" Click="Mark_Click" />
                                     <MenuFlyoutItem Text="Замороженные" Tag="Frozen" Click="Mark_Click" />
@@ -320,6 +320,11 @@
                                     <MenuFlyoutSeparator />
                                     <MenuFlyoutItem Text="Рекомендуемые к отключению" Tag="Recommended" Click="Mark_Click"
                                                     ToolTipService.ToolTip="Включённые приложения, которые советуется отключить: реклама, телеметрия, скрытые установщики (база ЧистогоТВ и список предустановок телефонов)" />
+                                    <MenuFlyoutSubItem x:Name="PresetsMenu" Text="Пресеты">
+                                        <MenuFlyoutSubItem.Icon>
+                                            <FontIcon Glyph="&#xE728;" />
+                                        </MenuFlyoutSubItem.Icon>
+                                    </MenuFlyoutSubItem>
                                     <MenuFlyoutSeparator />
                                     <MenuFlyoutItem Text="Инвертировать" Tag="Invert" Click="Mark_Click" />
                                     <MenuFlyoutItem Text="Снять отметку" Tag="None" Click="Mark_Click" />

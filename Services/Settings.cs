@@ -16,6 +16,12 @@ public sealed class Settings
     /// <summary>Названия моделей по серийному номеру и IP — чтобы показывать найденные в сети устройства по имени.</summary>
     public Dictionary<string, string> DeviceNames { get; set; } = [];
 
+    /// <summary>Типы устройств (телефон, ТВ…) по тем же ключам, что и <see cref="DeviceNames"/>, — для иконок ещё до подключения.</summary>
+    public Dictionary<string, Models.DeviceType> DeviceTypes { get; set; } = [];
+
+    /// <summary>Пресеты отметки: именованные наборы пакетов, общие для всех устройств.</summary>
+    public List<SelectionPreset> Presets { get; set; } = [];
+
     private static string FilePath => Path.Combine(AdbService.AppDataDir, "settings.json");
 
     public static Settings Load()
@@ -46,4 +52,13 @@ public sealed class PairedDevice
     public string Host { get; set; } = "";
     public string? Address { get; set; }
     public string? Serial { get; set; }
+}
+
+/// <summary>Пресет отметки: название, описание и имена пакетов.</summary>
+public sealed class SelectionPreset
+{
+    public string Name { get; set; } = "";
+    public string Description { get; set; } = "";
+    public List<string> Packages { get; set; } = [];
+    public DateTime Created { get; set; }
 }

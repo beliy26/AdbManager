@@ -10,12 +10,24 @@ public enum DeviceKind
     Paired,
 }
 
+/// <summary>Тип устройства по <c>ro.build.characteristics</c> и <c>android.software.leanback</c>.</summary>
+public enum DeviceType
+{
+    /// <summary>Ещё не подключались или тип не распознан (часы, автомобиль).</summary>
+    Unknown,
+    Phone,
+    Tablet,
+    /// <summary>Android TV / Google TV: телевизор или приставка.</summary>
+    Tv,
+}
+
 /// <summary>
 /// Устройство в списке: подключённое (из <c>adb devices -l</c>) или доступное для подключения —
 /// найденное в сети или сопряжённое ранее. У доступных <see cref="Serial"/> — адрес для <c>adb connect</c>.
 /// </summary>
 /// <remarks>Свойства только для чтения (без init): генератор XAML не умеет работать с init-аксессорами.</remarks>
-public sealed class DeviceInfo(string serial, string state, string model, string product, DeviceKind? kind = null)
+public sealed class DeviceInfo(string serial, string state, string model, string product, DeviceKind? kind = null,
+    DeviceType type = DeviceType.Unknown)
 {
     /// <summary>Не подключено, но доступно в сети.</summary>
     public const string AvailableState = "available";
@@ -30,8 +42,12 @@ public sealed class DeviceInfo(string serial, string state, string model, string
     public DeviceKind Kind { get; } = kind ?? (!IsWirelessSerial(serial) ? DeviceKind.Usb
         : serial.Contains("._adb-tls-connect.") ? DeviceKind.Paired : DeviceKind.Network);
 
-    public static DeviceInfo Available(string address, string? name, DeviceKind kind, bool missing = false) =>
-        new(address, missing ? MissingState : AvailableState, name ?? "", "", kind);
+    public DeviceType Type { get; } = type;
+
+    public static DeviceInfo Available(string address, string? name, DeviceKind kind, DeviceType type, bool missing = false) =>
+        new(address, missing ? MissingState : AvailableState, name ?? "", "", kind, type);
+
+    public DeviceInfo WithKindAndType(DeviceKind kind, DeviceType type) => new(Serial, State, Model, Product, kind, type);
 
     public bool IsConnected => State is not (AvailableState or MissingState);
 
@@ -65,11 +81,26 @@ public sealed class DeviceInfo(string serial, string state, string model, string
 
     public double ItemOpacity => IsConnected ? 1 : 0.7;
 
-    public string Glyph => Kind switch
+    public string TypeText => Type switch
     {
-        DeviceKind.Usb => "\uE88E",     // USB
-        DeviceKind.Paired => "\uE71B",  // связь (сопряжение)
-        _ => "\uE701",                  // Wi-Fi
+        DeviceType.Phone => "Телефон",
+        DeviceType.Tablet => "Планшет",
+        DeviceType.Tv => "Android TV (телевизор или приставка)",
+        _ => "Тип устройства станет известен после подключения",
+    };
+
+    /// <summary>Иконка по типу устройства; пока тип неизвестен — по способу подключения.</summary>
+    public string Glyph => Type switch
+    {
+        DeviceType.Phone => "\uE8EA",   // телефон
+        DeviceType.Tablet => "\uE70A",  // планшет
+        DeviceType.Tv => "\uE7F4",      // телевизор
+        _ => Kind switch
+        {
+            DeviceKind.Usb => "\uE88E",     // USB
+            DeviceKind.Paired => "\uE71B",  // связь (сопряжение)
+            _ => "\uE701",                  // Wi-Fi
+        },
     };
 
     /// <summary>Хост из адреса «ip:порт», для остальных серийных номеров — null.</summary>

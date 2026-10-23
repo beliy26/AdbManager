@@ -16,7 +16,8 @@ public sealed record AdbResult(int ExitCode, string Output, string Error)
 
 /// <summary>Свойства устройства из getprop.</summary>
 /// <param name="AdbSecure">ro.adb.secure: «0» — adb по сети пускает любого без запроса «Разрешить отладку?».</param>
-public sealed record DeviceProps(string Manufacturer, string Brand, string Model, string Android, int Sdk, string SerialNo, string AdbSecure)
+public sealed record DeviceProps(string Manufacturer, string Brand, string Model, string Android, int Sdk, string SerialNo, string AdbSecure,
+    DeviceType Type)
 {
     /// <summary>Стабильный ключ устройства (одинаковый по USB и Wi-Fi) — для журнала и бэкапов.</summary>
     public string Key => $"{Manufacturer}-{Model}-{SerialNo}";
@@ -395,11 +396,25 @@ public sealed class AdbService
     {
         string[] keys = ["ro.product.manufacturer", "ro.product.brand", "ro.product.model",
             "ro.build.version.release", "ro.build.version.sdk", "ro.serialno", "ro.adb.secure"];
-        var script = string.Join("; ", keys.Select(k => "getprop " + k));
+        var script = string.Join("; ", keys.Select(k => "getprop " + k)) +
+                     "; getprop ro.build.characteristics; pm has-feature android.software.leanback";
         var r = await RunAsync(["-s", serial, "shell", script], quiet: true);
         var lines = r.Output.Replace("\r", "").Split('\n');
         string V(int i) => i < lines.Length ? lines[i].Trim() : "";
-        return new DeviceProps(V(0), V(1), V(2), V(3), int.TryParse(V(4), out var sdk) ? sdk : 0, V(5), V(6));
+        return new DeviceProps(V(0), V(1), V(2), V(3), int.TryParse(V(4), out var sdk) ? sdk : 0, V(5), V(6),
+            DetectType(V(7), V(8) == "true"));
+    }
+
+    /// <summary>
+    /// Тип по <c>ro.build.characteristics</c> («tv,nosdcard», «tablet», «phone», «default»…) и наличию leanback (Android TV).
+    /// Часы и автомобили — <see cref="DeviceType.Unknown"/>.
+    /// </summary>
+    private static DeviceType DetectType(string characteristics, bool leanback)
+    {
+        var c = characteristics.Split(',', StringSplitOptions.TrimEntries);
+        if (leanback || c.Contains("tv")) return DeviceType.Tv;
+        if (c.Contains("watch") || c.Contains("automotive")) return DeviceType.Unknown;
+        return c.Contains("tablet") ? DeviceType.Tablet : DeviceType.Phone;
     }
 
     // ---------- Защита: главный экран и входы ТВ (идеи CleanYourTV) ----------
@@ -468,12 +483,6 @@ public sealed class AdbService
         return r.Output.Contains("Success", StringComparison.OrdinalIgnoreCase) ? r : new AdbResult(r.ExitCode == 0 ? 1 : r.ExitCode, "", r.Text);
     }
 
-    /// <summary>Android TV / Google TV (<c>android.software.leanback</c>).</summary>
-    public async Task<bool> IsTvAsync(string serial)
-    {
-        var r = await RunAsync(["-s", serial, "shell", "pm", "has-feature", "android.software.leanback"], quiet: true);
-        return r.Output.Trim() == "true";
-    }
 
     /// <summary>
     /// Пакеты, запрашивающие android.permission.TV_INPUT_HARDWARE, — программная часть входов HDMI/AV/тюнера.
