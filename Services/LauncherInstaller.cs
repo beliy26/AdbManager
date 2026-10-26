@@ -45,7 +45,7 @@ public static class ProjectivyLauncher
             if (name.EndsWith(".apk", StringComparison.OrdinalIgnoreCase) && url.StartsWith(DownloadPrefix, StringComparison.Ordinal))
                 return new LauncherRelease(version, name, url, asset.GetProperty("size").GetInt64(), page);
         }
-        throw new InvalidOperationException($"В выпуске {version} нет APK — см. {page}");
+        throw new InvalidOperationException(Res.Format("ReleaseNoApkFormat", version, page));
     }
 
     /// <summary>Скачивает APK (уже скачанный файл того же размера используется повторно).</summary>
@@ -79,7 +79,7 @@ public static class ProjectivyLauncher
         if (new FileInfo(temp).Length != release.Size)
         {
             File.Delete(temp);
-            throw new InvalidDataException("APK скачался не полностью — попробуйте ещё раз.");
+            throw new InvalidDataException(Res.Get("ApkDownloadIncomplete"));
         }
         File.Move(temp, path, overwrite: true);
         return path;

@@ -6,7 +6,9 @@
     <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
     <RootNamespace>AdbManager</RootNamespace>
     <AssemblyName>AdbManager</AssemblyName>
-    <Version>1.5.0</Version>
+    <!-- Язык ресурсов по умолчанию (Strings/en-US): для систем без русского в списке языков -->
+    <DefaultLanguage>en-US</DefaultLanguage>
+    <Version>1.6.0</Version>
     <Product>ADB Manager</Product>
     <Description>Управление приложениями Android по ADB</Description>
     <ApplicationManifest>app.manifest</ApplicationManifest>

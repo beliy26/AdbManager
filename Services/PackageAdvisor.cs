@@ -2,6 +2,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
 using AdbManager.Models;
+using Microsoft.Windows.ApplicationModel.Resources;
 
 namespace AdbManager.Services;
 
@@ -32,6 +33,8 @@ public sealed partial class PackageAdvisor
         [JsonPropertyName("action")] public string Action { get; set; } = "";
         [JsonPropertyName("title")] public string Title { get; set; } = "";
         [JsonPropertyName("note")] public string? Note { get; set; }
+        /// <summary>CleanYourTV: на скольких моделях ТВ пакет отключён — пояснение строится из ресурсов.</summary>
+        [JsonPropertyName("models")] public int Models { get; set; }
         [JsonPropertyName("launcher")] public bool Launcher { get; set; }
         [JsonPropertyName("override_protect")] public bool OverrideProtect { get; set; }
     }
@@ -108,7 +111,7 @@ public sealed partial class PackageAdvisor
                 var re = new Regex(p.DetectManufacturer, RegexOptions.CultureInvariant);
                 match = re.IsMatch(manufacturer ?? "") || re.IsMatch(brand ?? "");
             }
-            if (match) result.Add((p.Id, p.Name));
+            if (match) result.Add((p.Id, Localized("Platform", p.Id, p.Name)));
         }
         return result;
     }
@@ -121,8 +124,8 @@ public sealed partial class PackageAdvisor
 
         if (IsProtected(package.Name, package.IsSystem) && !(applicable && entry!.OverrideProtect))
         {
-            package.SetAdvice(PackageAdvice.Protected, "Критичный системный компонент",
-                "Без него устройство может перестать работать — заморозка и удаление заблокированы.");
+            package.SetAdvice(PackageAdvice.Protected, Res.Get("CriticalComponentTitle"),
+                Res.Get("CriticalComponentNote"));
             return;
         }
 
@@ -133,7 +136,7 @@ public sealed partial class PackageAdvisor
         }
 
         var (advice, fallbackNote) = entry!.Launcher
-            ? (PackageAdvice.Keep, "штатный главный экран")
+            ? (PackageAdvice.Keep, Res.Get("StockHomeScreen"))
             : entry.Action switch
             {
                 "disable" => (PackageAdvice.Disable, ""),
@@ -141,7 +144,21 @@ public sealed partial class PackageAdvisor
                 "keep" => (PackageAdvice.Keep, ""),
                 _ => (PackageAdvice.None, ""),
             };
-        var note = string.IsNullOrWhiteSpace(entry.Note) ? fallbackNote : entry.Note;
-        package.SetAdvice(advice, entry.Title, note);
+        var note = entry.Models > 0
+            ? entry.Models == 1 ? Res.Get("CleanYourTvNoteOne") : Res.Format("CleanYourTvNoteFormat", entry.Models)
+            : string.IsNullOrWhiteSpace(entry.Note) ? fallbackNote : Localized("Note", entry.Id, entry.Note);
+        package.SetAdvice(advice, Localized("Title", entry.Id, entry.Title), note);
+    }
+
+    // Тексты баз — на русском. Английский перевод — в Strings/en-US/Advice.resw (ключи «Title_com_example_app»);
+    // русского файла нет, поэтому для русского интерфейса ресурсы не читаются (MRT подставил бы английский).
+    // TryGetValue вместо ResourceLoader.GetString: у большинства пакетов перевода нет, а GetString на нём бросает исключение.
+    private static ResourceMap? _adviceMap;
+
+    private static string Localized(string kind, string id, string text)
+    {
+        if (Res.Language == Res.Russian) return text;
+        _adviceMap ??= new ResourceManager().MainResourceMap.TryGetSubtree("Advice");
+        return _adviceMap?.TryGetValue($"{kind}_{id.Replace('.', '_')}")?.ValueAsString is { Length: > 0 } en ? en : text;
     }
 }

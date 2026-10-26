@@ -1,0 +1,1312 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="AdbExeNotFound" xml:space="preserve">
+    <value>adb.exe not found</value>
+  </data>
+  <data name="AdbInsecureFormat" xml:space="preserve">
+    <value>{0} reports ro.adb.secure=0: adb port 5555 gives anyone on the network full access to the device, without the “Allow debugging?” prompt. When finished, turn off USB and network debugging on the device and restart it.</value>
+  </data>
+  <data name="AdbInsecureTitle" xml:space="preserve">
+    <value>Network debugging without confirmation</value>
+  </data>
+  <data name="AdbNotFound" xml:space="preserve">
+    <value>adb.exe not found.</value>
+  </data>
+  <data name="AdbNotFoundMessage" xml:space="preserve">
+    <value>Click “Download” to get Android platform-tools, or specify the path to adb.exe.</value>
+  </data>
+  <data name="AdbNotFoundSpecify" xml:space="preserve">
+    <value>adb.exe not found. Specify the path to it or download platform-tools.</value>
+  </data>
+  <data name="AdbNotFoundTitle" xml:space="preserve">
+    <value>adb not found</value>
+  </data>
+  <data name="AdbNotInArchive" xml:space="preserve">
+    <value>adb.exe not found in the platform-tools archive</value>
+  </data>
+  <data name="AdbPathText.Text" xml:space="preserve">
+    <value>adb.exe not found</value>
+  </data>
+  <data name="AdviceDisable" xml:space="preserve">
+    <value>Can be disabled</value>
+  </data>
+  <data name="AdviceKeep" xml:space="preserve">
+    <value>Don't touch</value>
+  </data>
+  <data name="AdviceOptional" xml:space="preserve">
+    <value>Optional</value>
+  </data>
+  <data name="AdviceProtected" xml:space="preserve">
+    <value>Protected</value>
+  </data>
+  <data name="AgoSuffix" xml:space="preserve">
+    <value> ago</value>
+  </data>
+  <data name="AllInPlace" xml:space="preserve">
+    <value>Everything is in place</value>
+  </data>
+  <data name="AllInPlaceFormat" xml:space="preserve">
+    <value>Everything the program froze and removed on this device ({0}) is still frozen and removed.</value>
+  </data>
+  <data name="AlreadyHomeScreen" xml:space="preserve">
+    <value> — already the home screen</value>
+  </data>
+  <data name="AndMoreFormat" xml:space="preserve">
+    <value> and {0} more</value>
+  </data>
+  <data name="ApkDownloadIncomplete" xml:space="preserve">
+    <value>The APK was not downloaded completely — try again.</value>
+  </data>
+  <data name="ApkSaved" xml:space="preserve">
+    <value>APK saved</value>
+  </data>
+  <data name="AppListEmptyMessage" xml:space="preserve">
+    <value>Connect a device first and wait for the list to load.</value>
+  </data>
+  <data name="AppListEmptyTitle" xml:space="preserve">
+    <value>The app list is empty</value>
+  </data>
+  <data name="Apply" xml:space="preserve">
+    <value>Apply</value>
+  </data>
+  <data name="AppNoLaunchActivity" xml:space="preserve">
+    <value>The app has no launchable screen — open it on the phone manually.</value>
+  </data>
+  <data name="AppNotEnabledAfterLaunch" xml:space="preserve">
+    <value>The app wasn't enabled after launching.</value>
+  </data>
+  <data name="Apps" xml:space="preserve">
+    <value>Apps</value>
+  </data>
+  <data name="AppsCountFormat" xml:space="preserve">
+    <value>Apps: {0}</value>
+  </data>
+  <data name="AppsHeaderFormat" xml:space="preserve">
+    <value>Apps — {0}</value>
+  </data>
+  <data name="BackupMessage" xml:space="preserve">
+    <value>Saving the device state before making changes</value>
+  </data>
+  <data name="BackupTitle" xml:space="preserve">
+    <value>Backup…</value>
+  </data>
+  <data name="BrowseAdbButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
+    <value>Specify the path to adb.exe</value>
+  </data>
+  <data name="BrowseAdbText.Text" xml:space="preserve">
+    <value>Browse</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="ChangedErrorsFormat" xml:space="preserve">
+    <value>{0}: {1}, errors: {2}</value>
+  </data>
+  <data name="CheckDriftButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
+    <value>A firmware update brings back frozen and removed apps — find them and repeat</value>
+  </data>
+  <data name="CheckDriftButton.Label" xml:space="preserve">
+    <value>Check after a firmware update…</value>
+  </data>
+  <data name="Checking" xml:space="preserve">
+    <value>Checking…</value>
+  </data>
+  <data name="CheckingDriftMessage" xml:space="preserve">
+    <value>Comparing the change journal with the device</value>
+  </data>
+  <data name="CheckingLatestVersion" xml:space="preserve">
+    <value>Checking the latest version on GitHub…</value>
+  </data>
+  <data name="CheckingTvInputs" xml:space="preserve">
+    <value>Checking whether the packages serve TV inputs (HDMI/AV)</value>
+  </data>
+  <data name="CheckNamesTitle" xml:space="preserve">
+    <value>Check the names</value>
+  </data>
+  <data name="CheckUpdatesButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
+    <value>Find out whether a new version of ADB Manager is out on GitHub</value>
+  </data>
+  <data name="CheckUpdatesButton.Label" xml:space="preserve">
+    <value>Check for updates</value>
+  </data>
+  <data name="CleanYourTvNoteFormat" xml:space="preserve">
+    <value>CleanYourTV: disabled on {0} TV models</value>
+  </data>
+  <data name="CleanYourTvNoteOne" xml:space="preserve">
+    <value>CleanYourTV: disabled on one TV model</value>
+  </data>
+  <data name="ClearLogButton.Content" xml:space="preserve">
+    <value>Clear</value>
+  </data>
+  <data name="Close" xml:space="preserve">
+    <value>Close</value>
+  </data>
+  <data name="Connect" xml:space="preserve">
+    <value>Connect</value>
+  </data>
+  <data name="ConnectButton.Content" xml:space="preserve">
+    <value>Connect</value>
+  </data>
+  <data name="Connected" xml:space="preserve">
+    <value>Connected</value>
+  </data>
+  <data name="ConnectFailed" xml:space="preserve">
+    <value>Failed to connect</value>
+  </data>
+  <data name="ConnectHeader.Text" xml:space="preserve">
+    <value>Connect over Wi-Fi</value>
+  </data>
+  <data name="ConnectingTitle" xml:space="preserve">
+    <value>Connecting…</value>
+  </data>
+  <data name="CopyListButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
+    <value>Copy the shown app list (with search and filters applied) as a table with a prompt for asking an AI</value>
+  </data>
+  <data name="CopyListButton.Label" xml:space="preserve">
+    <value>Copy list for LLM</value>
+  </data>
+  <data name="CopyNameButton.Label" xml:space="preserve">
+    <value>Copy package name</value>
+  </data>
+  <data name="CriticalComponentNote" xml:space="preserve">
+    <value>The device may stop working without it — freezing and removal are blocked.</value>
+  </data>
+  <data name="CriticalComponentTitle" xml:space="preserve">
+    <value>Critical system component</value>
+  </data>
+  <data name="DeletedCountFormat" xml:space="preserve">
+    <value>, deleted: {0}</value>
+  </data>
+  <data name="DeletePreset" xml:space="preserve">
+    <value>Delete preset</value>
+  </data>
+  <data name="Description" xml:space="preserve">
+    <value>Description</value>
+  </data>
+  <data name="DeviceKindPaired" xml:space="preserve">
+    <value>Wireless debugging</value>
+  </data>
+  <data name="DeviceNotConnectedHint" xml:space="preserve">
+    <value>The device is not connected — click it in the list on the left</value>
+  </data>
+  <data name="DevicesFoundFormat" xml:space="preserve">
+    <value>Devices found: {0}</value>
+  </data>
+  <data name="DevicesFoundMessage" xml:space="preserve">
+    <value>They were added to the list on the left — click a device to connect.</value>
+  </data>
+  <data name="DevicesHeader.Text" xml:space="preserve">
+    <value>Devices</value>
+  </data>
+  <data name="DeviceStateAvailable" xml:space="preserve">
+    <value>Not connected — click to connect</value>
+  </data>
+  <data name="DeviceStateMissing" xml:space="preserve">
+    <value>Paired, not on the network now</value>
+  </data>
+  <data name="DeviceStateOffline" xml:space="preserve">
+    <value>Offline</value>
+  </data>
+  <data name="DeviceStateUnauthorized" xml:space="preserve">
+    <value>Unauthorized — allow debugging on the phone</value>
+  </data>
+  <data name="DeviceTypePhone" xml:space="preserve">
+    <value>Phone</value>
+  </data>
+  <data name="DeviceTypeTablet" xml:space="preserve">
+    <value>Tablet</value>
+  </data>
+  <data name="DeviceTypeTv" xml:space="preserve">
+    <value>Android TV (TV or set-top box)</value>
+  </data>
+  <data name="DeviceTypeUnknown" xml:space="preserve">
+    <value>The device type will be known after connecting</value>
+  </data>
+  <data name="DeviceUnavailableFormat" xml:space="preserve">
+    <value>Device unavailable: {0}</value>
+  </data>
+  <data name="DisableExpertModeButton.Content" xml:space="preserve">
+    <value>Turn off</value>
+  </data>
+  <data name="Disconnect" xml:space="preserve">
+    <value>Disconnect</value>
+  </data>
+  <data name="DisconnectButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
+    <value>Disconnect a wireless device or forget a paired one</value>
+  </data>
+  <data name="DisconnectButtonText.Text" xml:space="preserve">
+    <value>Disconnect</value>
+  </data>
+  <data name="DnsAdGuard" xml:space="preserve">
+    <value>AdGuard — blocks ads and trackers</value>
+  </data>
+  <data name="DnsAdGuardFamily" xml:space="preserve">
+    <value>AdGuard Family — plus adult content</value>
+  </data>
+  <data name="DnsAutomatic" xml:space="preserve">
+    <value>Automatic (Android default)</value>
+  </data>
+  <data name="DnsAutomaticLower" xml:space="preserve">
+    <value>automatic</value>
+  </data>
+  <data name="DnsChangeFailed" xml:space="preserve">
+    <value>Failed to change DNS</value>
+  </data>
+  <data name="DnsCustom" xml:space="preserve">
+    <value>Custom server</value>
+  </data>
+  <data name="DnsDialogFormat" xml:space="preserve">
+    <value>Current: {0}. A blocking DNS removes ads and trackers in all apps and the browser, but not ads inside YouTube. If a site or app stops working, switch back to “Automatic”.</value>
+  </data>
+  <data name="DnsOff" xml:space="preserve">
+    <value>Off</value>
+  </data>
+  <data name="DnsOffLower" xml:space="preserve">
+    <value>off</value>
+  </data>
+  <data name="DnsSetFormat" xml:space="preserve">
+    <value>Set: {0}.</value>
+  </data>
+  <data name="DnsUnavailableMessage" xml:space="preserve">
+    <value>Android 9 or newer is required.</value>
+  </data>
+  <data name="DnsUnavailableTitle" xml:space="preserve">
+    <value>Private DNS is unavailable</value>
+  </data>
+  <data name="DoneTitle" xml:space="preserve">
+    <value>Done</value>
+  </data>
+  <data name="DownloadAdbButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
+    <value>Download Android platform-tools from dl.google.com</value>
+  </data>
+  <data name="DownloadAdbText.Text" xml:space="preserve">
+    <value>Download</value>
+  </data>
+  <data name="DownloadAndInstall" xml:space="preserve">
+    <value>Download and install</value>
+  </data>
+  <data name="DownloadFromGitHubAnd" xml:space="preserve">
+    <value>Download from GitHub and install Projectivy Launcher — an ad-free home screen for Android TV</value>
+  </data>
+  <data name="DownloadPlatformToolsMessage" xml:space="preserve">
+    <value>Downloading platform-tools from dl.google.com…</value>
+  </data>
+  <data name="DownloadTitle" xml:space="preserve">
+    <value>Downloading</value>
+  </data>
+  <data name="DriftMessage" xml:space="preserve">
+    <value>The program froze or removed these apps, but now they work again — this usually happens after a firmware update. The checked ones will be frozen or removed again.</value>
+  </data>
+  <data name="DriftTitle" xml:space="preserve">
+    <value>After a firmware update</value>
+  </data>
+  <data name="DropApkHint.Text" xml:space="preserve">
+    <value>Drop APK files into the window to install them</value>
+  </data>
+  <data name="EmptyPackagesText.Text" xml:space="preserve">
+    <value>Select a device on the left</value>
+  </data>
+  <data name="Enable" xml:space="preserve">
+    <value>Enable</value>
+  </data>
+  <data name="EnableWifiButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
+    <value>Switch the USB device to Wi-Fi debugging (adb tcpip 5555)</value>
+  </data>
+  <data name="EnableWifiText.Text" xml:space="preserve">
+    <value>Wi-Fi mode</value>
+  </data>
+  <data name="EnableWirelessDebuggingHint" xml:space="preserve">
+    <value>Turn on “Wireless debugging” on the phone. If that doesn't help, pair with a code again.</value>
+  </data>
+  <data name="EnablingByLaunch" xml:space="preserve">
+    <value>Enabling (launching on the phone)…</value>
+  </data>
+  <data name="Error" xml:space="preserve">
+    <value>Error</value>
+  </data>
+  <data name="ErrorApkIncomplete" xml:space="preserve">
+    <value>Incomplete APK data: </value>
+  </data>
+  <data name="ErrorBytesExpected" xml:space="preserve">
+    <value>Expected {0} bytes, got {1}</value>
+  </data>
+  <data name="ErrorEmptyXml" xml:space="preserve">
+    <value>Empty XML</value>
+  </data>
+  <data name="ErrorNotBinaryXml" xml:space="preserve">
+    <value>Not a binary XML</value>
+  </data>
+  <data name="ErrorNotResourcesArsc" xml:space="preserve">
+    <value>Not a resources.arsc</value>
+  </data>
+  <data name="ErrorOffsetOutOfFile" xml:space="preserve">
+    <value>Offset is outside the file</value>
+  </data>
+  <data name="ErrorReadApk" xml:space="preserve">
+    <value>Failed to read the APK on the device: </value>
+  </data>
+  <data name="ErrorZip64" xml:space="preserve">
+    <value>ZIP64 is not supported</value>
+  </data>
+  <data name="ErrorZipLocalHeader" xml:space="preserve">
+    <value>Corrupted ZIP local header: </value>
+  </data>
+  <data name="ErrorZipMethod" xml:space="preserve">
+    <value>Compression method {0} is not supported</value>
+  </data>
+  <data name="ErrorZipNoDirectory" xml:space="preserve">
+    <value>ZIP central directory not found: </value>
+  </data>
+  <data name="ExpertModeBar.Message" xml:space="preserve">
+    <value>Protection is off: any system app can be frozen or removed, including critical ones. To turn it off — “… → Expert mode”.</value>
+  </data>
+  <data name="ExpertModeBar.Title" xml:space="preserve">
+    <value>Expert mode</value>
+  </data>
+  <data name="ExpertModeButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
+    <value>Remove protection: allow freezing and removing any system apps, including critical ones</value>
+  </data>
+  <data name="ExpertModeButton.Label" xml:space="preserve">
+    <value>Expert mode</value>
+  </data>
+  <data name="ExpertModeQuestion" xml:space="preserve">
+    <value>Turn on expert mode?</value>
+  </data>
+  <data name="ExpertModeUntilClose" xml:space="preserve">
+    <value>The mode lasts until the program is closed.</value>
+  </data>
+  <data name="ExpertModeWarning1" xml:space="preserve">
+    <value>Protection will be removed: any system app can be frozen or removed — the system UI, telephony, Wi-Fi, the installer, Google Play, the home screen, TV inputs.</value>
+  </data>
+  <data name="ExpertModeWarning2" xml:space="preserve">
+    <value>A system app is removed only for the current user (pm uninstall --user 0): it stays in the firmware and can be restored via “Undo changes” or “Restore removed system apps”. But without a critical component the device may hang on boot or lose the network or the screen — then the package can be restored over adb (it usually works even when the UI hangs), and as a last resort only a factory reset helps.</value>
+  </data>
+  <data name="ExpertRiskConfirm" xml:space="preserve">
+    <value>I understand the risk and know what I'm doing</value>
+  </data>
+  <data name="ExpertRiskMessageSuffix" xml:space="preserve">
+    <value>. Without them the device may stop booting or lose the network, screen, sound or TV inputs. To restore: “… → Undo changes” or “Restore removed system apps”.</value>
+  </data>
+  <data name="ExpertRiskTitleFormat" xml:space="preserve">
+    <value>Expert mode: protected packages — {0}</value>
+  </data>
+  <data name="ExportToFile" xml:space="preserve">
+    <value>Export to file</value>
+  </data>
+  <data name="FailedList" xml:space="preserve">
+    <value>Failed:</value>
+  </data>
+  <data name="FindInNetworkButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
+    <value>Finds devices with network debugging (port 5555 on the home network and Android 11+ wireless debugging via mDNS) and adds them to the list</value>
+  </data>
+  <data name="FindInNetworkText.Text" xml:space="preserve">
+    <value>Find on network</value>
+  </data>
+  <data name="Forget" xml:space="preserve">
+    <value>Forget</value>
+  </data>
+  <data name="FoundOfFormat" xml:space="preserve">
+    <value>Found: {0} of {1}</value>
+  </data>
+  <data name="Freeze" xml:space="preserve">
+    <value>Freeze</value>
+  </data>
+  <data name="FreezeButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
+    <value>Disable the app (pm disable-user). Data is kept.</value>
+  </data>
+  <data name="FreezeButton.Label" xml:space="preserve">
+    <value>Freeze</value>
+  </data>
+  <data name="FreezeExplanation" xml:space="preserve">
+    <value>A frozen app doesn't run, doesn't receive notifications and disappears from the menu. Data is kept — it can be unfrozen at any time.</value>
+  </data>
+  <data name="FreezeManyQuestionFormat" xml:space="preserve">
+    <value>Freeze apps ({0})?</value>
+  </data>
+  <data name="FreezeOneQuestion" xml:space="preserve">
+    <value>Freeze the app?</value>
+  </data>
+  <data name="FreezeSystemWarning" xml:space="preserve">
+    <value>Freezing important system components may break the phone (up to a boot loop). Only freeze what you know the purpose of.</value>
+  </data>
+  <data name="Freezing" xml:space="preserve">
+    <value>Freezing…</value>
+  </data>
+  <data name="Frozen" xml:space="preserve">
+    <value>Frozen</value>
+  </data>
+  <data name="FrozenBadgeText.Text" xml:space="preserve">
+    <value>Frozen</value>
+  </data>
+  <data name="FrozenCountFormat" xml:space="preserve">
+    <value> · frozen: {0}</value>
+  </data>
+  <data name="HomeGuardNote" xml:space="preserve">
+    <value>The only home screen app: without it the device has nothing to show when Home is pressed. Install and select another launcher — then the protection is lifted.</value>
+  </data>
+  <data name="HomeScreen" xml:space="preserve">
+    <value>Home screen</value>
+  </data>
+  <data name="ImportFromFile" xml:space="preserve">
+    <value>Import from file…</value>
+  </data>
+  <data name="ImportPresetsToolTip" xml:space="preserve">
+    <value>ADB Manager presets (*.json) or a list of package names (*.txt, one per line)</value>
+  </data>
+  <data name="Install" xml:space="preserve">
+    <value>Install</value>
+  </data>
+  <data name="InstallButton.Label" xml:space="preserve">
+    <value>Install APK</value>
+  </data>
+  <data name="InstallDowngrade" xml:space="preserve">
+    <value>Allow installing an older version (-d)</value>
+  </data>
+  <data name="Installed" xml:space="preserve">
+    <value>Installed</value>
+  </data>
+  <data name="InstalledCountFormat" xml:space="preserve">
+    <value>Packages installed: {0}</value>
+  </data>
+  <data name="InstallError" xml:space="preserve">
+    <value>Installation error</value>
+  </data>
+  <data name="InstallFailed" xml:space="preserve">
+    <value>Failed to install</value>
+  </data>
+  <data name="InstallGrant" xml:space="preserve">
+    <value>Grant all permissions right away (-g)</value>
+  </data>
+  <data name="Installing" xml:space="preserve">
+    <value>Installing…</value>
+  </data>
+  <data name="InstallLauncherButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
+    <value>Download from GitHub and install Projectivy Launcher — an ad-free home screen for Android TV</value>
+  </data>
+  <data name="InstallLauncherButton.Label" xml:space="preserve">
+    <value>Install Projectivy launcher…</value>
+  </data>
+  <data name="InstallOnFormat" xml:space="preserve">
+    <value>Install on {0}</value>
+  </data>
+  <data name="InstallOnPrefix" xml:space="preserve">
+    <value>Install on </value>
+  </data>
+  <data name="InstallSplit" xml:space="preserve">
+    <value>These are parts of one app (split APK, install-multiple)</value>
+  </data>
+  <data name="InvalidAdbFileMessage" xml:space="preserve">
+    <value>Select adb.exe from the platform-tools folder.</value>
+  </data>
+  <data name="InvalidAddressTitle" xml:space="preserve">
+    <value>Invalid address</value>
+  </data>
+  <data name="InvalidDnsMessage" xml:space="preserve">
+    <value>Enter a DNS-over-TLS server name, for example dns.adguard-dns.com.</value>
+  </data>
+  <data name="InvalidFileTitle" xml:space="preserve">
+    <value>Invalid file</value>
+  </data>
+  <data name="KeepDataAndCache" xml:space="preserve">
+    <value>Keep data and cache (-k)</value>
+  </data>
+  <data name="KindSystem" xml:space="preserve">
+    <value>System</value>
+  </data>
+  <data name="KindUser" xml:space="preserve">
+    <value>User</value>
+  </data>
+  <data name="LanguageButton.Label" xml:space="preserve">
+    <value>Language / Язык</value>
+  </data>
+  <data name="LanguageSystemItem.Text" xml:space="preserve">
+    <value>Windows default</value>
+  </data>
+  <data name="LanguageTag" xml:space="preserve">
+    <value>en-US</value>
+  </data>
+  <data name="Later" xml:space="preserve">
+    <value>Later</value>
+  </data>
+  <data name="LatestVersionFormat" xml:space="preserve">
+    <value>Latest version: {0} ({1})</value>
+  </data>
+  <data name="LauncherDescription" xml:space="preserve">
+    <value>A free launcher for Android TV without ads and recommendations: custom categories, wallpapers, hiding apps. A third-party project; the APK is downloaded from the author's GitHub.</value>
+  </data>
+  <data name="LauncherKeepNote" xml:space="preserve">
+    <value>The stock launcher stays. If the Home button still opens it (this happens on Google TV), freeze it in the table — the protection is lifted once there is a second launcher. To undo the installation and the home screen change — “… → Undo changes”.</value>
+  </data>
+  <data name="LauncherNoHomeActivity" xml:space="preserve">
+    <value>the launcher doesn't declare a home screen activity</value>
+  </data>
+  <data name="LauncherTvOnlyToolTip" xml:space="preserve">
+    <value>Projectivy Launcher is a home screen for Android TV; it isn't installed on phones and tablets</value>
+  </data>
+  <data name="ListCopied" xml:space="preserve">
+    <value>List copied</value>
+  </data>
+  <data name="ListCopiedFormat" xml:space="preserve">
+    <value>Apps: {0}. Paste it into an AI chat (Ctrl+V).</value>
+  </data>
+  <data name="LlmAppsCountFormat" xml:space="preserve">
+    <value>Apps in the list: {0}</value>
+  </data>
+  <data name="LlmFilterFormat" xml:space="preserve">
+    <value>, filter: “{0}”</value>
+  </data>
+  <data name="LlmIncludingSystem" xml:space="preserve">
+    <value> (including system)</value>
+  </data>
+  <data name="LlmIntroFormat" xml:space="preserve">
+    <value>Below is the list of apps on my Android smartphone{0}{1}.</value>
+  </data>
+  <data name="LlmNoteAdvice" xml:space="preserve">
+    <value>- Advice — from the ChistyTV project database (mostly Android TV), the list of phone ad preinstalls and built-in protection of critical system packages; the program doesn't allow disabling “Protected” and “Don't touch”.</value>
+  </data>
+  <data name="LlmNoteFreeze" xml:space="preserve">
+    <value>- Freezing — `pm disable-user`: the app doesn't run, data is kept, it can be enabled again.</value>
+  </data>
+  <data name="LlmNotesHeader" xml:space="preserve">
+    <value>Notes on the table:</value>
+  </data>
+  <data name="LlmNoteSize" xml:space="preserve">
+    <value>- Size — the app together with its data.</value>
+  </data>
+  <data name="LlmNoteStatus" xml:space="preserve">
+    <value>- Status “Frozen” — disabled manually; “Unused” — Android itself stopped an app that hasn't been used for a long time.</value>
+  </data>
+  <data name="LlmNoteUninstall" xml:space="preserve">
+    <value>- Removing system apps — only for the current user (`pm uninstall --user 0`), restored with `cmd package install-existing`.</value>
+  </data>
+  <data name="LlmRequest" xml:space="preserve">
+    <value>Tell me which of them can be safely removed or frozen and which must not be touched. For each recommended app briefly explain what it does and what disabling it can break. Group the answer: “can be removed”, “better freeze”, “don't touch”.</value>
+  </data>
+  <data name="LlmTableHeader" xml:space="preserve">
+    <value>| Name | Package | Type | Status | Advice | Size | Location |</value>
+  </data>
+  <data name="LlmUserOnly" xml:space="preserve">
+    <value> (user apps only)</value>
+  </data>
+  <data name="Loading" xml:space="preserve">
+    <value>Loading…</value>
+  </data>
+  <data name="LoadingIconsFormat" xml:space="preserve">
+    <value>Loading icons: {0} of {1}</value>
+  </data>
+  <data name="LogExpander.Header" xml:space="preserve">
+    <value>adb log</value>
+  </data>
+  <data name="MakeHomeFailedPrefix" xml:space="preserve">
+    <value> Couldn't make it the home screen: </value>
+  </data>
+  <data name="MakeHomeManually" xml:space="preserve">
+    <value>. Select it on the device: Settings → Apps → Default apps → Home app.</value>
+  </data>
+  <data name="MakeHomeScreen" xml:space="preserve">
+    <value>Make it the home screen (Home button)</value>
+  </data>
+  <data name="ManagePresets" xml:space="preserve">
+    <value>Manage presets…</value>
+  </data>
+  <data name="MarkAllItem.Text" xml:space="preserve">
+    <value>All</value>
+  </data>
+  <data name="MarkButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
+    <value>Quickly mark apps among the shown ones</value>
+  </data>
+  <data name="MarkButtonText.Text" xml:space="preserve">
+    <value>Mark</value>
+  </data>
+  <data name="MarkedCountFormat" xml:space="preserve">
+    <value> · marked: {0}</value>
+  </data>
+  <data name="MarkedFormat" xml:space="preserve">
+    <value>Marked: {0}</value>
+  </data>
+  <data name="MarkedFreezeHint" xml:space="preserve">
+    <value>Check the list and click “Freeze” — freezing can be undone at any time.</value>
+  </data>
+  <data name="MarkEnabledItem.Text" xml:space="preserve">
+    <value>Enabled</value>
+  </data>
+  <data name="MarkFrozenItem.Text" xml:space="preserve">
+    <value>Frozen</value>
+  </data>
+  <data name="MarkInTableFormat" xml:space="preserve">
+    <value>Mark in the table ({0})</value>
+  </data>
+  <data name="MarkInvertItem.Text" xml:space="preserve">
+    <value>Invert</value>
+  </data>
+  <data name="MarkNoneItem.Text" xml:space="preserve">
+    <value>Clear marks</value>
+  </data>
+  <data name="MarkRecommendedItem.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
+    <value>Enabled apps that are advised to be disabled: ads, telemetry, hidden installers (ChistyTV database and the list of phone preinstalls)</value>
+  </data>
+  <data name="MarkRecommendedItem.Text" xml:space="preserve">
+    <value>Recommended to disable</value>
+  </data>
+  <data name="MarkSystemItem.Text" xml:space="preserve">
+    <value>System</value>
+  </data>
+  <data name="MarkUnusedItem.Text" xml:space="preserve">
+    <value>Unused</value>
+  </data>
+  <data name="MarkUserItem.Text" xml:space="preserve">
+    <value>User</value>
+  </data>
+  <data name="MissingOnDeviceFormat" xml:space="preserve">
+    <value>Not on the device ({0}): </value>
+  </data>
+  <data name="Name" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="NetworkSearchMessage" xml:space="preserve">
+    <value>Checking port 5555 on the home network and wireless debugging (mDNS)</value>
+  </data>
+  <data name="NetworkSearchTitle" xml:space="preserve">
+    <value>Searching the network…</value>
+  </data>
+  <data name="NewPresetMessageFormat" xml:space="preserve">
+    <value>Marked apps: {0}. The preset can be loaded on any device: “Mark → Presets”.</value>
+  </data>
+  <data name="NewPresetTitle" xml:space="preserve">
+    <value>New preset</value>
+  </data>
+  <data name="NoApkMessage" xml:space="preserve">
+    <value>Drop files with the .apk extension.</value>
+  </data>
+  <data name="NoApkTitle" xml:space="preserve">
+    <value>No APK</value>
+  </data>
+  <data name="NoAppsFound" xml:space="preserve">
+    <value>No apps found</value>
+  </data>
+  <data name="NoDescription" xml:space="preserve">
+    <value>No description</value>
+  </data>
+  <data name="NoDeviceMessage" xml:space="preserve">
+    <value>Select a connected device first.</value>
+  </data>
+  <data name="NoDevicesFoundMessage" xml:space="preserve">
+    <value>Make sure the device is on the same Wi-Fi network and network debugging is enabled on it (or “Wireless debugging” on Android 11+). For wireless debugging without pairing use “Pair with code”. A VPN on the computer may block access to the home network.</value>
+  </data>
+  <data name="NoDevicesFoundTitle" xml:space="preserve">
+    <value>No devices found</value>
+  </data>
+  <data name="NoDevicesText.Text" xml:space="preserve">
+    <value>No devices.
+Connect a phone over USB with USB debugging enabled, click “Find on network” or pair with a code.</value>
+  </data>
+  <data name="NoDeviceTitle" xml:space="preserve">
+    <value>No device</value>
+  </data>
+  <data name="NoPackageNamesFormat" xml:space="preserve">
+    <value>{0}: no package names</value>
+  </data>
+  <data name="NoRemovedSystemAppsMessage" xml:space="preserve">
+    <value>All system apps are installed for the current user.</value>
+  </data>
+  <data name="NoRemovedSystemAppsTitle" xml:space="preserve">
+    <value>No removed system apps</value>
+  </data>
+  <data name="NotAndroidTvMessage" xml:space="preserve">
+    <value>Projectivy is designed for TVs and set-top boxes; it is inconvenient on a phone.</value>
+  </data>
+  <data name="NotAndroidTvTitle" xml:space="preserve">
+    <value>This is not Android TV</value>
+  </data>
+  <data name="NothingChangedYet" xml:space="preserve">
+    <value>The program hasn't frozen or removed anything on this device yet.</value>
+  </data>
+  <data name="NothingToCheck" xml:space="preserve">
+    <value>Nothing to check</value>
+  </data>
+  <data name="NothingToUndoMessage" xml:space="preserve">
+    <value>The journal has no changes made by this program that can be undone.</value>
+  </data>
+  <data name="NothingToUndoTitle" xml:space="preserve">
+    <value>Nothing to undo</value>
+  </data>
+  <data name="NotInstalled" xml:space="preserve">
+    <value>not installed</value>
+  </data>
+  <data name="NotPresetsFile" xml:space="preserve">
+    <value>The file doesn't look like ADB Manager presets: </value>
+  </data>
+  <data name="NowHomeScreen" xml:space="preserve">
+    <value> It is now the home screen — press Home on the remote.</value>
+  </data>
+  <data name="OnDeviceFormat" xml:space="preserve">
+    <value>On the device: {0}</value>
+  </data>
+  <data name="OpenBackupsButton.Label" xml:space="preserve">
+    <value>Open backups and journal folder</value>
+  </data>
+  <data name="OpenFolderFailed" xml:space="preserve">
+    <value>Failed to open the folder</value>
+  </data>
+  <data name="PackagesHeader.Text" xml:space="preserve">
+    <value>Apps</value>
+  </data>
+  <data name="PackageVersionFormat" xml:space="preserve">
+    <value>{0} · version {1}</value>
+  </data>
+  <data name="PairAddressHeader" xml:space="preserve">
+    <value>Pairing IP address and port</value>
+  </data>
+  <data name="PairButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
+    <value>Android 11+ wireless debugging: connect with a pairing code</value>
+  </data>
+  <data name="PairButton.Content" xml:space="preserve">
+    <value>Pair with code…</value>
+  </data>
+  <data name="PairCodeHeader" xml:space="preserve">
+    <value>Pairing code (6 digits)</value>
+  </data>
+  <data name="PairConnectAddressHeader" xml:space="preserve">
+    <value>IP address and port to connect (from the main “Wireless debugging” screen)</value>
+  </data>
+  <data name="PairDoneMessage" xml:space="preserve">
+    <value>The device will appear in the list when the phone announces its connection address. If it doesn't, enter the address from the “Wireless debugging” screen.</value>
+  </data>
+  <data name="PairDoneTitle" xml:space="preserve">
+    <value>Paired</value>
+  </data>
+  <data name="PairFailed" xml:space="preserve">
+    <value>Pairing failed</value>
+  </data>
+  <data name="PairInstructions" xml:space="preserve">
+    <value>On the phone: Settings → Developer options → Wireless debugging → “Pair device with pairing code”. Enter the address and code shown.</value>
+  </data>
+  <data name="PairTitle" xml:space="preserve">
+    <value>Pair with code</value>
+  </data>
+  <data name="PlatformToolsDownloadFailed" xml:space="preserve">
+    <value>Failed to download platform-tools</value>
+  </data>
+  <data name="PlatformToolsInstalled" xml:space="preserve">
+    <value>platform-tools installed: </value>
+  </data>
+  <data name="PresetAppliedFormat" xml:space="preserve">
+    <value>Preset “{0}”: marked {1} of {2}</value>
+  </data>
+  <data name="PresetDescriptionPlaceholder" xml:space="preserve">
+    <value>What the preset contains and what it is for</value>
+  </data>
+  <data name="PresetExistsMessage" xml:space="preserve">
+    <value>Its app list and description will be replaced.</value>
+  </data>
+  <data name="PresetExistsTitle" xml:space="preserve">
+    <value>A preset with this name already exists</value>
+  </data>
+  <data name="PresetInfoFormat" xml:space="preserve">
+    <value>Apps: {0} · created {1:dd.MM.yyyy HH:mm}</value>
+  </data>
+  <data name="PresetNameDuplicateFormat" xml:space="preserve">
+    <value>The name “{0}” is used more than once.</value>
+  </data>
+  <data name="PresetNameEmpty" xml:space="preserve">
+    <value>A preset name can't be empty.</value>
+  </data>
+  <data name="PresetNamePlaceholder" xml:space="preserve">
+    <value>For example: Xiaomi ads</value>
+  </data>
+  <data name="Presets" xml:space="preserve">
+    <value>Presets</value>
+  </data>
+  <data name="PresetsAdded" xml:space="preserve">
+    <value>Added: </value>
+  </data>
+  <data name="PresetsAlreadyExistFormat" xml:space="preserve">
+    <value>Already present: {0}</value>
+  </data>
+  <data name="PresetSaved" xml:space="preserve">
+    <value>Preset saved</value>
+  </data>
+  <data name="PresetSavedFormat" xml:space="preserve">
+    <value>“{0}” — apps: {1}. To load: “Mark → Presets”.</value>
+  </data>
+  <data name="PresetsCountFormat" xml:space="preserve">
+    <value>Presets: {0}</value>
+  </data>
+  <data name="PresetsExportedFormat" xml:space="preserve">
+    <value>Presets exported: {0}</value>
+  </data>
+  <data name="PresetsFileType" xml:space="preserve">
+    <value>ADB Manager presets</value>
+  </data>
+  <data name="PresetsImportedFormat" xml:space="preserve">
+    <value>Presets imported: {0}</value>
+  </data>
+  <data name="PresetsMenu.Text" xml:space="preserve">
+    <value>Presets</value>
+  </data>
+  <data name="PresetsSaved" xml:space="preserve">
+    <value>Presets saved</value>
+  </data>
+  <data name="PreviousHome" xml:space="preserve">
+    <value>previous</value>
+  </data>
+  <data name="PreviousHomeUnknown" xml:space="preserve">
+    <value>the previous home screen is unknown — select it on the device</value>
+  </data>
+  <data name="PrivacyAcrSection" xml:space="preserve">
+    <value>On-screen content recognition (ACR) — no microphone needed</value>
+  </data>
+  <data name="PrivacyAlexa" xml:space="preserve">
+    <value>Amazon Alexa on Philips TVs; the microphone is in the remote</value>
+  </data>
+  <data name="PrivacyAlphonso" xml:space="preserve">
+    <value>Alphonso: ad tracking, reads app usage statistics</value>
+  </data>
+  <data name="PrivacyAudit" xml:space="preserve">
+    <value>Privacy audit…</value>
+  </data>
+  <data name="PrivacyAuditButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
+    <value>Voice assistant, microphone access from AppOps history, ACR and telemetry</value>
+  </data>
+  <data name="PrivacyAuditButton.Label" xml:space="preserve">
+    <value>Privacy audit…</value>
+  </data>
+  <data name="PrivacyAuditMessage" xml:space="preserve">
+    <value>Reading the assistant settings and microphone access history (AppOps)</value>
+  </data>
+  <data name="PrivacyAuditTitlePrefix" xml:space="preserve">
+    <value>Privacy audit — </value>
+  </data>
+  <data name="PrivacyCandeebug" xml:space="preserve">
+    <value>“DAC” analytics on Philips TVs</value>
+  </data>
+  <data name="PrivacyDisclaimer" xml:space="preserve">
+    <value>The audit doesn't prove that sound or data leaves the device: AppOps only shows that access happened. Disabling the assistant, you lose the microphone button and voice search.</value>
+  </data>
+  <data name="PrivacyFeedback" xml:space="preserve">
+    <value>sends feedback and reports to Google</value>
+  </data>
+  <data name="PrivacyFrameworkLogger" xml:space="preserve">
+    <value>framework and reboot logging</value>
+  </data>
+  <data name="PrivacyGel" xml:space="preserve">
+    <value>“GEL” analytics on Philips TVs (runs in the candeebug process)</value>
+  </data>
+  <data name="PrivacyInscape" xml:space="preserve">
+    <value>Inscape ACR: recognizes what is on screen (including HDMI) from the picture — no microphone needed</value>
+  </data>
+  <data name="PrivacyKatniss" xml:space="preserve">
+    <value>Google Assistant and voice search; without it the remote's microphone button and voice search in apps stop working</value>
+  </data>
+  <data name="PrivacyMicSection" xml:space="preserve">
+    <value>Accessed the microphone (AppOps history)</value>
+  </data>
+  <data name="PrivacyMiuiAnalytics" xml:space="preserve">
+    <value>Xiaomi analytics: logs and usage statistics</value>
+  </data>
+  <data name="PrivacyNothingFound" xml:space="preserve">
+    <value>  — nothing found</value>
+  </data>
+  <data name="PrivacyPumpkin" xml:space="preserve">
+    <value>offline hotword model, not needed without the assistant</value>
+  </data>
+  <data name="PrivacySkyworth" xml:space="preserve">
+    <value>Coocaa/Skyworth ACR for ad targeting</value>
+  </data>
+  <data name="PrivacyTclBi" xml:space="preserve">
+    <value>TCL analytics</value>
+  </data>
+  <data name="PrivacyTclLogkit" xml:space="preserve">
+    <value>TCL log collection</value>
+  </data>
+  <data name="PrivacyTelemetrySection" xml:space="preserve">
+    <value>Telemetry and analytics</value>
+  </data>
+  <data name="PrivacyUsageLogger" xml:space="preserve">
+    <value>boot, remote key press statistics and panel telemetry</value>
+  </data>
+  <data name="PrivacyVoiceSection" xml:space="preserve">
+    <value>Voice assistant (set in the system settings)</value>
+  </data>
+  <data name="PrivacyXiaomiStatistic" xml:space="preserve">
+    <value>Xiaomi statistics</value>
+  </data>
+  <data name="PrivateDns" xml:space="preserve">
+    <value>Private DNS</value>
+  </data>
+  <data name="PrivateDnsButton.Label" xml:space="preserve">
+    <value>Private DNS (ad blocking)…</value>
+  </data>
+  <data name="PullApkButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
+    <value>One app — to the chosen file; several marked apps — to the chosen folder (files named by package)</value>
+  </data>
+  <data name="PullApkButton.Label" xml:space="preserve">
+    <value>Save APK to PC…</value>
+  </data>
+  <data name="Recently" xml:space="preserve">
+    <value>recently</value>
+  </data>
+  <data name="RecommendedCountFormat" xml:space="preserve">
+    <value>Recommended to disable: {0}</value>
+  </data>
+  <data name="RecommendedHint" xml:space="preserve">
+    <value>Check the list and click “Freeze”. Explanations are in the tooltip of the “Advice” column.</value>
+  </data>
+  <data name="RecommendedNone" xml:space="preserve">
+    <value>Nothing recommended to disable</value>
+  </data>
+  <data name="RecommendedNoneHint" xml:space="preserve">
+    <value>No known ads or junk among the shown enabled apps. Turn on “System apps” if they are hidden.</value>
+  </data>
+  <data name="RefreezeFormat" xml:space="preserve">
+    <value>Freeze again: {0} ({1}) — enabled again</value>
+  </data>
+  <data name="Refresh" xml:space="preserve">
+    <value>Refresh</value>
+  </data>
+  <data name="RefreshDevicesButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
+    <value>Refresh the device list</value>
+  </data>
+  <data name="RefreshPackagesButton.Label" xml:space="preserve">
+    <value>Refresh</value>
+  </data>
+  <data name="Reinstall" xml:space="preserve">
+    <value>Reinstall</value>
+  </data>
+  <data name="ReleaseNoApkFormat" xml:space="preserve">
+    <value>Release {0} has no APK — see {1}</value>
+  </data>
+  <data name="ReleasePage" xml:space="preserve">
+    <value>Release page on GitHub</value>
+  </data>
+  <data name="RepeatAction" xml:space="preserve">
+    <value>Repeat</value>
+  </data>
+  <data name="Repeated" xml:space="preserve">
+    <value>Repeated</value>
+  </data>
+  <data name="RepeatedErrorsFormat" xml:space="preserve">
+    <value>Repeated: {0}, errors: {1}</value>
+  </data>
+  <data name="Repeating" xml:space="preserve">
+    <value>Repeating…</value>
+  </data>
+  <data name="Replace" xml:space="preserve">
+    <value>Replace</value>
+  </data>
+  <data name="RestartAction" xml:space="preserve">
+    <value>Restart</value>
+  </data>
+  <data name="RestartFailed" xml:space="preserve">
+    <value>Failed to restart the program</value>
+  </data>
+  <data name="RestartMessage" xml:space="preserve">
+    <value>The language will change after the program restarts. Operations in progress will be interrupted.</value>
+  </data>
+  <data name="RestartQuestion" xml:space="preserve">
+    <value>Restart ADB Manager?</value>
+  </data>
+  <data name="RestoreAction" xml:space="preserve">
+    <value>Restore</value>
+  </data>
+  <data name="RestoreButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
+    <value>Undo freezing, removal of system apps and DNS changes made by this program</value>
+  </data>
+  <data name="RestoreButton.Label" xml:space="preserve">
+    <value>Undo changes…</value>
+  </data>
+  <data name="Restored" xml:space="preserve">
+    <value>Restored</value>
+  </data>
+  <data name="RestoredErrorsFormat" xml:space="preserve">
+    <value>Restored: {0}, errors: {1}</value>
+  </data>
+  <data name="RestoreRemovedButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
+    <value>System apps removed for the user (by anyone) are restored via install-existing</value>
+  </data>
+  <data name="RestoreRemovedButton.Label" xml:space="preserve">
+    <value>Restore removed system apps…</value>
+  </data>
+  <data name="RestoreRemovedMessage" xml:space="preserve">
+    <value>These system apps are removed for the current user (pm uninstall --user 0) but remain in the firmware. The checked ones will be restored with cmd package install-existing.</value>
+  </data>
+  <data name="RestoreRemovedTitle" xml:space="preserve">
+    <value>Restore removed system apps</value>
+  </data>
+  <data name="Restoring" xml:space="preserve">
+    <value>Restoring…</value>
+  </data>
+  <data name="ReuninstallFormat" xml:space="preserve">
+    <value>Remove again: {0} ({1}) — installed again</value>
+  </data>
+  <data name="Save" xml:space="preserve">
+    <value>Save</value>
+  </data>
+  <data name="SavedApkFormat" xml:space="preserve">
+    <value>APKs saved: {0} of {1}</value>
+  </data>
+  <data name="SaveFileFailed" xml:space="preserve">
+    <value>Failed to save the file</value>
+  </data>
+  <data name="SaveMarkedAsPreset" xml:space="preserve">
+    <value>Save marked as preset…</value>
+  </data>
+  <data name="SavingApkFormat" xml:space="preserve">
+    <value>Saving APK: {0} of {1}</value>
+  </data>
+  <data name="ScreenshotButton.Label" xml:space="preserve">
+    <value>Device screenshot…</value>
+  </data>
+  <data name="ScreenshotFailedMessage" xml:space="preserve">
+    <value>The device returned no image. Some screens (protected video, banking apps) forbid screenshots.</value>
+  </data>
+  <data name="ScreenshotFailedTitle" xml:space="preserve">
+    <value>Failed to take a screenshot</value>
+  </data>
+  <data name="ScreenshotSaved" xml:space="preserve">
+    <value>Screenshot saved</value>
+  </data>
+  <data name="SearchBox.PlaceholderText" xml:space="preserve">
+    <value>Search by name or package</value>
+  </data>
+  <data name="SelectADeviceOn" xml:space="preserve">
+    <value>Select a device on the left</value>
+  </data>
+  <data name="SelectAllCheckBox.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
+    <value>Mark all shown apps</value>
+  </data>
+  <data name="ShellCannotChangeState" xml:space="preserve">
+    <value>Android doesn't allow adb to change the state of this app.</value>
+  </data>
+  <data name="ShowSystemToggle.OffContent" xml:space="preserve">
+    <value>System apps: hidden</value>
+  </data>
+  <data name="ShowSystemToggle.OnContent" xml:space="preserve">
+    <value>System apps: shown</value>
+  </data>
+  <data name="SizeToolTipFormat" xml:space="preserve">
+    <value>App: {0}
+Data: {1}
+incl. cache: {2}</value>
+  </data>
+  <data name="SizeUnknown" xml:space="preserve">
+    <value>No size data (Android hasn't calculated it yet)</value>
+  </data>
+  <data name="SkippedProtectedFormat" xml:space="preserve">
+    <value>Protected packages skipped: {0}</value>
+  </data>
+  <data name="SkippedProtectedMessage" xml:space="preserve">
+    <value>These packages won't be touched — the device may stop working without them: </value>
+  </data>
+  <data name="SkippedTvInputs" xml:space="preserve">
+    <value>Skipped — TV inputs</value>
+  </data>
+  <data name="SkippedTvInputsFormat" xml:space="preserve">
+    <value>Skipped — TV inputs: {0}</value>
+  </data>
+  <data name="SortByAdviceButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
+    <value>Advice from the ChistyTV database and the list of phone ad preinstalls; built-in protection of critical system packages</value>
+  </data>
+  <data name="SortByAdviceText.Text" xml:space="preserve">
+    <value>Advice</value>
+  </data>
+  <data name="SortByKindText.Text" xml:space="preserve">
+    <value>Type</value>
+  </data>
+  <data name="SortByNameText.Text" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="SortByPackageText.Text" xml:space="preserve">
+    <value>Package</value>
+  </data>
+  <data name="SortBySizeText.Text" xml:space="preserve">
+    <value>Size</value>
+  </data>
+  <data name="SortByStatusText.Text" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="StatusEnabled" xml:space="preserve">
+    <value>Enabled</value>
+  </data>
+  <data name="StockHomeScreen" xml:space="preserve">
+    <value>stock home screen</value>
+  </data>
+  <data name="SystemApps" xml:space="preserve">
+    <value>System apps</value>
+  </data>
+  <data name="TcpipEnabledTitle" xml:space="preserve">
+    <value>TCP/IP mode enabled</value>
+  </data>
+  <data name="TcpipFailed" xml:space="preserve">
+    <value>Failed to enable TCP/IP mode</value>
+  </data>
+  <data name="TcpipNoIpMessage" xml:space="preserve">
+    <value>Couldn't determine the phone's IP — make sure it is on Wi-Fi and enter the address manually.</value>
+  </data>
+  <data name="TotalFormat" xml:space="preserve">
+    <value>Total: {0}</value>
+  </data>
+  <data name="TvInputDriversMessage" xml:space="preserve">
+    <value>They request android.permission.TV_INPUT_HARDWARE — the software part of the HDMI/AV/tuner inputs. If they are disabled, the input sees the cable but shows “No signal”, and only a full restore and a cold reboot bring the picture back.</value>
+  </data>
+  <data name="TvInputsGuardNote" xml:space="preserve">
+    <value>Serves the TV inputs. If disabled, the input sees the cable but shows “No signal”.</value>
+  </data>
+  <data name="TvInputsGuardTitle" xml:space="preserve">
+    <value>TV inputs (HDMI / AV / tuner)</value>
+  </data>
+  <data name="UndoAction" xml:space="preserve">
+    <value>Undo</value>
+  </data>
+  <data name="UndoDnsFormat" xml:space="preserve">
+    <value>Private DNS: restore the previous setting ({0}) — changed {1:dd.MM HH:mm}</value>
+  </data>
+  <data name="UndoFreezeFormat" xml:space="preserve">
+    <value>Unfreeze: {0} ({1}) — frozen {2:dd.MM HH:mm}</value>
+  </data>
+  <data name="UndoHomeFormat" xml:space="preserve">
+    <value>Home screen: restore {0} — changed {1:dd.MM HH:mm}</value>
+  </data>
+  <data name="Undoing" xml:space="preserve">
+    <value>Undoing…</value>
+  </data>
+  <data name="UndoInstallFormat" xml:space="preserve">
+    <value>Uninstall what the program installed: {0} ({1}) — installed {2:dd.MM HH:mm}</value>
+  </data>
+  <data name="UndoMessage" xml:space="preserve">
+    <value>Changes made by this program on the device. Uncheck what shouldn't be undone.</value>
+  </data>
+  <data name="UndoneErrorsFormat" xml:space="preserve">
+    <value>Undone: {0}, errors: {1}</value>
+  </data>
+  <data name="UndoneMessageFormat" xml:space="preserve">
+    <value>Changes undone: {0}. Restart the device if something worked incorrectly.</value>
+  </data>
+  <data name="UndoneTitle" xml:space="preserve">
+    <value>Undone</value>
+  </data>
+  <data name="UndoTitle" xml:space="preserve">
+    <value>Undo changes</value>
+  </data>
+  <data name="UndoUninstallFormat" xml:space="preserve">
+    <value>Restore: {0} ({1}) — removed {2:dd.MM HH:mm}</value>
+  </data>
+  <data name="UnfreezeButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
+    <value>Unfreeze the app or enable one stopped by the system</value>
+  </data>
+  <data name="UnfreezeButton.Label" xml:space="preserve">
+    <value>Enable</value>
+  </data>
+  <data name="Unfreezing" xml:space="preserve">
+    <value>Unfreezing…</value>
+  </data>
+  <data name="Uninstall" xml:space="preserve">
+    <value>Uninstall</value>
+  </data>
+  <data name="UninstallButton.Label" xml:space="preserve">
+    <value>Uninstall</value>
+  </data>
+  <data name="Uninstalled" xml:space="preserve">
+    <value>Uninstalled</value>
+  </data>
+  <data name="UninstalledErrorsFormat" xml:space="preserve">
+    <value>Uninstalled: {0}, errors: {1}</value>
+  </data>
+  <data name="Uninstalling" xml:space="preserve">
+    <value>Uninstalling…</value>
+  </data>
+  <data name="UninstallManyQuestionFormat" xml:space="preserve">
+    <value>Uninstall apps ({0})?</value>
+  </data>
+  <data name="UninstallOneQuestion" xml:space="preserve">
+    <value>Uninstall the app?</value>
+  </data>
+  <data name="UninstallSystemWarning" xml:space="preserve">
+    <value>They will be removed only for the current user (pm uninstall --user 0). Removing important system components may break the phone. They can be restored via “… → Undo changes” or “Restore removed system apps”.</value>
+  </data>
+  <data name="UninstallTitle" xml:space="preserve">
+    <value>Uninstall</value>
+  </data>
+  <data name="UnitBytes" xml:space="preserve">
+    <value>B</value>
+  </data>
+  <data name="UnitDays" xml:space="preserve">
+    <value>d</value>
+  </data>
+  <data name="UnitGigabytes" xml:space="preserve">
+    <value>GB</value>
+  </data>
+  <data name="UnitHours" xml:space="preserve">
+    <value>h</value>
+  </data>
+  <data name="UnitKilobytes" xml:space="preserve">
+    <value>KB</value>
+  </data>
+  <data name="UnitMegabytes" xml:space="preserve">
+    <value>MB</value>
+  </data>
+  <data name="UnitMinutes" xml:space="preserve">
+    <value>min</value>
+  </data>
+  <data name="UnitSeconds" xml:space="preserve">
+    <value>s</value>
+  </data>
+  <data name="UnitTerabytes" xml:space="preserve">
+    <value>TB</value>
+  </data>
+  <data name="UnknownAction" xml:space="preserve">
+    <value>unknown action</value>
+  </data>
+  <data name="UnknownError" xml:space="preserve">
+    <value>unknown error</value>
+  </data>
+  <data name="Unused" xml:space="preserve">
+    <value>Unused</value>
+  </data>
+  <data name="UnusedBadge.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
+    <value>Android stopped the app because it hasn't been used for a long time. It will be enabled when launched.</value>
+  </data>
+  <data name="UnusedBadgeText.Text" xml:space="preserve">
+    <value>Unused</value>
+  </data>
+  <data name="UnusedCountFormat" xml:space="preserve">
+    <value> · unused: {0}</value>
+  </data>
+  <data name="UpdateAvailableFormat" xml:space="preserve">
+    <value>Version {0} is available</value>
+  </data>
+  <data name="UpdateAvailableMessageFormat" xml:space="preserve">
+    <value>You have version {0}. Download the archive from the release page and extract it over the old folder. Close this notice and the program won't remind you about this version again.</value>
+  </data>
+  <data name="UpdateBar.Title" xml:space="preserve">
+    <value>A new version is available</value>
+  </data>
+  <data name="UpdateCheckFailed" xml:space="preserve">
+    <value>Failed to check for updates</value>
+  </data>
+  <data name="UpdateDownloadButton.Content" xml:space="preserve">
+    <value>Open the download page</value>
+  </data>
+  <data name="UpToDateFormat" xml:space="preserve">
+    <value>You have the latest version — {0}.</value>
+  </data>
+  <data name="UpToDateTitle" xml:space="preserve">
+    <value>No updates</value>
+  </data>
+  <data name="UsbCanBeUnplugged" xml:space="preserve">
+    <value>You can now unplug the USB cable.</value>
+  </data>
+  <data name="UsingNow" xml:space="preserve">
+    <value>using now</value>
+  </data>
+  <data name="VersionInstalledFormat" xml:space="preserve">
+    <value>Version {0} installed.</value>
+  </data>
+  <data name="VpnBlocksFormat" xml:space="preserve">
+    <value>Traffic to the device goes through “{0}” — a VPN on the computer blocks access to the home network. Turn it off or allow local network access in it.</value>
+  </data>
+</root>

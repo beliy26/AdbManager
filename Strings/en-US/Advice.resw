@@ -1,0 +1,652 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="Note_com_alibaba_aliexpresshd" xml:space="preserve">
+    <value>Partner preinstall</value>
+  </data>
+  <data name="Note_com_amazon_mShop_android_shopping" xml:space="preserve">
+    <value>Partner preinstall</value>
+  </data>
+  <data name="Note_com_android_location_fused" xml:space="preserve">
+    <value>disabling it caused a boot loop</value>
+  </data>
+  <data name="Note_com_aura_oobe_samsung" xml:space="preserve">
+    <value>Ad installer: offers and installs partner apps</value>
+  </data>
+  <data name="Note_com_aura_oobe_samsung_gl" xml:space="preserve">
+    <value>Ad installer: offers and installs partner apps</value>
+  </data>
+  <data name="Note_com_booking" xml:space="preserve">
+    <value>Partner preinstall</value>
+  </data>
+  <data name="Note_com_cleanmaster_mguard" xml:space="preserve">
+    <value>A “cleaner” with aggressive ads, no real benefit</value>
+  </data>
+  <data name="Note_com_cleanmaster_security" xml:space="preserve">
+    <value>An “antivirus” with aggressive ads</value>
+  </data>
+  <data name="Note_com_facebook_appmanager" xml:space="preserve">
+    <value>Preinstall: updates and installs Facebook apps in the background, even if you don't have them</value>
+  </data>
+  <data name="Note_com_facebook_katana" xml:space="preserve">
+    <value>If you don't use it, it can be removed</value>
+  </data>
+  <data name="Note_com_facebook_orca" xml:space="preserve">
+    <value>If you don't use it, it can be removed</value>
+  </data>
+  <data name="Note_com_facebook_services" xml:space="preserve">
+    <value>Preinstall: Facebook background service that sends device data</value>
+  </data>
+  <data name="Note_com_facebook_system" xml:space="preserve">
+    <value>Preinstall: hidden installer of Facebook apps</value>
+  </data>
+  <data name="Note_com_glance_internet" xml:space="preserve">
+    <value>Ad feed and wallpapers on the lock screen</value>
+  </data>
+  <data name="Note_com_google_android_apps_mediashell" xml:space="preserve">
+    <value>casting from a phone</value>
+  </data>
+  <data name="Note_com_google_android_apps_tv_launcherx" xml:space="preserve">
+    <value>can be disabled only together with setupwraith, otherwise the system reboots in a loop</value>
+  </data>
+  <data name="Note_com_google_android_backdrop" xml:space="preserve">
+    <value>select another screensaver first</value>
+  </data>
+  <data name="Note_com_google_android_katniss" xml:space="preserve">
+    <value>the microphone button on the remote will stop working</value>
+  </data>
+  <data name="Note_com_google_android_tungsten_setupwraith" xml:space="preserve">
+    <value>owns the Wi-Fi network saved during the initial setup</value>
+  </data>
+  <data name="Note_com_google_android_tv_remote_service" xml:space="preserve">
+    <value>Bluetooth remote microphone</value>
+  </data>
+  <data name="Note_com_google_android_tvrecommendations" xml:space="preserve">
+    <value>ad rows on the home screen</value>
+  </data>
+  <data name="Note_com_google_android_videos" xml:space="preserve">
+    <value>a movie store, doesn't work in Russia</value>
+  </data>
+  <data name="Note_com_hisense_evservice" xml:space="preserve">
+    <value>recognizes what you watch for ads</value>
+  </data>
+  <data name="Note_com_infolink_limeiptv" xml:space="preserve">
+    <value>TV channels</value>
+  </data>
+  <data name="Note_com_ironsource_appcloud_oobe_huawei" xml:space="preserve">
+    <value>Ad installer: offers and installs partner apps</value>
+  </data>
+  <data name="Note_com_king_candycrushsaga" xml:space="preserve">
+    <value>Partner preinstall</value>
+  </data>
+  <data name="Note_com_kinosfera_tv24" xml:space="preserve">
+    <value>TV channels</value>
+  </data>
+  <data name="Note_com_lenovo_anyshare_gps" xml:space="preserve">
+    <value>Lots of ads; files can be shared with built-in tools (Quick Share, Nearby Share)</value>
+  </data>
+  <data name="Note_com_linkedin_android" xml:space="preserve">
+    <value>Partner preinstall</value>
+  </data>
+  <data name="Note_com_microsoft_office_officehubrow" xml:space="preserve">
+    <value>Partner preinstall</value>
+  </data>
+  <data name="Note_com_microsoft_skydrive" xml:space="preserve">
+    <value>Partner preinstall; if you don't use it, it can be removed</value>
+  </data>
+  <data name="Note_com_mitv_dream" xml:space="preserve">
+    <value>select another screensaver in the settings first</value>
+  </data>
+  <data name="Note_com_mitv_overseaservice" xml:space="preserve">
+    <value>Bluetooth remote</value>
+  </data>
+  <data name="Note_com_mitv_tvhome_atv" xml:space="preserve">
+    <value>keep it if PatchWall is your home screen</value>
+  </data>
+  <data name="Note_com_mitv_tvhome_michannel" xml:space="preserve">
+    <value>recommendations on the home screen</value>
+  </data>
+  <data name="Note_com_mitv_tvhome_mitvplus" xml:space="preserve">
+    <value>free channels with ads</value>
+  </data>
+  <data name="Note_com_miui_analytics" xml:space="preserve">
+    <value>Xiaomi telemetry</value>
+  </data>
+  <data name="Note_com_miui_android_fashiongallery" xml:space="preserve">
+    <value>Lock screen wallpapers with ads on Xiaomi</value>
+  </data>
+  <data name="Note_com_miui_daemon" xml:space="preserve">
+    <value>Xiaomi usage statistics collection</value>
+  </data>
+  <data name="Note_com_miui_hybrid" xml:space="preserve">
+    <value>Xiaomi mini-apps with ads</value>
+  </data>
+  <data name="Note_com_miui_hybrid_accessory" xml:space="preserve">
+    <value>Quick Apps add-on</value>
+  </data>
+  <data name="Note_com_miui_msa_global" xml:space="preserve">
+    <value>Xiaomi system ads in apps and during installation</value>
+  </data>
+  <data name="Note_com_miui_systemAdSolution" xml:space="preserve">
+    <value>Xiaomi system ads</value>
+  </data>
+  <data name="Note_com_nearme_statistics_rom" xml:space="preserve">
+    <value>OPPO / realme telemetry</value>
+  </data>
+  <data name="Note_com_netflix_mediaclient" xml:space="preserve">
+    <value>Partner preinstall</value>
+  </data>
+  <data name="Note_com_netflix_partner_activation" xml:space="preserve">
+    <value>Netflix partner activation service; the app itself works without it</value>
+  </data>
+  <data name="Note_com_opos_ads" xml:space="preserve">
+    <value>OPPO / realme / OnePlus system ads</value>
+  </data>
+  <data name="Note_com_samsung_android_app_spage" xml:space="preserve">
+    <value>News and ads feed to the left of the home screen</value>
+  </data>
+  <data name="Note_com_samsung_android_diagmonagent" xml:space="preserve">
+    <value>Telemetry: diagnostics and error reports to Samsung</value>
+  </data>
+  <data name="Note_com_samsung_android_dqagent" xml:space="preserve">
+    <value>Telemetry: sends device operation data to Samsung</value>
+  </data>
+  <data name="Note_com_samsung_android_ipsgeofence" xml:space="preserve">
+    <value>Tracks visited places for ad offers</value>
+  </data>
+  <data name="Note_com_samsung_android_rubin_app" xml:space="preserve">
+    <value>Collects usage data for personalized ads and recommendations</value>
+  </data>
+  <data name="Note_com_samsung_sree" xml:space="preserve">
+    <value>Wallpapers and notifications with ads</value>
+  </data>
+  <data name="Note_com_sec_android_diagmonagent" xml:space="preserve">
+    <value>Telemetry: diagnostics and error reports to Samsung</value>
+  </data>
+  <data name="Note_com_spotify_music" xml:space="preserve">
+    <value>Partner preinstall</value>
+  </data>
+  <data name="Note_com_tcl_guard" xml:space="preserve">
+    <value>a “cleaner” and statistics; on Chinese firmware apps from a USB drive are installed through it</value>
+  </data>
+  <data name="Note_com_tcl_initsetup" xml:space="preserve">
+    <value>Wi-Fi disappears on some models</value>
+  </data>
+  <data name="Note_com_tcl_suspension" xml:space="preserve">
+    <value>without it HDMI can't be switched</value>
+  </data>
+  <data name="Note_com_tcl_ttvs" xml:space="preserve">
+    <value>including updates — don't disable</value>
+  </data>
+  <data name="Note_com_tcl_tv_plus" xml:space="preserve">
+    <value>free channels with ads</value>
+  </data>
+  <data name="Note_com_UCMobile_intl" xml:space="preserve">
+    <value>Browser with ads</value>
+  </data>
+  <data name="Note_com_xiaomi_glgm" xml:space="preserve">
+    <value>Game catalog with ads</value>
+  </data>
+  <data name="Note_com_xiaomi_mipicks" xml:space="preserve">
+    <value>Xiaomi app store with ads</value>
+  </data>
+  <data name="Note_com_xiaomi_mitv_tvmanager" xml:space="preserve">
+    <value>a “cleaner” running in the background</value>
+  </data>
+  <data name="Note_com_yandex_android_advid" xml:space="preserve">
+    <value>the main source of ads on Yandex TV</value>
+  </data>
+  <data name="Note_com_yandex_io_sdk" xml:space="preserve">
+    <value>also pulls in ads, but Alice may stop working once it is disabled</value>
+  </data>
+  <data name="Note_com_yandex_launcher_updaterapp" xml:space="preserve">
+    <value>updates often bring the ads back; without it there will be no new firmware either</value>
+  </data>
+  <data name="Note_com_yandex_tv_alice" xml:space="preserve">
+    <value>voice assistant</value>
+  </data>
+  <data name="Note_com_yandex_tv_appudater" xml:space="preserve">
+    <value>same as above, on newer firmware</value>
+  </data>
+  <data name="Note_com_yandex_tv_bugreportsender" xml:space="preserve">
+    <value>telemetry</value>
+  </data>
+  <data name="Note_com_yandex_tv_home" xml:space="preserve">
+    <value>can be disabled only after a new launcher has become the home screen</value>
+  </data>
+  <data name="Note_com_yandex_tv_input_efir" xml:space="preserve">
+    <value>antenna and tuner</value>
+  </data>
+  <data name="Note_com_yandex_tv_live" xml:space="preserve">
+    <value>without it inputs and HDMI can't be switched</value>
+  </data>
+  <data name="Note_com_yandex_tv_services_platform" xml:space="preserve">
+    <value>disabling it leads to a black screen and recovery</value>
+  </data>
+  <data name="Note_com_yandex_tv_videoplayer" xml:space="preserve">
+    <value>keep it if you play videos from a USB drive</value>
+  </data>
+  <data name="Note_com_yandex_tv_ytplayer" xml:space="preserve">
+    <value>not needed if you watch via SmartTube</value>
+  </data>
+  <data name="Note_com_zhiliaoapp_musically" xml:space="preserve">
+    <value>Partner preinstall</value>
+  </data>
+  <data name="Note_mitv_service" xml:space="preserve">
+    <value>remote buttons</value>
+  </data>
+  <data name="Note_net_vidaatv_hisense_android_tv" xml:space="preserve">
+    <value>free channels with ads</value>
+  </data>
+  <data name="Note_one_premier_rustoretv" xml:space="preserve">
+    <value>streaming service</value>
+  </data>
+  <data name="Note_ru_cn_tv" xml:space="preserve">
+    <value>TV channels</value>
+  </data>
+  <data name="Note_ru_haier_evo" xml:space="preserve">
+    <value>claims the Home button</value>
+  </data>
+  <data name="Note_ru_ivi_client" xml:space="preserve">
+    <value>streaming service</value>
+  </data>
+  <data name="Note_ru_kinopoisk_tv" xml:space="preserve">
+    <value>streaming service</value>
+  </data>
+  <data name="Note_ru_kinopoisk_yandex_tv" xml:space="preserve">
+    <value>streaming service</value>
+  </data>
+  <data name="Note_ru_rt_video_app_tv" xml:space="preserve">
+    <value>Rostelecom streaming service</value>
+  </data>
+  <data name="Note_ru_sberdevices_assistant" xml:space="preserve">
+    <value>the assistant button on the remote will stop working</value>
+  </data>
+  <data name="Note_ru_sberdevices_crashreporter" xml:space="preserve">
+    <value>telemetry</value>
+  </data>
+  <data name="Note_ru_sberdevices_gamepad_service" xml:space="preserve">
+    <value>needed for games with a gamepad</value>
+  </data>
+  <data name="Note_ru_sberdevices_huaweicast" xml:space="preserve">
+    <value>a Chromecast alternative</value>
+  </data>
+  <data name="Note_ru_sberdevices_sberplay" xml:space="preserve">
+    <value>games</value>
+  </data>
+  <data name="Note_ru_sberdevices_smarthome_promo" xml:space="preserve">
+    <value>ads</value>
+  </data>
+  <data name="Note_ru_sberdevices_starlauncher" xml:space="preserve">
+    <value>disabling it sends the TV into recovery even with a third-party launcher</value>
+  </data>
+  <data name="Note_ru_sberdevices_startube" xml:space="preserve">
+    <value>not needed if you watch via SmartTube</value>
+  </data>
+  <data name="Note_ru_sberdevices_TV" xml:space="preserve">
+    <value>TV channels</value>
+  </data>
+  <data name="Note_ru_sberdevices_videoplayer" xml:space="preserve">
+    <value>keep it if you play videos from a USB drive</value>
+  </data>
+  <data name="Note_ru_start_androidtv" xml:space="preserve">
+    <value>streaming service</value>
+  </data>
+  <data name="Note_ru_yandex_androidkeyboard_tv" xml:space="preserve">
+    <value>the only keyboard in the system</value>
+  </data>
+  <data name="Note_tv_alphonso_alphonso_eula" xml:space="preserve">
+    <value>recognizes what you watch for ads</value>
+  </data>
+  <data name="Note_tv_anoki_acr_controller" xml:space="preserve">
+    <value>recognizes what you watch for ads</value>
+  </data>
+  <data name="Note_tv_lfstrm_smotreshka" xml:space="preserve">
+    <value>TV channels</value>
+  </data>
+  <data name="Note_tv_lfstrm_smotreshka_stb" xml:space="preserve">
+    <value>TV channels</value>
+  </data>
+  <data name="Note_tv_okko_androidtv" xml:space="preserve">
+    <value>streaming service</value>
+  </data>
+  <data name="Platform_sber" xml:space="preserve">
+    <value>Salute TV / SberBox</value>
+  </data>
+  <data name="Platform_yandex" xml:space="preserve">
+    <value>Yandex TV (YaOS)</value>
+  </data>
+  <data name="Title_android_autoinstalls_config_google_gtvpai" xml:space="preserve">
+    <value>Auto-install of partner apps</value>
+  </data>
+  <data name="Title_android_autoinstalls_config_haier_hanyang" xml:space="preserve">
+    <value>Auto-install of partner apps</value>
+  </data>
+  <data name="Title_android_autoinstalls_config_hisense_laohushan" xml:space="preserve">
+    <value>Auto-install of partner apps</value>
+  </data>
+  <data name="Title_android_autoinstalls_config_hisense_xiaoyushan" xml:space="preserve">
+    <value>Auto-install of partner apps</value>
+  </data>
+  <data name="Title_android_autoinstalls_config_xiaomi_amelie" xml:space="preserve">
+    <value>Auto-install of partner apps</value>
+  </data>
+  <data name="Title_android_autoinstalls_config_xiaomi_mibox3" xml:space="preserve">
+    <value>Auto-install of partner apps</value>
+  </data>
+  <data name="Title_android_autoinstalls_config_xioami_dangal" xml:space="preserve">
+    <value>Auto-install of partner apps</value>
+  </data>
+  <data name="Title_android_autoinstalls_config_xioami_mibox3" xml:space="preserve">
+    <value>Auto-install of partner apps</value>
+  </data>
+  <data name="Title_com_android_location_fused" xml:space="preserve">
+    <value>Location</value>
+  </data>
+  <data name="Title_com_android_tv_feedbackconsent" xml:space="preserve">
+    <value>Report consent</value>
+  </data>
+  <data name="Title_com_google_android_apps_tv_launcherx" xml:space="preserve">
+    <value>Google TV home screen</value>
+  </data>
+  <data name="Title_com_google_android_backdrop" xml:space="preserve">
+    <value>Google screensaver</value>
+  </data>
+  <data name="Title_com_google_android_feedback" xml:space="preserve">
+    <value>Google feedback</value>
+  </data>
+  <data name="Title_com_google_android_gms" xml:space="preserve">
+    <value>Google services</value>
+  </data>
+  <data name="Title_com_google_android_katniss" xml:space="preserve">
+    <value>Google voice search</value>
+  </data>
+  <data name="Title_com_google_android_leanbacklauncher_partnercustomizer" xml:space="preserve">
+    <value>Partner rows</value>
+  </data>
+  <data name="Title_com_google_android_partnersetup" xml:space="preserve">
+    <value>Partner setup</value>
+  </data>
+  <data name="Title_com_google_android_play_games" xml:space="preserve">
+    <value>Google Play Games</value>
+  </data>
+  <data name="Title_com_google_android_tungsten_setupwraith" xml:space="preserve">
+    <value>Google TV setup wizard</value>
+  </data>
+  <data name="Title_com_google_android_tv_bugreportsender" xml:space="preserve">
+    <value>Sending reports to Google</value>
+  </data>
+  <data name="Title_com_google_android_tv_remote_service" xml:space="preserve">
+    <value>Remote service</value>
+  </data>
+  <data name="Title_com_google_android_tvlauncher" xml:space="preserve">
+    <value>Android TV home screen</value>
+  </data>
+  <data name="Title_com_google_android_tvrecommendations" xml:space="preserve">
+    <value>Google recommendations</value>
+  </data>
+  <data name="Title_com_google_android_videos" xml:space="preserve">
+    <value>Google TV (movies)</value>
+  </data>
+  <data name="Title_com_haier_appmanager_dispatcher" xml:space="preserve">
+    <value>Remote hotkeys</value>
+  </data>
+  <data name="Title_com_haier_apps" xml:space="preserve">
+    <value>Haier app promo</value>
+  </data>
+  <data name="Title_com_haier_emanual" xml:space="preserve">
+    <value>E-manual</value>
+  </data>
+  <data name="Title_com_haier_oemtabprovider" xml:space="preserve">
+    <value>Haier tab in Google TV</value>
+  </data>
+  <data name="Title_com_haier_tv_hmagicboard" xml:space="preserve">
+    <value>Remote buttons and sound</value>
+  </data>
+  <data name="Title_com_haier_tvhousekeeper" xml:space="preserve">
+    <value>Haier “cleaner”</value>
+  </data>
+  <data name="Title_com_haierubic_usmartdevice" xml:space="preserve">
+    <value>Haier smart devices</value>
+  </data>
+  <data name="Title_com_hisense_service_message" xml:space="preserve">
+    <value>Hisense push messages</value>
+  </data>
+  <data name="Title_com_infolink_limeiptv" xml:space="preserve">
+    <value>Lime HD</value>
+  </data>
+  <data name="Title_com_kinosfera_tv24" xml:space="preserve">
+    <value>24TV</value>
+  </data>
+  <data name="Title_com_mediatek_android_leanbacklauncher_partnercustomizer" xml:space="preserve">
+    <value>Partner rows on the home screen</value>
+  </data>
+  <data name="Title_com_mitv_dream" xml:space="preserve">
+    <value>MiDream screensaver</value>
+  </data>
+  <data name="Title_com_mitv_overseaservice" xml:space="preserve">
+    <value>Mi TV service</value>
+  </data>
+  <data name="Title_com_mitv_tvhome_michannel" xml:space="preserve">
+    <value>PatchWall channels</value>
+  </data>
+  <data name="Title_com_mitv_tvhome_oemtab" xml:space="preserve">
+    <value>Mi Home tab in Google TV</value>
+  </data>
+  <data name="Title_com_miui_android_fashiongallery" xml:space="preserve">
+    <value>Wallpaper carousel</value>
+  </data>
+  <data name="Title_com_miui_tv_analytics" xml:space="preserve">
+    <value>Xiaomi analytics</value>
+  </data>
+  <data name="Title_com_tcl_bi" xml:space="preserve">
+    <value>TCL analytics</value>
+  </data>
+  <data name="Title_com_tcl_dashboard" xml:space="preserve">
+    <value>TCL dashboard</value>
+  </data>
+  <data name="Title_com_tcl_esticker" xml:space="preserve">
+    <value>Ad sticker</value>
+  </data>
+  <data name="Title_com_tcl_exhibit" xml:space="preserve">
+    <value>Store demo mode</value>
+  </data>
+  <data name="Title_com_tcl_hotelmenu" xml:space="preserve">
+    <value>Hotel menu</value>
+  </data>
+  <data name="Title_com_tcl_initsetup" xml:space="preserve">
+    <value>Initial setup</value>
+  </data>
+  <data name="Title_com_tcl_logkit" xml:space="preserve">
+    <value>TCL log collection</value>
+  </data>
+  <data name="Title_com_tcl_messagebox" xml:space="preserve">
+    <value>TCL push messages</value>
+  </data>
+  <data name="Title_com_tcl_ocean_instructions" xml:space="preserve">
+    <value>Manual</value>
+  </data>
+  <data name="Title_com_tcl_overseasappshow" xml:space="preserve">
+    <value>TCL app showcase</value>
+  </data>
+  <data name="Title_com_tcl_partnercustomizer" xml:space="preserve">
+    <value>Partner rows</value>
+  </data>
+  <data name="Title_com_tcl_providers_config" xml:space="preserve">
+    <value>TCL configuration</value>
+  </data>
+  <data name="Title_com_tcl_smartlink_core" xml:space="preserve">
+    <value>Silent app installation</value>
+  </data>
+  <data name="Title_com_tcl_suspension" xml:space="preserve">
+    <value>Source menu</value>
+  </data>
+  <data name="Title_com_tcl_ttvs" xml:space="preserve">
+    <value>TCL services</value>
+  </data>
+  <data name="Title_com_tcl_tv_tclhome_passive" xml:space="preserve">
+    <value>TCL Home recommendations</value>
+  </data>
+  <data name="Title_com_tcl_usercenter" xml:space="preserve">
+    <value>TCL account</value>
+  </data>
+  <data name="Title_com_tcl_waterfall_overseas" xml:space="preserve">
+    <value>TCL ad feed</value>
+  </data>
+  <data name="Title_com_telink_lt_ota" xml:space="preserve">
+    <value>Remote firmware</value>
+  </data>
+  <data name="Title_com_vk_tv" xml:space="preserve">
+    <value>VK Video</value>
+  </data>
+  <data name="Title_com_xiaomi_android_tvsetup_partnercustomizer" xml:space="preserve">
+    <value>Remote pairing</value>
+  </data>
+  <data name="Title_com_xiaomi_floatingframe" xml:space="preserve">
+    <value>Xiaomi promo pop-ups</value>
+  </data>
+  <data name="Title_com_xiaomi_mitv_updateservice" xml:space="preserve">
+    <value>Firmware updates</value>
+  </data>
+  <data name="Title_com_xiaomi_statistic" xml:space="preserve">
+    <value>Xiaomi statistics</value>
+  </data>
+  <data name="Title_com_xiaomi_tvqs_overseas" xml:space="preserve">
+    <value>Quick settings</value>
+  </data>
+  <data name="Title_com_yandex_android_advid" xml:space="preserve">
+    <value>Yandex advertising ID</value>
+  </data>
+  <data name="Title_com_yandex_browser_tv" xml:space="preserve">
+    <value>Yandex Browser</value>
+  </data>
+  <data name="Title_com_yandex_io_sdk" xml:space="preserve">
+    <value>Yandex services (io.sdk)</value>
+  </data>
+  <data name="Title_com_yandex_launcher_updaterapp" xml:space="preserve">
+    <value>Yandex TV updates</value>
+  </data>
+  <data name="Title_com_yandex_tv_alice" xml:space="preserve">
+    <value>Alice</value>
+  </data>
+  <data name="Title_com_yandex_tv_appudater" xml:space="preserve">
+    <value>Yandex TV updates (2026 firmware)</value>
+  </data>
+  <data name="Title_com_yandex_tv_bugreportsender" xml:space="preserve">
+    <value>Sending reports to Yandex</value>
+  </data>
+  <data name="Title_com_yandex_tv_daydream" xml:space="preserve">
+    <value>Yandex screensaver</value>
+  </data>
+  <data name="Title_com_yandex_tv_home" xml:space="preserve">
+    <value>Yandex TV home screen</value>
+  </data>
+  <data name="Title_com_yandex_tv_input_efir" xml:space="preserve">
+    <value>Broadcast TV</value>
+  </data>
+  <data name="Title_com_yandex_tv_live" xml:space="preserve">
+    <value>Ya.TV player</value>
+  </data>
+  <data name="Title_com_yandex_tv_music" xml:space="preserve">
+    <value>Yandex Music</value>
+  </data>
+  <data name="Title_com_yandex_tv_services" xml:space="preserve">
+    <value>Yandex TV services</value>
+  </data>
+  <data name="Title_com_yandex_tv_services_platform" xml:space="preserve">
+    <value>Yandex services platform</value>
+  </data>
+  <data name="Title_com_yandex_tv_settings" xml:space="preserve">
+    <value>Yandex TV settings</value>
+  </data>
+  <data name="Title_com_yandex_tv_videoplayer" xml:space="preserve">
+    <value>Yandex video player</value>
+  </data>
+  <data name="Title_com_yandex_tv_webplayer" xml:space="preserve">
+    <value>Yandex web player</value>
+  </data>
+  <data name="Title_com_yandex_tv_ytplayer" xml:space="preserve">
+    <value>Built-in YouTube (Cobalt)</value>
+  </data>
+  <data name="Title_fusion_android_tv_demo" xml:space="preserve">
+    <value>Demo mode</value>
+  </data>
+  <data name="Title_it_hon_service" xml:space="preserve">
+    <value>hOn (Haier smart home)</value>
+  </data>
+  <data name="Title_mitv_service" xml:space="preserve">
+    <value>Mi TV service</value>
+  </data>
+  <data name="Title_net_vidaatv_hisense_android_tv" xml:space="preserve">
+    <value>VIDAA channels</value>
+  </data>
+  <data name="Title_ru_kinopoisk_tv" xml:space="preserve">
+    <value>Kinopoisk</value>
+  </data>
+  <data name="Title_ru_kinopoisk_yandex_tv" xml:space="preserve">
+    <value>Kinopoisk (built-in)</value>
+  </data>
+  <data name="Title_ru_sberdevices_assistant" xml:space="preserve">
+    <value>Salute assistant</value>
+  </data>
+  <data name="Title_ru_sberdevices_catalog" xml:space="preserve">
+    <value>Sber app catalog</value>
+  </data>
+  <data name="Title_ru_sberdevices_crashreporter" xml:space="preserve">
+    <value>Sber crash reports</value>
+  </data>
+  <data name="Title_ru_sberdevices_gamepad_service" xml:space="preserve">
+    <value>Gamepad service</value>
+  </data>
+  <data name="Title_ru_sberdevices_huaweicast" xml:space="preserve">
+    <value>Screen casting</value>
+  </data>
+  <data name="Title_ru_sberdevices_music" xml:space="preserve">
+    <value>SberZvuk</value>
+  </data>
+  <data name="Title_ru_sberdevices_newswidget" xml:space="preserve">
+    <value>News widget</value>
+  </data>
+  <data name="Title_ru_sberdevices_SberDevicesServiceSystem" xml:space="preserve">
+    <value>Sber system service</value>
+  </data>
+  <data name="Title_ru_sberdevices_settings" xml:space="preserve">
+    <value>Sber settings</value>
+  </data>
+  <data name="Title_ru_sberdevices_smarthome_promo" xml:space="preserve">
+    <value>Smart home promo</value>
+  </data>
+  <data name="Title_ru_sberdevices_starlauncher" xml:space="preserve">
+    <value>Salute home screen</value>
+  </data>
+  <data name="Title_ru_sberdevices_starlivetv" xml:space="preserve">
+    <value>Broadcast and inputs</value>
+  </data>
+  <data name="Title_ru_sberdevices_startube" xml:space="preserve">
+    <value>Built-in YouTube</value>
+  </data>
+  <data name="Title_ru_sberdevices_trafficwidget" xml:space="preserve">
+    <value>Traffic widget</value>
+  </data>
+  <data name="Title_ru_sberdevices_TV" xml:space="preserve">
+    <value>Smotreshka (Sber)</value>
+  </data>
+  <data name="Title_ru_sberdevices_videoplayer" xml:space="preserve">
+    <value>Video player</value>
+  </data>
+  <data name="Title_ru_sberdevices_videos" xml:space="preserve">
+    <value>Video</value>
+  </data>
+  <data name="Title_ru_yandex_androidkeyboard_tv" xml:space="preserve">
+    <value>Keyboard</value>
+  </data>
+  <data name="Title_tv_lfstrm_smotreshka" xml:space="preserve">
+    <value>Smotreshka</value>
+  </data>
+  <data name="Title_tv_lfstrm_smotreshka_stb" xml:space="preserve">
+    <value>Smotreshka</value>
+  </data>
+</root>

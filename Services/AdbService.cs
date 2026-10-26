@@ -104,7 +104,7 @@ public sealed class AdbService
 
         var adb = Path.Combine(LocalPlatformToolsDir, "adb.exe");
         if (!File.Exists(adb))
-            throw new FileNotFoundException("В архиве platform-tools не найден adb.exe", adb);
+            throw new FileNotFoundException(Res.Get("AdbNotInArchive"), adb);
         return adb;
     }
 
@@ -113,7 +113,7 @@ public sealed class AdbService
     public async Task<AdbResult> RunAsync(IEnumerable<string> args, bool quiet = false, CancellationToken ct = default)
     {
         if (string.IsNullOrEmpty(AdbPath) || !File.Exists(AdbPath))
-            throw new InvalidOperationException("adb.exe не найден. Укажите путь к нему или скачайте platform-tools.");
+            throw new InvalidOperationException(Res.Get("AdbNotFoundSpecify"));
 
         var psi = new ProcessStartInfo(AdbPath)
         {
@@ -159,7 +159,7 @@ public sealed class AdbService
     public async Task<byte[]> ExecOutAsync(string serial, string command, CancellationToken ct = default)
     {
         if (string.IsNullOrEmpty(AdbPath) || !File.Exists(AdbPath))
-            throw new InvalidOperationException("adb.exe не найден.");
+            throw new InvalidOperationException(Res.Get("AdbNotFound"));
 
         var psi = new ProcessStartInfo(AdbPath)
         {
@@ -342,14 +342,14 @@ public sealed class AdbService
             "-a", "android.intent.action.MAIN", "-c", "android.intent.category.LAUNCHER", package);
         var component = resolve.Output.Split('\n').Select(l => l.Trim()).LastOrDefault(l => l.Contains('/'));
         if (component is null)
-            return new AdbResult(1, "", "У приложения нет экрана для запуска — откройте его на телефоне вручную.");
+            return new AdbResult(1, "", Res.Get("AppNoLaunchActivity"));
 
         await RunOnDeviceAsync(serial, "shell", "am", "start", "-W", "-n", component);
         await RunOnDeviceAsync(serial, "shell", "am", "force-stop", package);
 
         var states = await GetDisabledStatesAsync(serial);
         return states.TryGetValue(package, out var state) && state == PackageState.Unused
-            ? new AdbResult(1, "", "Приложение не включилось после запуска.")
+            ? new AdbResult(1, "", Res.Get("AppNotEnabledAfterLaunch"))
             : new AdbResult(0, "enabled", "");
     }
 
@@ -369,7 +369,7 @@ public sealed class AdbService
             return r;
 
         var error = r.Text.Contains("Shell cannot change component state", StringComparison.Ordinal)
-            ? "Android не разрешает adb менять состояние этого приложения."
+            ? Res.Get("ShellCannotChangeState")
             : r.Text;
         return new AdbResult(r.ExitCode == 0 ? 1 : r.ExitCode, "", error);
     }

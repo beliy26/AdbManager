@@ -1,6 +1,7 @@
 using System.Buffers.Binary;
 using System.Globalization;
 using System.Text;
+using AdbManager.Services;
 
 namespace AdbManager.Apk;
 
@@ -154,7 +155,7 @@ internal static class AxmlParser
     public static AxmlElement Parse(byte[] d)
     {
         if (d.Length < 8 || Le.U16(d, 0) != 0x0003)
-            throw new InvalidDataException("Не бинарный XML");
+            throw new InvalidDataException(Res.Get("ErrorNotBinaryXml"));
 
         StringPool? pool = null;
         uint[] resIds = [];
@@ -211,7 +212,7 @@ internal static class AxmlParser
             pos += size;
         }
 
-        return root ?? throw new InvalidDataException("Пустой XML");
+        return root ?? throw new InvalidDataException(Res.Get("ErrorEmptyXml"));
     }
 }
 
@@ -235,7 +236,7 @@ internal sealed class ResTable
     public ResTable(byte[] d)
     {
         if (d.Length < 12 || Le.U16(d, 0) != 0x0002)
-            throw new InvalidDataException("Не resources.arsc");
+            throw new InvalidDataException(Res.Get("ErrorNotResourcesArsc"));
         _d = d;
 
         int end = Math.Min(Le.I32(d, 4), d.Length);

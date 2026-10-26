@@ -46,12 +46,22 @@ public sealed partial class MainWindow : Window
         ConnectAddressBox.Text = _settings.LastConnectAddress ?? "";
         if (Enum.TryParse<SortColumn>(_settings.SortColumn, out var sortColumn)) _sortColumn = sortColumn;
         _sortDescending = _settings.SortDescending;
+        (_settings.Language switch
+        {
+            Res.Russian => LanguageRussianItem,
+            Res.English => LanguageEnglishItem,
+            _ => LanguageSystemItem,
+        }).IsChecked = true;
 
         _devicePollTimer = DispatcherQueue.CreateTimer();
         _devicePollTimer.Interval = TimeSpan.FromSeconds(3);
         _devicePollTimer.Tick += async (_, _) => await PollDevicesAsync();
 
-        RootGrid.Loaded += async (_, _) => await InitializeAdbAsync();
+        RootGrid.Loaded += async (_, _) =>
+        {
+            _ = CheckForUpdatesAsync(manual: false);
+            await InitializeAdbAsync();
+        };
         Closed += (_, _) =>
         {
             _devicePollTimer.Stop();
@@ -97,8 +107,8 @@ public sealed partial class MainWindow : Window
 
         if (_adb.AdbPath is null)
         {
-            ShowStatus(InfoBarSeverity.Warning, "adb не найден",
-                "Нажмите «Скачать», чтобы загрузить Android platform-tools, или укажите путь к adb.exe.");
+            ShowStatus(InfoBarSeverity.Warning, Res.Get("AdbNotFoundTitle"),
+                Res.Get("AdbNotFoundMessage"));
             return;
         }
 
@@ -113,7 +123,7 @@ public sealed partial class MainWindow : Window
     private void SetAdbPath(string? path)
     {
         _adb.AdbPath = path;
-        AdbPathText.Text = path ?? "adb.exe не найден";
+        AdbPathText.Text = path ?? Res.Get("AdbExeNotFound");
         if (path is not null && path != _settings.AdbPath)
         {
             _settings.AdbPath = path;
@@ -130,7 +140,7 @@ public sealed partial class MainWindow : Window
 
         if (!file.Name.Equals("adb.exe", StringComparison.OrdinalIgnoreCase))
         {
-            ShowStatus(InfoBarSeverity.Warning, "Неверный файл", "Нужно выбрать adb.exe из папки platform-tools.");
+            ShowStatus(InfoBarSeverity.Warning, Res.Get("InvalidFileTitle"), Res.Get("InvalidAdbFileMessage"));
             return;
         }
 
@@ -144,19 +154,19 @@ public sealed partial class MainWindow : Window
         BusyBar.IsIndeterminate = false;
         BusyBar.Value = 0;
         BusyBar.Visibility = Visibility.Visible;
-        ShowStatus(InfoBarSeverity.Informational, "Загрузка", "Скачивание platform-tools с dl.google.com…");
+        ShowStatus(InfoBarSeverity.Informational, Res.Get("DownloadTitle"), Res.Get("DownloadPlatformToolsMessage"));
 
         try
         {
             var progress = new Progress<double>(p => BusyBar.Value = p * 100);
             var path = await AdbService.DownloadPlatformToolsAsync(progress);
             SetAdbPath(path);
-            ShowStatus(InfoBarSeverity.Success, "Готово", "platform-tools установлены: " + path);
+            ShowStatus(InfoBarSeverity.Success, Res.Get("DoneTitle"), Res.Get("PlatformToolsInstalled") + path);
             await InitializeAdbAsync();
         }
         catch (Exception ex)
         {
-            ShowStatus(InfoBarSeverity.Error, "Не удалось скачать platform-tools", ex.Message);
+            ShowStatus(InfoBarSeverity.Error, Res.Get("PlatformToolsDownloadFailed"), ex.Message);
         }
         finally
         {
@@ -242,7 +252,7 @@ public sealed partial class MainWindow : Window
             var key = d.Kind == DeviceKind.Usb ? d.Serial : d.Host ?? tlsSerial;
             list.Add(d.WithKindAndType(paired ? DeviceKind.Paired : d.Kind, TypeFor(tlsSerial ?? d.Serial, key)));
 
-            if (d.Host is { } host) connectedAddresses.Add(d.Serial);
+            if (d.Host is not null) connectedAddresses.Add(d.Serial);
             if (tlsSerial is not null) connectedSerials.Add(tlsSerial);
             RememberName(key, d.Model);
 
@@ -277,8 +287,8 @@ public sealed partial class MainWindow : Window
         : host is not null && _settings.DeviceTypes.TryGetValue(host, out t) ? t
         : DeviceType.Unknown;
 
-    /// <summary>Запоминает тип по ключам устройства; true — если что-то изменилось.</summary>
-    private bool RememberType(DeviceType type, params string?[] keys)
+    /// <summary>Запоминает тип по ключам устройства (настройки сохраняются, только если что-то изменилось).</summary>
+    private void RememberType(DeviceType type, params string?[] keys)
     {
         var changed = false;
         foreach (var key in keys)
@@ -288,7 +298,6 @@ public sealed partial class MainWindow : Window
             changed = true;
         }
         if (changed) _settings.Save();
-        return changed;
     }
 
     private string? NameFor(string? serial, string? host) =>
@@ -377,7 +386,7 @@ public sealed partial class MainWindow : Window
         EnableWifiButton.IsEnabled = online && !device!.IsWireless;
         var forget = device is { IsConnected: false, Kind: DeviceKind.Paired };
         DisconnectButton.IsEnabled = device is { IsConnected: true, IsWireless: true } || forget;
-        DisconnectButtonText.Text = forget ? "Забыть" : "Отключить";
+        DisconnectButtonText.Text = forget ? Res.Get("Forget") : Res.Get("Disconnect");
 
         // Тот же выбор после обновления списка — приложения не перечитываем.
         var key = device is null ? null : $"{device.Serial}|{device.State}";
@@ -388,7 +397,7 @@ public sealed partial class MainWindow : Window
         CancelMetadataLoading();
         _allPackages = [];
         ApplyFilter();
-        PackagesHeader.Text = device is null ? "Приложения" : $"Приложения — {device.DisplayName}";
+        PackagesHeader.Text = device is null ? Res.Get("Apps") : Res.Format("AppsHeaderFormat", device.DisplayName);
 
         if (online)
         {
@@ -398,9 +407,9 @@ public sealed partial class MainWindow : Window
         {
             EmptyPackagesText.Text = device switch
             {
-                null => "Выберите устройство слева",
-                { IsConnected: false } => "Устройство не подключено — нажмите на него в списке слева",
-                _ => $"Устройство недоступно: {device.StateText}",
+                null => Res.Get("SelectADeviceOn"),
+                { IsConnected: false } => Res.Get("DeviceNotConnectedHint"),
+                _ => Res.Format("DeviceUnavailableFormat", device.StateText),
             };
         }
     }
@@ -428,21 +437,20 @@ public sealed partial class MainWindow : Window
     {
         await RunBusyAsync(async () =>
         {
-            ShowStatus(InfoBarSeverity.Informational, "Подключение…", address);
+            ShowStatus(InfoBarSeverity.Informational, Res.Get("ConnectingTitle"), address);
             var r = await _adb.ConnectAsync(address);
             var ok = r.Output.Contains("connected to", StringComparison.OrdinalIgnoreCase);
             var message = r.Text;
             if (!ok && NetworkScanner.GetVirtualRouteAdapter(address) is { } vpn)
             {
-                message += Environment.NewLine + $"Трафик к устройству идёт через «{vpn}» — VPN на компьютере закрывает доступ " +
-                           "к домашней сети. Выключите его или разрешите в нём доступ к локальной сети.";
+                message += Environment.NewLine + Res.Format("VpnBlocksFormat", vpn);
             }
             else if (!ok && paired)
             {
-                message += Environment.NewLine + "Включите на телефоне «Беспроводную отладку». Если не поможет — выполните сопряжение по коду заново.";
+                message += Environment.NewLine + Res.Get("EnableWirelessDebuggingHint");
             }
             ShowStatus(ok ? InfoBarSeverity.Success : InfoBarSeverity.Error,
-                ok ? "Подключено" : "Не удалось подключиться", message);
+                ok ? Res.Get("Connected") : Res.Get("ConnectFailed"), message);
 
             if (ok && !paired)
             {
@@ -462,7 +470,7 @@ public sealed partial class MainWindow : Window
     {
         await RunBusyAsync(async () =>
         {
-            ShowStatus(InfoBarSeverity.Informational, "Поиск в сети…", "Проверяю порт 5555 в домашней сети и беспроводную отладку (mDNS)");
+            ShowStatus(InfoBarSeverity.Informational, Res.Get("NetworkSearchTitle"), Res.Get("NetworkSearchMessage"));
             var scanTask = NetworkScanner.ScanAsync();
             var mdnsTask = _adb.GetMdnsDevicesAsync();
             await Task.WhenAll(scanTask, mdnsTask);
@@ -480,34 +488,33 @@ public sealed partial class MainWindow : Window
 
             if (found.Count == 0)
             {
-                ShowStatus(InfoBarSeverity.Warning, "Устройства не найдены",
-                    "Проверьте, что устройство в той же Wi-Fi сети и на нём включена отладка по сети (или «Беспроводная отладка» на Android 11+). " +
-                    "Для беспроводной отладки без сопряжения используйте «Сопряжение по коду». VPN на компьютере может закрывать доступ к домашней сети.");
+                ShowStatus(InfoBarSeverity.Warning, Res.Get("NoDevicesFoundTitle"),
+                    Res.Get("NoDevicesFoundMessage"));
             }
             else
             {
-                ShowStatus(InfoBarSeverity.Success, $"Найдено устройств: {found.Count}",
-                    "Они добавлены в список слева — нажмите на устройство, чтобы подключиться.");
+                ShowStatus(InfoBarSeverity.Success, Res.Format("DevicesFoundFormat", found.Count),
+                    Res.Get("DevicesFoundMessage"));
             }
         });
     }
 
     private async void Pair_Click(object sender, RoutedEventArgs e)
     {
-        var addressBox = new TextBox { Header = "IP-адрес и порт сопряжения", PlaceholderText = "192.168.1.10:37123" };
-        var codeBox = new TextBox { Header = "Код сопряжения (6 цифр)", PlaceholderText = "123456" };
+        var addressBox = new TextBox { Header = Res.Get("PairAddressHeader"), PlaceholderText = "192.168.1.10:37123" };
+        var codeBox = new TextBox { Header = Res.Get("PairCodeHeader"), PlaceholderText = "123456" };
         var connectBox = new TextBox
         {
-            Header = "IP-адрес и порт для подключения (с главного экрана «Беспроводной отладки»)",
+            Header = Res.Get("PairConnectAddressHeader"),
             PlaceholderText = "192.168.1.10:41234",
         };
 
         var dialog = new ContentDialog
         {
             XamlRoot = Content.XamlRoot,
-            Title = "Сопряжение по коду",
-            PrimaryButtonText = "Подключить",
-            CloseButtonText = "Отмена",
+            Title = Res.Get("PairTitle"),
+            PrimaryButtonText = Res.Get("Connect"),
+            CloseButtonText = Res.Get("Cancel"),
             DefaultButton = ContentDialogButton.Primary,
             Content = new StackPanel
             {
@@ -517,8 +524,7 @@ public sealed partial class MainWindow : Window
                     new TextBlock
                     {
                         TextWrapping = TextWrapping.Wrap,
-                        Text = "На телефоне: Настройки → Для разработчиков → Беспроводная отладка → " +
-                               "«Подключить устройство с помощью кода». Введите показанные адрес и код.",
+                        Text = Res.Get("PairInstructions"),
                     },
                     addressBox, codeBox, connectBox,
                 },
@@ -538,7 +544,7 @@ public sealed partial class MainWindow : Window
             var r = await _adb.PairAsync(pairAddress, code);
             if (!r.Output.Contains("Successfully paired", StringComparison.OrdinalIgnoreCase))
             {
-                ShowStatus(InfoBarSeverity.Error, "Сопряжение не удалось", r.Text);
+                ShowStatus(InfoBarSeverity.Error, Res.Get("PairFailed"), r.Text);
                 return;
             }
 
@@ -556,8 +562,8 @@ public sealed partial class MainWindow : Window
 
             if (address is null)
             {
-                ShowStatus(InfoBarSeverity.Success, "Сопряжение выполнено",
-                    "Устройство появится в списке, когда телефон объявит адрес подключения. Если нет — введите адрес с экрана «Беспроводной отладки».");
+                ShowStatus(InfoBarSeverity.Success, Res.Get("PairDoneTitle"),
+                    Res.Get("PairDoneMessage"));
                 await RefreshDevicesAsync();
             }
         });
@@ -576,14 +582,14 @@ public sealed partial class MainWindow : Window
             var r = await _adb.EnableTcpIpAsync(device.Serial);
             if (!r.Success)
             {
-                ShowStatus(InfoBarSeverity.Error, "Не удалось включить режим TCP/IP", r.Text);
+                ShowStatus(InfoBarSeverity.Error, Res.Get("TcpipFailed"), r.Text);
                 return;
             }
 
             if (ip is null)
             {
-                ShowStatus(InfoBarSeverity.Warning, "Режим TCP/IP включён",
-                    "Не удалось определить IP телефона — убедитесь, что он подключён к Wi-Fi, и введите адрес вручную.");
+                ShowStatus(InfoBarSeverity.Warning, Res.Get("TcpipEnabledTitle"),
+                    Res.Get("TcpipNoIpMessage"));
                 return;
             }
 
@@ -595,7 +601,7 @@ public sealed partial class MainWindow : Window
         if (address is null) return;
         await ConnectToAsync(address, paired: false);
         if (SelectedDevice?.Serial == address)
-            StatusBar.Message += Environment.NewLine + "Теперь USB-кабель можно отключить.";
+            StatusBar.Message += Environment.NewLine + Res.Get("UsbCanBeUnplugged");
     }
 
     private async void Disconnect_Click(object sender, RoutedEventArgs e)
@@ -627,9 +633,9 @@ public sealed partial class MainWindow : Window
 
         await RunBusyAsync(async () =>
         {
-            EmptyPackagesText.Text = "Загрузка…";
+            EmptyPackagesText.Text = Res.Get("Loading");
             await ReloadPackagesCoreAsync(device);
-            EmptyPackagesText.Text = "Приложения не найдены";
+            EmptyPackagesText.Text = Res.Get("NoAppsFound");
         });
     }
 
@@ -700,8 +706,8 @@ public sealed partial class MainWindow : Window
         var phone = device?.Type is DeviceType.Phone or DeviceType.Tablet;
         InstallLauncherButton.IsEnabled = device?.IsOnline == true && !phone;
         ToolTipService.SetToolTip(InstallLauncherButton, phone
-            ? "Projectivy Launcher — главный экран для Android TV; на телефонах и планшетах не устанавливается"
-            : "Скачать с GitHub и установить Projectivy Launcher — главный экран для Android TV без рекламы");
+            ? Res.Get("LauncherTvOnlyToolTip")
+            : Res.Get("DownloadFromGitHubAnd"));
     }
 
     /// <summary>Журнал изменений устройства — по стабильному ключу (модель + серийный номер).</summary>
@@ -726,25 +732,23 @@ public sealed partial class MainWindow : Window
         {
             if (p.Name == home && !homeHasAlternative)
             {
-                p.SetAdvice(PackageAdvice.Protected, "Главный экран",
-                    "Единственное приложение главного экрана: без него устройству нечего показать по кнопке Home. " +
-                    "Установите и выберите другой лаунчер — тогда защита снимется.");
+                p.SetAdvice(PackageAdvice.Protected, Res.Get("HomeScreen"),
+                    Res.Get("HomeGuardNote"));
             }
             else if (p.IsSystem && tvInputs.Contains(p.Name))
             {
-                p.SetAdvice(PackageAdvice.Protected, "Входы ТВ (HDMI / AV / тюнер)",
-                    "Обслуживает входы телевизора. Если отключить, вход видит кабель, но показывает «Нет сигнала».");
+                p.SetAdvice(PackageAdvice.Protected, Res.Get("TvInputsGuardTitle"),
+                    Res.Get("TvInputsGuardNote"));
             }
         }
 
         if (props.AdbSecure == "0" && _insecureWarned.Add(device.Serial))
         {
-            ShowStatus(InfoBarSeverity.Warning, "Отладка по сети без подтверждения",
-                $"{device.DisplayName} сообщает ro.adb.secure=0: порт adb 5555 даёт полный доступ к устройству любому в сети, " +
-                "без запроса «Разрешить отладку?». Закончив, выключите на устройстве отладку по USB и по сети и перезагрузите его.");
+            ShowStatus(InfoBarSeverity.Warning, Res.Get("AdbInsecureTitle"),
+                Res.Format("AdbInsecureFormat", device.DisplayName));
         }
 
-        var title = $"Приложения — {device.DisplayName}";
+        var title = Res.Format("AppsHeaderFormat", device.DisplayName);
         if (platforms.Count > 0) title += " · " + string.Join(", ", platforms.Select(p => p.Name));
         PackagesHeader.Text = title;
     }
@@ -762,7 +766,7 @@ public sealed partial class MainWindow : Window
 
         var ct = cts.Token;
         int done = 0;
-        void Report() => MetadataProgressText.Text = $"Загрузка иконок: {done} из {packages.Count}";
+        void Report() => MetadataProgressText.Text = Res.Format("LoadingIconsFormat", done, packages.Count);
         Report();
         MetadataProgressPanel.Visibility = Visibility.Visible;
 
@@ -782,7 +786,7 @@ public sealed partial class MainWindow : Window
                     throttle.Release();
                 }
             }
-            catch (OperationCanceledException) { }
+            catch (OperationCanceledException) { /* загрузку отменили — устройство сменилось или список перечитан */ }
             catch (Exception ex) { AppendLog($"! {p.Name}: {ex.Message}"); }
             finally
             {
@@ -918,14 +922,14 @@ public sealed partial class MainWindow : Window
         }
 
         var text = Packages.Count == _allPackages.Count
-            ? $"Всего: {_allPackages.Count}"
-            : $"Найдено: {Packages.Count} из {_allPackages.Count}";
+            ? Res.Format("TotalFormat", _allPackages.Count)
+            : Res.Format("FoundOfFormat", Packages.Count, _allPackages.Count);
         var frozen = _allPackages.Count(p => p.IsFrozen);
         var unused = _allPackages.Count(p => p.IsUnused);
-        if (frozen > 0) text += $" · заморожено: {frozen}";
-        if (unused > 0) text += $" · не используется: {unused}";
+        if (frozen > 0) text += Res.Format("FrozenCountFormat", frozen);
+        if (unused > 0) text += Res.Format("UnusedCountFormat", unused);
         var marked = PackagesList.SelectedItems.Count;
-        if (marked > 0) text += $" · отмечено: {marked}";
+        if (marked > 0) text += Res.Format("MarkedCountFormat", marked);
         PackagesCountText.Text = text;
     }
 
@@ -992,11 +996,10 @@ public sealed partial class MainWindow : Window
         {
             var count = PackagesList.SelectedItems.Count;
             ShowStatus(count > 0 ? InfoBarSeverity.Informational : InfoBarSeverity.Success,
-                count > 0 ? $"Рекомендуемых к отключению: {count}" : "Рекомендуемых к отключению нет",
+                count > 0 ? Res.Format("RecommendedCountFormat", count) : Res.Get("RecommendedNone"),
                 count > 0
-                    ? "Проверьте список и нажмите «Заморозить». Пояснения — в подсказке колонки «Совет»."
-                    : "Среди показанных включённых приложений не найдено известной рекламы и мусора. " +
-                      "Включите «Системные», если они скрыты.");
+                    ? Res.Get("RecommendedHint")
+                    : Res.Get("RecommendedNoneHint"));
         }
     }
 
@@ -1022,8 +1025,8 @@ public sealed partial class MainWindow : Window
         {
             var item = new MenuFlyoutItem { Text = preset.Name, Tag = preset };
             ToolTipService.SetToolTip(item,
-                (preset.Description.Length > 0 ? preset.Description : "Без описания") +
-                Environment.NewLine + $"Приложений: {preset.Packages.Count}");
+                (preset.Description.Length > 0 ? preset.Description : Res.Get("NoDescription")) +
+                Environment.NewLine + Res.Format("AppsCountFormat", preset.Packages.Count));
             item.Click += PresetItem_Click;
             PresetsMenu.Items.Add(item);
         }
@@ -1031,7 +1034,7 @@ public sealed partial class MainWindow : Window
 
         var save = new MenuFlyoutItem
         {
-            Text = "Сохранить отмеченные как пресет…",
+            Text = Res.Get("SaveMarkedAsPreset"),
             Icon = new SymbolIcon(Symbol.Save),
             IsEnabled = PackagesList.SelectedItems.Count > 0,
         };
@@ -1040,7 +1043,7 @@ public sealed partial class MainWindow : Window
 
         var manage = new MenuFlyoutItem
         {
-            Text = "Управление пресетами…",
+            Text = Res.Get("ManagePresets"),
             Icon = new SymbolIcon(Symbol.Edit),
             IsEnabled = _settings.Presets.Count > 0,
         };
@@ -1048,8 +1051,8 @@ public sealed partial class MainWindow : Window
         PresetsMenu.Items.Add(manage);
 
         PresetsMenu.Items.Add(new MenuFlyoutSeparator());
-        var import = new MenuFlyoutItem { Text = "Импорт из файла…", Icon = new SymbolIcon(Symbol.OpenFile) };
-        ToolTipService.SetToolTip(import, "Пресеты ADB Manager (*.json) или список имён пакетов (*.txt, по одному в строке)");
+        var import = new MenuFlyoutItem { Text = Res.Get("ImportFromFile"), Icon = new SymbolIcon(Symbol.OpenFile) };
+        ToolTipService.SetToolTip(import, Res.Get("ImportPresetsToolTip"));
         import.Click += ImportPresets_Click;
         PresetsMenu.Items.Add(import);
     }
@@ -1061,7 +1064,7 @@ public sealed partial class MainWindow : Window
             SuggestedFileName = PresetFile.SafeFileName(suggestedName),
             SuggestedStartLocation = PickerLocationId.Downloads,
         };
-        picker.FileTypeChoices.Add("Пресеты ADB Manager", [".json"]);
+        picker.FileTypeChoices.Add(Res.Get("PresetsFileType"), [".json"]);
         WinRT.Interop.InitializeWithWindow.Initialize(picker, WinRT.Interop.WindowNative.GetWindowHandle(this));
         var file = await picker.PickSaveFileAsync();
         if (file is null) return;
@@ -1069,11 +1072,11 @@ public sealed partial class MainWindow : Window
         try
         {
             await PresetFile.ExportAsync(file.Path, presets);
-            ShowStatus(InfoBarSeverity.Success, $"Экспортировано пресетов: {presets.Count}", file.Path);
+            ShowStatus(InfoBarSeverity.Success, Res.Format("PresetsExportedFormat", presets.Count), file.Path);
         }
         catch (Exception ex)
         {
-            ShowStatus(InfoBarSeverity.Error, "Не удалось сохранить файл", ex.Message);
+            ShowStatus(InfoBarSeverity.Error, Res.Get("SaveFileFailed"), ex.Message);
         }
     }
 
@@ -1100,7 +1103,7 @@ public sealed partial class MainWindow : Window
                 errors.Add($"{file.Name}: {ex.Message}");
                 continue;
             }
-            if (imported.Count == 0) errors.Add($"{file.Name}: нет имён пакетов");
+            if (imported.Count == 0) errors.Add(Res.Format("NoPackageNamesFormat", file.Name));
 
             foreach (var preset in imported)
             {
@@ -1112,7 +1115,8 @@ public sealed partial class MainWindow : Window
                     continue;
                 }
                 var name = preset.Name;
-                for (var n = 2; FindPreset(name) is not null; n++) name = $"{preset.Name} ({n})";
+                var n = 2;
+                while (FindPreset(name) is not null) name = $"{preset.Name} ({n++})";
                 preset.Name = name;
                 _settings.Presets.Add(preset);
                 added.Add(name);
@@ -1121,11 +1125,11 @@ public sealed partial class MainWindow : Window
         if (added.Count > 0) _settings.Save();
 
         var lines = new List<string>();
-        if (added.Count > 0) lines.Add("Добавлены: " + string.Join(", ", added.Select(n => $"«{n}»")));
-        if (skipped > 0) lines.Add($"Уже были: {skipped}");
+        if (added.Count > 0) lines.Add(Res.Get("PresetsAdded") + string.Join(", ", added.Select(n => $"«{n}»")));
+        if (skipped > 0) lines.Add(Res.Format("PresetsAlreadyExistFormat", skipped));
         lines.AddRange(errors);
         ShowStatus(errors.Count > 0 ? InfoBarSeverity.Warning : added.Count > 0 ? InfoBarSeverity.Success : InfoBarSeverity.Informational,
-            $"Импортировано пресетов: {added.Count}", string.Join(Environment.NewLine, lines));
+            Res.Format("PresetsImportedFormat", added.Count), string.Join(Environment.NewLine, lines));
     }
 
     private void PresetItem_Click(object sender, RoutedEventArgs e)
@@ -1137,7 +1141,7 @@ public sealed partial class MainWindow : Window
     {
         if (_allPackages.Count == 0)
         {
-            ShowStatus(InfoBarSeverity.Warning, "Список приложений пуст", "Сначала подключите устройство и дождитесь загрузки списка.");
+            ShowStatus(InfoBarSeverity.Warning, Res.Get("AppListEmptyTitle"), Res.Get("AppListEmptyMessage"));
             return;
         }
 
@@ -1167,11 +1171,11 @@ public sealed partial class MainWindow : Window
         if (missing.Count > 0)
         {
             message += (message.Length > 0 ? Environment.NewLine : "") +
-                       $"Нет на устройстве ({missing.Count}): " + string.Join(", ", missing.Take(5)) +
-                       (missing.Count > 5 ? $" и ещё {missing.Count - 5}" : "");
+                       Res.Format("MissingOnDeviceFormat", missing.Count) + string.Join(", ", missing.Take(5)) +
+                       (missing.Count > 5 ? Res.Format("AndMoreFormat", missing.Count - 5) : "");
         }
         ShowStatus(found > 0 ? InfoBarSeverity.Informational : InfoBarSeverity.Warning,
-            $"Пресет «{preset.Name}»: отмечено {found} из {names.Count}", message);
+            Res.Format("PresetAppliedFormat", preset.Name, found, names.Count), message);
     }
 
     private async void SavePreset_Click(object sender, RoutedEventArgs e)
@@ -1180,11 +1184,11 @@ public sealed partial class MainWindow : Window
             .Select(p => p.Name).Order(StringComparer.Ordinal).ToList();
         if (packages.Count == 0) return;
 
-        var nameBox = new TextBox { Header = "Название", PlaceholderText = "Например: Реклама Xiaomi" };
+        var nameBox = new TextBox { Header = Res.Get("Name"), PlaceholderText = Res.Get("PresetNamePlaceholder") };
         var descriptionBox = new TextBox
         {
-            Header = "Описание",
-            PlaceholderText = "Что входит в пресет и для чего он нужен",
+            Header = Res.Get("Description"),
+            PlaceholderText = Res.Get("PresetDescriptionPlaceholder"),
             AcceptsReturn = true,
             TextWrapping = TextWrapping.Wrap,
             MinHeight = 80,
@@ -1194,13 +1198,13 @@ public sealed partial class MainWindow : Window
         {
             IsClosable = false,
             Severity = InfoBarSeverity.Warning,
-            Title = "Пресет с таким названием уже есть",
-            Message = "Его список приложений и описание будут заменены.",
+            Title = Res.Get("PresetExistsTitle"),
+            Message = Res.Get("PresetExistsMessage"),
         };
         var content = new StackPanel { Spacing = 12, MinWidth = 400 };
         content.Children.Add(new TextBlock
         {
-            Text = $"Отмеченных приложений: {packages.Count}. Пресет можно загрузить на любом устройстве: «Отметить → Пресеты».",
+            Text = Res.Format("NewPresetMessageFormat", packages.Count),
             TextWrapping = TextWrapping.Wrap,
         });
         content.Children.Add(nameBox);
@@ -1210,9 +1214,9 @@ public sealed partial class MainWindow : Window
         var dialog = new ContentDialog
         {
             XamlRoot = Content.XamlRoot,
-            Title = "Новый пресет",
-            PrimaryButtonText = "Сохранить",
-            CloseButtonText = "Отмена",
+            Title = Res.Get("NewPresetTitle"),
+            PrimaryButtonText = Res.Get("Save"),
+            CloseButtonText = Res.Get("Cancel"),
             DefaultButton = ContentDialogButton.Primary,
             IsPrimaryButtonEnabled = false,
             Content = content,
@@ -1224,7 +1228,7 @@ public sealed partial class MainWindow : Window
         {
             var existing = FindPreset(nameBox.Text.Trim());
             dialog.IsPrimaryButtonEnabled = nameBox.Text.Trim().Length > 0;
-            dialog.PrimaryButtonText = existing is null ? "Сохранить" : "Заменить";
+            dialog.PrimaryButtonText = existing is null ? Res.Get("Save") : Res.Get("Replace");
             replaceBar.IsOpen = existing is not null;
             if (descriptionBox.Text == autoDescription)
                 descriptionBox.Text = autoDescription = existing?.Description ?? "";
@@ -1242,8 +1246,8 @@ public sealed partial class MainWindow : Window
             Created = DateTime.Now,
         });
         _settings.Save();
-        ShowStatus(InfoBarSeverity.Success, "Пресет сохранён",
-            $"«{name}» — приложений: {packages.Count}. Загрузить: «Отметить → Пресеты».");
+        ShowStatus(InfoBarSeverity.Success, Res.Get("PresetSaved"),
+            Res.Format("PresetSavedFormat", name, packages.Count));
     }
 
     private async void ManagePresets_Click(object sender, RoutedEventArgs e)
@@ -1252,11 +1256,11 @@ public sealed partial class MainWindow : Window
         var list = new StackPanel { Spacing = 8 };
         foreach (var preset in SortedPresets())
         {
-            var nameBox = new TextBox { Text = preset.Name, PlaceholderText = "Название" };
+            var nameBox = new TextBox { Text = preset.Name, PlaceholderText = Res.Get("Name") };
             var descriptionBox = new TextBox
             {
                 Text = preset.Description,
-                PlaceholderText = "Описание",
+                PlaceholderText = Res.Get("Description"),
                 AcceptsReturn = true,
                 TextWrapping = TextWrapping.Wrap,
                 MaxHeight = 120,
@@ -1266,15 +1270,15 @@ public sealed partial class MainWindow : Window
             fields.Children.Add(descriptionBox);
             fields.Children.Add(new TextBlock
             {
-                Text = $"Приложений: {preset.Packages.Count} · создан {preset.Created:dd.MM.yyyy HH:mm}",
+                Text = Res.Format("PresetInfoFormat", preset.Packages.Count, preset.Created),
                 Foreground = ThemeBrush("TextFillColorSecondaryBrush"),
                 FontSize = 12,
             });
 
             var delete = new Button { Content = new SymbolIcon(Symbol.Delete) };
-            ToolTipService.SetToolTip(delete, "Удалить пресет");
+            ToolTipService.SetToolTip(delete, Res.Get("DeletePreset"));
             var export = new Button { Content = new SymbolIcon(Symbol.Share) };
-            ToolTipService.SetToolTip(export, "Экспорт в файл");
+            ToolTipService.SetToolTip(export, Res.Get("ExportToFile"));
             export.Click += async (_, _) =>
             {
                 // В файл — с правками из полей, даже если диалог ещё не сохранён.
@@ -1317,7 +1321,7 @@ public sealed partial class MainWindow : Window
             list.Children.Add(card);
         }
 
-        var errorBar = new InfoBar { IsClosable = false, Severity = InfoBarSeverity.Error, Title = "Проверьте названия" };
+        var errorBar = new InfoBar { IsClosable = false, Severity = InfoBarSeverity.Error, Title = Res.Get("CheckNamesTitle") };
         var content = new StackPanel { Spacing = 12, MinWidth = 440 };
         content.Children.Add(new ScrollViewer { Content = list, MaxHeight = 420 });
         content.Children.Add(errorBar);
@@ -1325,18 +1329,18 @@ public sealed partial class MainWindow : Window
         var dialog = new ContentDialog
         {
             XamlRoot = Content.XamlRoot,
-            Title = "Пресеты",
-            PrimaryButtonText = "Сохранить",
-            CloseButtonText = "Отмена",
+            Title = Res.Get("Presets"),
+            PrimaryButtonText = Res.Get("Save"),
+            CloseButtonText = Res.Get("Cancel"),
             DefaultButton = ContentDialogButton.Primary,
             Content = content,
         };
         dialog.PrimaryButtonClick += (_, args) =>
         {
             var names = rows.Select(r => r.Name.Text.Trim()).ToList();
-            string? error = names.Any(n => n.Length == 0) ? "Название пресета не может быть пустым."
+            string? error = names.Any(n => n.Length == 0) ? Res.Get("PresetNameEmpty")
                 : names.GroupBy(n => n, StringComparer.CurrentCultureIgnoreCase).FirstOrDefault(g => g.Count() > 1) is { } dup
-                    ? $"Название «{dup.Key}» повторяется."
+                    ? Res.Format("PresetNameDuplicateFormat", dup.Key)
                     : null;
             errorBar.Message = error ?? "";
             errorBar.IsOpen = error is not null;
@@ -1352,8 +1356,8 @@ public sealed partial class MainWindow : Window
         }
         _settings.Presets = rows.Select(r => r.Preset).ToList();
         _settings.Save();
-        ShowStatus(InfoBarSeverity.Success, "Пресеты сохранены",
-            $"Пресетов: {rows.Count}" + (removed > 0 ? $", удалено: {removed}" : "") + ".");
+        ShowStatus(InfoBarSeverity.Success, Res.Get("PresetsSaved"),
+            Res.Format("PresetsCountFormat", rows.Count) + (removed > 0 ? Res.Format("DeletedCountFormat", removed) : "") + ".");
     }
 
     private void UpdatePackageButtons()
@@ -1397,7 +1401,7 @@ public sealed partial class MainWindow : Window
             {
                 var version = await _adb.GetVersionAsync(device.Serial, pkg.Name);
                 if (ReferenceEquals(PackagesList.SelectedItem, pkg))
-                    PackagesCountText.Text = $"{pkg.Name} · версия {version ?? "?"}";
+                    PackagesCountText.Text = Res.Format("PackageVersionFormat", pkg.Name, version ?? "?");
             }
             catch { /* необязательная информация */ }
         }
@@ -1434,40 +1438,35 @@ public sealed partial class MainWindow : Window
 
         var phone = string.Join(" ", new[] { manufacturer, device?.DisplayName }.Where(s => !string.IsNullOrWhiteSpace(s)));
         var sb = new System.Text.StringBuilder();
-        sb.AppendLine($"Ниже список приложений на моём Android-смартфоне{(phone.Length > 0 ? " " + phone : "")}" +
-                      $"{(android is null ? "" : $" (Android {android})")}.");
-        sb.AppendLine("Подскажи, какие из них можно безопасно удалить или заморозить, а какие трогать нельзя. " +
-                      "Для каждого рекомендуемого приложения кратко объясни, что оно делает и чем грозит его отключение. " +
-                      "Сгруппируй ответ: «можно удалить», «лучше заморозить», «не трогать».");
+        sb.AppendLine(Res.Format("LlmIntroFormat", (phone.Length > 0 ? " " + phone : ""), (android is null ? "" : $" (Android {android})")));
+        sb.AppendLine(Res.Get("LlmRequest"));
         sb.AppendLine();
-        sb.AppendLine("Пояснения к таблице:");
-        sb.AppendLine("- Заморозка — `pm disable-user`: приложение не запускается, данные сохраняются, можно включить обратно.");
-        sb.AppendLine("- Удаление системных приложений — только для текущего пользователя (`pm uninstall --user 0`), " +
-                      "восстанавливается командой `cmd package install-existing`.");
-        sb.AppendLine("- Статус «Заморожено» — отключено вручную; «Не используется» — Android сам остановил давно не используемое приложение.");
-        sb.AppendLine("- Размер — приложение вместе с данными.");
-        sb.AppendLine("- Совет — из базы проекта ЧистыйТВ (в основном Android TV), списка рекламных предустановок телефонов и встроенной защиты " +
-                      "критичных системных пакетов; «Защищено» и «Не трогать» программа отключать не даёт.");
+        sb.AppendLine(Res.Get("LlmNotesHeader"));
+        sb.AppendLine(Res.Get("LlmNoteFreeze"));
+        sb.AppendLine(Res.Get("LlmNoteUninstall"));
+        sb.AppendLine(Res.Get("LlmNoteStatus"));
+        sb.AppendLine(Res.Get("LlmNoteSize"));
+        sb.AppendLine(Res.Get("LlmNoteAdvice"));
         sb.AppendLine();
-        sb.AppendLine($"Приложений в списке: {items.Count}" +
-                      (ShowSystemToggle.IsOn ? " (включая системные)" : " (только пользовательские)") +
-                      (SearchBox.Text.Trim().Length > 0 ? $", фильтр: «{SearchBox.Text.Trim()}»" : "") + ".");
+        sb.AppendLine(Res.Format("LlmAppsCountFormat", items.Count) +
+                      (ShowSystemToggle.IsOn ? Res.Get("LlmIncludingSystem") : Res.Get("LlmUserOnly")) +
+                      (SearchBox.Text.Trim().Length > 0 ? Res.Format("LlmFilterFormat", SearchBox.Text.Trim()) : "") + ".");
         sb.AppendLine();
-        sb.AppendLine("| Название | Пакет | Тип | Статус | Совет | Размер | Расположение |");
+        sb.AppendLine(Res.Get("LlmTableHeader"));
         sb.AppendLine("|---|---|---|---|---|---|---|");
         foreach (var p in items)
         {
             var advice = p.Advice == PackageAdvice.None ? "" : p.AdviceText +
                 (string.IsNullOrWhiteSpace(p.AdviceNote) ? "" : ": " + p.AdviceNote);
-            sb.AppendLine($"| {Md(p.DisplayName)} | `{p.Name}` | {p.KindText} | {(p.StatusText.Length > 0 ? p.StatusText : "Включено")} " +
+            sb.AppendLine($"| {Md(p.DisplayName)} | `{p.Name}` | {p.KindText} | {(p.StatusText.Length > 0 ? p.StatusText : Res.Get("StatusEnabled"))} " +
                           $"| {Md(advice)} | {p.SizeText} | {Md(ApkLocation(p.ApkPath))} |");
         }
 
         var package = new DataPackage();
         package.SetText(sb.ToString());
         Clipboard.SetContent(package);
-        ShowStatus(InfoBarSeverity.Success, "Список скопирован",
-            $"Приложений: {items.Count}. Вставьте его в чат с ИИ (Ctrl+V).");
+        ShowStatus(InfoBarSeverity.Success, Res.Get("ListCopied"),
+            Res.Format("ListCopiedFormat", items.Count));
 
         static string Md(string s) => s.Replace("|", "\\|").Replace("\r", " ").Replace("\n", " ");
 
@@ -1497,7 +1496,7 @@ public sealed partial class MainWindow : Window
         if (e.DataView.Contains(StandardDataFormats.StorageItems) && SelectedDevice?.IsOnline == true)
         {
             e.AcceptedOperation = DataPackageOperation.Copy;
-            e.DragUIOverride.Caption = "Установить на " + SelectedDevice.DisplayName;
+            e.DragUIOverride.Caption = Res.Get("InstallOnPrefix") + SelectedDevice.DisplayName;
         }
         else
         {
@@ -1516,7 +1515,7 @@ public sealed partial class MainWindow : Window
             .ToList();
 
         if (apks.Count == 0)
-            ShowStatus(InfoBarSeverity.Warning, "Нет APK", "Перетащите файлы с расширением .apk.");
+            ShowStatus(InfoBarSeverity.Warning, Res.Get("NoApkTitle"), Res.Get("NoApkMessage"));
         else
             await InstallFilesAsync(apks);
     }
@@ -1525,24 +1524,24 @@ public sealed partial class MainWindow : Window
     {
         if (SelectedDevice is not { IsOnline: true } device)
         {
-            ShowStatus(InfoBarSeverity.Warning, "Нет устройства", "Сначала выберите подключённое устройство.");
+            ShowStatus(InfoBarSeverity.Warning, Res.Get("NoDeviceTitle"), Res.Get("NoDeviceMessage"));
             return;
         }
 
-        var downgrade = new CheckBox { Content = "Разрешить установку более старой версии (-d)" };
-        var grant = new CheckBox { Content = "Сразу выдать все разрешения (-g)" };
+        var downgrade = new CheckBox { Content = Res.Get("InstallDowngrade") };
+        var grant = new CheckBox { Content = Res.Get("InstallGrant") };
         var split = new CheckBox
         {
-            Content = "Это части одного приложения (split APK, install-multiple)",
+            Content = Res.Get("InstallSplit"),
             Visibility = paths.Count > 1 ? Visibility.Visible : Visibility.Collapsed,
         };
 
         var dialog = new ContentDialog
         {
             XamlRoot = Content.XamlRoot,
-            Title = $"Установка на {device.DisplayName}",
-            PrimaryButtonText = "Установить",
-            CloseButtonText = "Отмена",
+            Title = Res.Format("InstallOnFormat", device.DisplayName),
+            PrimaryButtonText = Res.Get("Install"),
+            CloseButtonText = Res.Get("Cancel"),
             DefaultButton = ContentDialogButton.Primary,
             Content = new StackPanel
             {
@@ -1572,7 +1571,7 @@ public sealed partial class MainWindow : Window
             foreach (var group in groups)
             {
                 var name = string.Join(", ", group.Select(Path.GetFileName));
-                ShowStatus(InfoBarSeverity.Informational, "Установка…", name);
+                ShowStatus(InfoBarSeverity.Informational, Res.Get("Installing"), name);
 
                 var r = await _adb.InstallAsync(device.Serial, group, downgrade.IsChecked == true, grant.IsChecked == true);
                 if (!r.Success || !r.Text.Contains("Success"))
@@ -1580,10 +1579,10 @@ public sealed partial class MainWindow : Window
             }
 
             if (errors.Count == 0)
-                ShowStatus(InfoBarSeverity.Success, "Установлено",
-                    groups.Count == 1 ? Path.GetFileName(paths[0]) : $"Установлено пакетов: {groups.Count}");
+                ShowStatus(InfoBarSeverity.Success, Res.Get("Installed"),
+                    groups.Count == 1 ? Path.GetFileName(paths[0]) : Res.Format("InstalledCountFormat", groups.Count));
             else
-                ShowStatus(InfoBarSeverity.Error, "Ошибка установки", string.Join(Environment.NewLine, errors));
+                ShowStatus(InfoBarSeverity.Error, Res.Get("InstallError"), string.Join(Environment.NewLine, errors));
 
             await ReloadPackagesCoreAsync(device);
         });
@@ -1603,13 +1602,13 @@ public sealed partial class MainWindow : Window
             return;
         }
 
-        var keepData = new CheckBox { Content = "Сохранить данные и кэш (-k)" };
+        var keepData = new CheckBox { Content = Res.Get("KeepDataAndCache") };
         var content = new StackPanel { Spacing = 8 };
         AddSkippedProtectedInfo(content, marked.Where(IsLocked));
         if (!_expertMode) AddSkippedTvInputInfo(content, drivers);
         content.Children.Add(new TextBlock
         {
-            Text = selected.Count == 1 ? "Удалить приложение?" : $"Удалить приложения ({selected.Count})?",
+            Text = selected.Count == 1 ? Res.Get("UninstallOneQuestion") : Res.Format("UninstallManyQuestionFormat", selected.Count),
         });
         content.Children.Add(new ScrollViewer
         {
@@ -1628,10 +1627,8 @@ public sealed partial class MainWindow : Window
                 IsOpen = true,
                 IsClosable = false,
                 Severity = InfoBarSeverity.Warning,
-                Title = "Системные приложения",
-                Message = "Будут удалены только для текущего пользователя (pm uninstall --user 0). " +
-                          "Удаление важных системных компонентов может нарушить работу телефона. " +
-                          "Вернуть можно через «… → Вернуть как было» или «Восстановить удалённые системные».",
+                Title = Res.Get("SystemApps"),
+                Message = Res.Get("UninstallSystemWarning"),
             });
         }
         content.Children.Add(keepData);
@@ -1639,9 +1636,9 @@ public sealed partial class MainWindow : Window
         var dialog = new ContentDialog
         {
             XamlRoot = Content.XamlRoot,
-            Title = "Удаление",
-            PrimaryButtonText = "Удалить",
-            CloseButtonText = "Отмена",
+            Title = Res.Get("UninstallTitle"),
+            PrimaryButtonText = Res.Get("Uninstall"),
+            CloseButtonText = Res.Get("Cancel"),
             DefaultButton = ContentDialogButton.Close,
             Content = content,
         };
@@ -1651,14 +1648,14 @@ public sealed partial class MainWindow : Window
         await RunBusyAsync(async () =>
         {
             var journal = await GetJournalAsync(device);
-            ShowStatus(InfoBarSeverity.Informational, "Бэкап…", "Сохраняю состояние устройства перед изменениями");
+            ShowStatus(InfoBarSeverity.Informational, Res.Get("BackupTitle"), Res.Get("BackupMessage"));
             await journal.EnsureBackupAsync(_adb, device.Serial);
 
             var errors = new List<string>();
             var removed = new List<PackageInfo>();
             foreach (var pkg in selected)
             {
-                ShowStatus(InfoBarSeverity.Informational, "Удаление…", pkg.Name);
+                ShowStatus(InfoBarSeverity.Informational, Res.Get("Uninstalling"), pkg.Name);
                 var r = await _adb.UninstallAsync(device.Serial, pkg, keepData.IsChecked == true);
                 if (r.Success && r.Text.Contains("Success"))
                 {
@@ -1675,9 +1672,9 @@ public sealed partial class MainWindow : Window
             ApplyFilter();
 
             if (errors.Count == 0)
-                ShowStatus(InfoBarSeverity.Success, "Удалено", string.Join(", ", removed.Select(p => p.Name)));
+                ShowStatus(InfoBarSeverity.Success, Res.Get("Uninstalled"), string.Join(", ", removed.Select(p => p.Name)));
             else
-                ShowStatus(InfoBarSeverity.Error, $"Удалено: {removed.Count}, ошибок: {errors.Count}",
+                ShowStatus(InfoBarSeverity.Error, Res.Format("UninstalledErrorsFormat", removed.Count, errors.Count),
                     string.Join(Environment.NewLine, errors));
         });
     }
@@ -1702,8 +1699,7 @@ public sealed partial class MainWindow : Window
         content.Children.Add(new TextBlock
         {
             TextWrapping = TextWrapping.Wrap,
-            Text = "Замороженное приложение не запускается, не получает уведомлений и пропадает из меню. " +
-                   "Данные сохраняются — его можно разморозить в любой момент.",
+            Text = Res.Get("FreezeExplanation"),
         });
         content.Children.Add(new ScrollViewer
         {
@@ -1721,18 +1717,17 @@ public sealed partial class MainWindow : Window
                 IsOpen = true,
                 IsClosable = false,
                 Severity = InfoBarSeverity.Warning,
-                Title = "Системные приложения",
-                Message = "Заморозка важных системных компонентов может нарушить работу телефона " +
-                          "(вплоть до циклической перезагрузки). Замораживайте только то, назначение чего знаете.",
+                Title = Res.Get("SystemApps"),
+                Message = Res.Get("FreezeSystemWarning"),
             });
         }
 
         var dialog = new ContentDialog
         {
             XamlRoot = Content.XamlRoot,
-            Title = selected.Count == 1 ? "Заморозить приложение?" : $"Заморозить приложения ({selected.Count})?",
-            PrimaryButtonText = "Заморозить",
-            CloseButtonText = "Отмена",
+            Title = selected.Count == 1 ? Res.Get("FreezeOneQuestion") : Res.Format("FreezeManyQuestionFormat", selected.Count),
+            PrimaryButtonText = Res.Get("Freeze"),
+            CloseButtonText = Res.Get("Cancel"),
             DefaultButton = ContentDialogButton.Close,
             Content = content,
         };
@@ -1757,7 +1752,7 @@ public sealed partial class MainWindow : Window
             var journal = await GetJournalAsync(device);
             if (frozen)
             {
-                ShowStatus(InfoBarSeverity.Informational, "Бэкап…", "Сохраняю состояние устройства перед изменениями");
+                ShowStatus(InfoBarSeverity.Informational, Res.Get("BackupTitle"), Res.Get("BackupMessage"));
                 await journal.EnsureBackupAsync(_adb, device.Serial);
             }
 
@@ -1769,12 +1764,12 @@ public sealed partial class MainWindow : Window
                 if (!frozen && pkg.IsUnused)
                 {
                     // Остановленное системой приложение включается только запуском.
-                    ShowStatus(InfoBarSeverity.Informational, "Включение (запуск на телефоне)…", pkg.DisplayName);
+                    ShowStatus(InfoBarSeverity.Informational, Res.Get("EnablingByLaunch"), pkg.DisplayName);
                     r = await _adb.WakeAsync(device.Serial, pkg.Name);
                 }
                 else
                 {
-                    ShowStatus(InfoBarSeverity.Informational, frozen ? "Заморозка…" : "Разморозка…", pkg.DisplayName);
+                    ShowStatus(InfoBarSeverity.Informational, frozen ? Res.Get("Freezing") : Res.Get("Unfreezing"), pkg.DisplayName);
                     r = await _adb.SetFrozenAsync(device.Serial, pkg.Name, frozen);
                 }
 
@@ -1793,11 +1788,11 @@ public sealed partial class MainWindow : Window
             UpdatePackagesCountText();
             UpdatePackageButtons();
 
-            var verb = frozen ? "Заморожено" : "Включено";
+            var verb = frozen ? Res.Get("Frozen") : Res.Get("StatusEnabled");
             if (errors.Count == 0)
                 ShowStatus(InfoBarSeverity.Success, verb, string.Join(", ", changed.Select(p => p.DisplayName)));
             else
-                ShowStatus(InfoBarSeverity.Error, $"{verb}: {changed.Count}, ошибок: {errors.Count}",
+                ShowStatus(InfoBarSeverity.Error, Res.Format("ChangedErrorsFormat", verb, changed.Count, errors.Count),
                     string.Join(Environment.NewLine, errors));
         });
     }
@@ -1812,8 +1807,8 @@ public sealed partial class MainWindow : Window
             IsOpen = true,
             IsClosable = false,
             Severity = InfoBarSeverity.Informational,
-            Title = $"Пропущено защищённых: {list.Count}",
-            Message = "Эти пакеты не будут затронуты — без них устройство может перестать работать: " +
+            Title = Res.Format("SkippedProtectedFormat", list.Count),
+            Message = Res.Get("SkippedProtectedMessage") +
                       string.Join(", ", list.Select(p => p.DisplayName)),
         });
     }
@@ -1836,22 +1831,18 @@ public sealed partial class MainWindow : Window
         var dialog = new ContentDialog
         {
             XamlRoot = Content.XamlRoot,
-            Title = "Включить экспертный режим?",
-            PrimaryButtonText = "Включить",
-            CloseButtonText = "Отмена",
+            Title = Res.Get("ExpertModeQuestion"),
+            PrimaryButtonText = Res.Get("Enable"),
+            CloseButtonText = Res.Get("Cancel"),
             DefaultButton = ContentDialogButton.Close,
             Content = new TextBlock
             {
                 TextWrapping = TextWrapping.Wrap,
                 MaxWidth = 520,
-                Text = "Защита будет снята: можно заморозить и удалить любые системные приложения — системный интерфейс, " +
-                       "телефонию, Wi-Fi, установщик, Google Play, главный экран, входы ТВ." + Environment.NewLine + Environment.NewLine +
-                       "Удаление системного приложения выполняется только для текущего пользователя (pm uninstall --user 0): " +
-                       "оно остаётся в прошивке, и его можно вернуть через «Вернуть как было» или «Восстановить удалённые системные». " +
-                       "Но без критичного компонента устройство может зависнуть на загрузке, потерять сеть или экран — тогда " +
-                       "вернуть пакет можно по adb (он обычно работает и при зависшем интерфейсе), в крайнем случае поможет только сброс к заводским настройкам." +
+                Text = Res.Get("ExpertModeWarning1") + Environment.NewLine + Environment.NewLine +
+                       Res.Get("ExpertModeWarning2") +
                        Environment.NewLine + Environment.NewLine +
-                       "Режим действует до закрытия программы.",
+                       Res.Get("ExpertModeUntilClose"),
             },
         };
         SetExpertMode(await dialog.ShowAsync() == ContentDialogResult.Primary);
@@ -1867,6 +1858,87 @@ public sealed partial class MainWindow : Window
         UpdatePackageButtons();
     }
 
+    // ----- Обновления -----
+
+    private AppRelease? _latestRelease;
+
+    /// <summary>
+    /// Новая версия на GitHub. При запуске — молча (нет сети — ничего не показываем) и без версии,
+    /// уведомление о которой закрыли; по кнопке «Проверить обновления» — всегда с результатом.
+    /// </summary>
+    private async Task CheckForUpdatesAsync(bool manual)
+    {
+        AppRelease? release;
+        try
+        {
+            release = await UpdateChecker.GetLatestAsync();
+        }
+        catch (Exception ex)
+        {
+            if (manual) ShowStatus(InfoBarSeverity.Error, Res.Get("UpdateCheckFailed"), ex.Message);
+            return;
+        }
+
+        if (release is null || release.Version <= UpdateChecker.CurrentVersion)
+        {
+            if (manual)
+                ShowStatus(InfoBarSeverity.Success, Res.Get("UpToDateTitle"),
+                    Res.Format("UpToDateFormat", UpdateChecker.CurrentVersion));
+            return;
+        }
+        if (!manual && release.Version.ToString() == _settings.SkippedUpdateVersion) return;
+
+        _latestRelease = release;
+        UpdateBar.Title = Res.Format("UpdateAvailableFormat", release.Version);
+        UpdateBar.Message = Res.Format("UpdateAvailableMessageFormat", UpdateChecker.CurrentVersion);
+        UpdateBar.IsOpen = true;
+    }
+
+    private async void CheckUpdates_Click(object sender, RoutedEventArgs e) => await CheckForUpdatesAsync(manual: true);
+
+    private async void UpdateDownload_Click(object sender, RoutedEventArgs e) =>
+        await Windows.System.Launcher.LaunchUriAsync(new Uri(_latestRelease?.PageUrl ?? UpdateChecker.ReleasesPage));
+
+    private void UpdateBar_CloseButtonClick(InfoBar sender, object args)
+    {
+        if (_latestRelease is null) return;
+        _settings.SkippedUpdateVersion = _latestRelease.Version.ToString();
+        _settings.Save();
+    }
+
+    // ----- Язык интерфейса -----
+
+    private async void Language_Click(object sender, RoutedEventArgs e)
+    {
+        if (sender is not FrameworkElement { Tag: string tag }) return;
+        var language = tag.Length == 0 ? null : tag;
+        if (language == _settings.Language) return;
+        _settings.Language = language;
+        _settings.Save();
+
+        // XAML читает строки при создании элементов — новый язык применится после перезапуска.
+        var dialog = new ContentDialog
+        {
+            XamlRoot = Content.XamlRoot,
+            Title = Res.Get("RestartQuestion"),
+            Content = new TextBlock { Text = Res.Get("RestartMessage"), TextWrapping = TextWrapping.Wrap },
+            PrimaryButtonText = Res.Get("RestartAction"),
+            CloseButtonText = Res.Get("Later"),
+            DefaultButton = ContentDialogButton.Primary,
+        };
+        if (await dialog.ShowAsync() != ContentDialogResult.Primary) return;
+
+        try
+        {
+            System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(Environment.ProcessPath!) { UseShellExecute = true });
+            Application.Current.Exit();
+        }
+        catch (Exception ex)
+        {
+            ShowStatus(InfoBarSeverity.Error, Res.Get("RestartFailed"), ex.Message);
+        }
+    }
+
     /// <summary>
     /// Экспертный режим: в списке есть защищённые пакеты — предупреждение и галочка подтверждения,
     /// без которой кнопка действия неактивна.
@@ -1879,21 +1951,18 @@ public sealed partial class MainWindow : Window
             IsOpen = true,
             IsClosable = false,
             Severity = InfoBarSeverity.Error,
-            Title = $"Экспертный режим: защищённых пакетов — {risky.Count}",
-            Message = string.Join(", ", risky.Select(p => p.DisplayName)) + ". Без них устройство может перестать загружаться, " +
-                      "потерять сеть, экран, звук или входы ТВ. Вернуть: «… → Вернуть как было» или «Восстановить удалённые системные».",
+            Title = Res.Format("ExpertRiskTitleFormat", risky.Count),
+            Message = string.Join(", ", risky.Select(p => p.DisplayName)) + Res.Get("ExpertRiskMessageSuffix"),
         });
-        var confirm = new CheckBox { Content = "Я понимаю риск и знаю, что делаю" };
+        var confirm = new CheckBox { Content = Res.Get("ExpertRiskConfirm") };
         confirm.Checked += (_, _) => dialog.IsPrimaryButtonEnabled = true;
         confirm.Unchecked += (_, _) => dialog.IsPrimaryButtonEnabled = false;
         content.Children.Add(confirm);
         dialog.IsPrimaryButtonEnabled = false;
     }
 
-    private const string TvInputDriversMessage =
-        "Запрашивают android.permission.TV_INPUT_HARDWARE — это программная часть входов HDMI/AV/тюнера. " +
-        "Если их отключить, вход видит кабель, но показывает «Нет сигнала», и картинку возвращает только " +
-        "полное восстановление и холодная перезагрузка.";
+    private static string TvInputDriversMessage =>
+        Res.Get("TvInputDriversMessage");
 
     /// <summary>Системные пакеты из списка, которые обслуживают входы ТВ (идея CleanYourTV), — их не трогаем.</summary>
     private async Task<List<PackageInfo>> FindTvInputDriversAsync(DeviceInfo device, IReadOnlyCollection<PackageInfo> packages)
@@ -1904,7 +1973,7 @@ public sealed partial class MainWindow : Window
         HashSet<string> found = [];
         await RunBusyAsync(async () =>
         {
-            ShowStatus(InfoBarSeverity.Informational, "Проверка…", "Проверяю, не обслуживают ли пакеты входы ТВ (HDMI/AV)");
+            ShowStatus(InfoBarSeverity.Informational, Res.Get("Checking"), Res.Get("CheckingTvInputs"));
             found = await _adb.GetTvInputHardwarePackagesAsync(device.Serial, system);
             StatusBar.IsOpen = false;
         });
@@ -1919,7 +1988,7 @@ public sealed partial class MainWindow : Window
             IsOpen = true,
             IsClosable = false,
             Severity = InfoBarSeverity.Warning,
-            Title = $"Пропущено — входы ТВ: {skipped.Count}",
+            Title = Res.Format("SkippedTvInputsFormat", skipped.Count),
             Message = string.Join(", ", skipped.Select(p => p.DisplayName)) + ". " + TvInputDriversMessage,
         });
     }
@@ -1927,7 +1996,7 @@ public sealed partial class MainWindow : Window
     private void ShowTvInputDriversSkipped(IReadOnlyCollection<PackageInfo> skipped)
     {
         if (skipped.Count > 0)
-            ShowStatus(InfoBarSeverity.Warning, "Пропущено — входы ТВ",
+            ShowStatus(InfoBarSeverity.Warning, Res.Get("SkippedTvInputs"),
                 string.Join(", ", skipped.Select(p => p.DisplayName)) + ". " + TvInputDriversMessage);
     }
 
@@ -1948,7 +2017,7 @@ public sealed partial class MainWindow : Window
             XamlRoot = Content.XamlRoot,
             Title = title,
             PrimaryButtonText = primary,
-            CloseButtonText = "Отмена",
+            CloseButtonText = Res.Get("Cancel"),
             DefaultButton = ContentDialogButton.Primary,
             Content = content,
         };
@@ -1971,30 +2040,30 @@ public sealed partial class MainWindow : Window
         }
         catch (Exception ex)
         {
-            ShowStatus(InfoBarSeverity.Error, "Ошибка", ex.Message);
+            ShowStatus(InfoBarSeverity.Error, Res.Get("Error"), ex.Message);
             return;
         }
 
         if (restorable.Count == 0)
         {
-            ShowStatus(InfoBarSeverity.Informational, "Нечего возвращать",
-                "В журнале нет изменений этой программы, которые можно отменить.");
+            ShowStatus(InfoBarSeverity.Informational, Res.Get("NothingToUndoTitle"),
+                Res.Get("NothingToUndoMessage"));
             return;
         }
 
         static string Describe(JournalEntry e) => e.Action switch
         {
-            "freeze" => $"Разморозить: {e.Label} ({e.Package}) — заморожено {e.Time:dd.MM HH:mm}",
-            "uninstall" => $"Вернуть: {e.Label} ({e.Package}) — удалено {e.Time:dd.MM HH:mm}",
-            "dns" => $"Частный DNS: вернуть прежнюю настройку ({DescribeDns(e.OldValue)}) — изменено {e.Time:dd.MM HH:mm}",
-            "home" => $"Главный экран: вернуть {e.OldValue?.Split('/')[0] ?? "прежний"} — изменено {e.Time:dd.MM HH:mm}",
-            "install" => $"Удалить установленное программой: {e.Label} ({e.Package}) — установлено {e.Time:dd.MM HH:mm}",
+            "freeze" => Res.Format("UndoFreezeFormat", e.Label, e.Package, e.Time),
+            "uninstall" => Res.Format("UndoUninstallFormat", e.Label, e.Package, e.Time),
+            "dns" => Res.Format("UndoDnsFormat", DescribeDns(e.OldValue), e.Time),
+            "home" => Res.Format("UndoHomeFormat", e.OldValue?.Split('/')[0] ?? Res.Get("PreviousHome"), e.Time),
+            "install" => Res.Format("UndoInstallFormat", e.Label, e.Package, e.Time),
             _ => e.Package,
         };
 
-        var chosen = await ShowChecklistAsync("Вернуть как было",
-            "Изменения, сделанные этой программой на устройстве. Снимите отметку с того, что возвращать не нужно.",
-            restorable.Select(r => (Describe(r), r)).ToList(), "Вернуть");
+        var chosen = await ShowChecklistAsync(Res.Get("UndoTitle"),
+            Res.Get("UndoMessage"),
+            restorable.Select(r => (Describe(r), r)).ToList(), Res.Get("UndoAction"));
         if (chosen is not { Count: > 0 }) return;
 
         await RunBusyAsync(async () =>
@@ -2004,17 +2073,17 @@ public sealed partial class MainWindow : Window
             // Сначала главный экран — потом можно удалять лаунчер, который им был.
             foreach (var entry in chosen.OrderBy(c => c.Action == "home" ? 0 : 1))
             {
-                ShowStatus(InfoBarSeverity.Informational, "Возвращаю…", entry.Label ?? entry.Package);
+                ShowStatus(InfoBarSeverity.Informational, Res.Get("Undoing"), entry.Label ?? entry.Package);
                 AdbResult r = entry.Action switch
                 {
                     "freeze" => await _adb.SetFrozenAsync(device.Serial, entry.Package, frozen: false),
                     "uninstall" => await _adb.InstallExistingAsync(device.Serial, entry.Package),
                     "dns" => await RestoreDnsAsync(device, entry.OldValue),
                     "home" => string.IsNullOrEmpty(entry.OldValue)
-                        ? new AdbResult(1, "", "прежний главный экран неизвестен — выберите его на устройстве")
+                        ? new AdbResult(1, "", Res.Get("PreviousHomeUnknown"))
                         : await _adb.SetHomeActivityAsync(device.Serial, entry.OldValue),
                     "install" => await _adb.UninstallAsync(device.Serial, new PackageInfo(entry.Package, false, ""), keepData: false),
-                    _ => new AdbResult(1, "", "неизвестное действие"),
+                    _ => new AdbResult(1, "", Res.Get("UnknownAction")),
                 };
                 if (r.Success)
                 {
@@ -2029,9 +2098,9 @@ public sealed partial class MainWindow : Window
 
             await ReloadPackagesCoreAsync(device);
             if (errors.Count == 0)
-                ShowStatus(InfoBarSeverity.Success, "Возвращено", $"Изменений отменено: {ok}. Перезагрузите устройство, если что-то работало неправильно.");
+                ShowStatus(InfoBarSeverity.Success, Res.Get("UndoneTitle"), Res.Format("UndoneMessageFormat", ok));
             else
-                ShowStatus(InfoBarSeverity.Error, $"Возвращено: {ok}, ошибок: {errors.Count}", string.Join(Environment.NewLine, errors));
+                ShowStatus(InfoBarSeverity.Error, Res.Format("UndoneErrorsFormat", ok, errors.Count), string.Join(Environment.NewLine, errors));
         });
     }
 
@@ -2043,8 +2112,8 @@ public sealed partial class MainWindow : Window
         await RunBusyAsync(async () => removed = await _adb.GetRemovedSystemPackagesAsync(device.Serial));
         if (removed.Count == 0)
         {
-            ShowStatus(InfoBarSeverity.Informational, "Удалённых системных приложений нет",
-                "Все системные приложения установлены для текущего пользователя.");
+            ShowStatus(InfoBarSeverity.Informational, Res.Get("NoRemovedSystemAppsTitle"),
+                Res.Get("NoRemovedSystemAppsMessage"));
             return;
         }
 
@@ -2052,10 +2121,9 @@ public sealed partial class MainWindow : Window
         foreach (var p in removed)
             if (_metadata.LoadCached(device.Serial, p) is { } meta) p.Apply(meta);
 
-        var chosen = await ShowChecklistAsync("Восстановить удалённые системные приложения",
-            "Эти системные приложения удалены для текущего пользователя (pm uninstall --user 0), но остались в прошивке. " +
-            "Отмеченные будут возвращены командой cmd package install-existing.",
-            removed.Select(p => (p.Label is null ? p.Name : $"{p.Label} ({p.Name})", p)).ToList(), "Восстановить");
+        var chosen = await ShowChecklistAsync(Res.Get("RestoreRemovedTitle"),
+            Res.Get("RestoreRemovedMessage"),
+            removed.Select(p => (p.Label is null ? p.Name : $"{p.Label} ({p.Name})", p)).ToList(), Res.Get("RestoreAction"));
         if (chosen is not { Count: > 0 }) return;
 
         await RunBusyAsync(async () =>
@@ -2065,7 +2133,7 @@ public sealed partial class MainWindow : Window
             int ok = 0;
             foreach (var p in chosen)
             {
-                ShowStatus(InfoBarSeverity.Informational, "Восстановление…", p.DisplayName);
+                ShowStatus(InfoBarSeverity.Informational, Res.Get("Restoring"), p.DisplayName);
                 var r = await _adb.InstallExistingAsync(device.Serial, p.Name);
                 if (r.Success)
                 {
@@ -2080,9 +2148,9 @@ public sealed partial class MainWindow : Window
 
             await ReloadPackagesCoreAsync(device);
             if (errors.Count == 0)
-                ShowStatus(InfoBarSeverity.Success, "Восстановлено", $"Приложений: {ok}");
+                ShowStatus(InfoBarSeverity.Success, Res.Get("Restored"), Res.Format("AppsCountFormat", ok));
             else
-                ShowStatus(InfoBarSeverity.Error, $"Восстановлено: {ok}, ошибок: {errors.Count}", string.Join(Environment.NewLine, errors));
+                ShowStatus(InfoBarSeverity.Error, Res.Format("RestoredErrorsFormat", ok, errors.Count), string.Join(Environment.NewLine, errors));
         });
     }
 
@@ -2097,7 +2165,7 @@ public sealed partial class MainWindow : Window
         }
         catch (Exception ex)
         {
-            ShowStatus(InfoBarSeverity.Error, "Не удалось открыть папку", ex.Message);
+            ShowStatus(InfoBarSeverity.Error, Res.Get("OpenFolderFailed"), ex.Message);
         }
     }
 
@@ -2116,7 +2184,7 @@ public sealed partial class MainWindow : Window
         var appliedCount = 0;
         await RunBusyAsync(async () =>
         {
-            ShowStatus(InfoBarSeverity.Informational, "Проверка…", "Сравниваю журнал изменений с устройством");
+            ShowStatus(InfoBarSeverity.Informational, Res.Get("Checking"), Res.Get("CheckingDriftMessage"));
             journal = await GetJournalAsync(device);
             var applied = journal.GetRestorable().Where(j => j.Action is "freeze" or "uninstall").ToList();
             appliedCount = applied.Count;
@@ -2130,20 +2198,19 @@ public sealed partial class MainWindow : Window
 
         if (drifted.Count == 0)
         {
-            ShowStatus(InfoBarSeverity.Success, appliedCount == 0 ? "Нечего проверять" : "Всё на месте",
+            ShowStatus(InfoBarSeverity.Success, appliedCount == 0 ? Res.Get("NothingToCheck") : Res.Get("AllInPlace"),
                 appliedCount == 0
-                    ? "Программа ещё ничего не замораживала и не удаляла на этом устройстве."
-                    : $"Всё, что программа замораживала и удаляла на этом устройстве ({appliedCount}), по-прежнему заморожено и удалено.");
+                    ? Res.Get("NothingChangedYet")
+                    : Res.Format("AllInPlaceFormat", appliedCount));
             return;
         }
 
         static string Describe(JournalEntry j) => j.Action == "freeze"
-            ? $"Заморозить снова: {j.Label} ({j.Package}) — снова включено"
-            : $"Удалить снова: {j.Label} ({j.Package}) — снова установлено";
-        var chosen = await ShowChecklistAsync("После обновления прошивки",
-            "Эти приложения программа замораживала или удаляла, но сейчас они снова работают — обычно так бывает после обновления прошивки. " +
-            "Отмеченные будут заморожены или удалены заново.",
-            drifted.Select(j => (Describe(j), j)).ToList(), "Повторить");
+            ? Res.Format("RefreezeFormat", j.Label, j.Package)
+            : Res.Format("ReuninstallFormat", j.Label, j.Package);
+        var chosen = await ShowChecklistAsync(Res.Get("DriftTitle"),
+            Res.Get("DriftMessage"),
+            drifted.Select(j => (Describe(j), j)).ToList(), Res.Get("RepeatAction"));
         if (chosen is not { Count: > 0 }) return;
 
         await RunBusyAsync(async () =>
@@ -2153,7 +2220,7 @@ public sealed partial class MainWindow : Window
             int ok = 0;
             foreach (var j in chosen)
             {
-                ShowStatus(InfoBarSeverity.Informational, "Повторяю…", j.Label ?? j.Package);
+                ShowStatus(InfoBarSeverity.Informational, Res.Get("Repeating"), j.Label ?? j.Package);
                 var r = j.Action == "freeze"
                     ? await _adb.SetFrozenAsync(device.Serial, j.Package, frozen: true)
                     : await _adb.UninstallAsync(device.Serial, new PackageInfo(j.Package, j.System, ""), keepData: false);
@@ -2170,9 +2237,9 @@ public sealed partial class MainWindow : Window
 
             await ReloadPackagesCoreAsync(device);
             if (errors.Count == 0)
-                ShowStatus(InfoBarSeverity.Success, "Повторено", $"Приложений: {ok}");
+                ShowStatus(InfoBarSeverity.Success, Res.Get("Repeated"), Res.Format("AppsCountFormat", ok));
             else
-                ShowStatus(InfoBarSeverity.Error, $"Повторено: {ok}, ошибок: {errors.Count}", string.Join(Environment.NewLine, errors));
+                ShowStatus(InfoBarSeverity.Error, Res.Format("RepeatedErrorsFormat", ok, errors.Count), string.Join(Environment.NewLine, errors));
         });
     }
 
@@ -2188,7 +2255,7 @@ public sealed partial class MainWindow : Window
         string? currentHome = null;
         await RunBusyAsync(async () =>
         {
-            ShowStatus(InfoBarSeverity.Informational, ProjectivyLauncher.Name, "Узнаю последнюю версию на GitHub…");
+            ShowStatus(InfoBarSeverity.Informational, ProjectivyLauncher.Name, Res.Get("CheckingLatestVersion"));
             release = await ProjectivyLauncher.GetLatestAsync();
             if ((await _adb.GetInstalledNamesAsync(device.Serial)).Contains(ProjectivyLauncher.Package))
                 installedVersion = await _adb.GetVersionAsync(device.Serial, ProjectivyLauncher.Package) ?? "?";
@@ -2199,29 +2266,28 @@ public sealed partial class MainWindow : Window
         if (release is null) return;
 
         var alreadyHome = currentHome?.StartsWith(ProjectivyLauncher.Package + "/", StringComparison.Ordinal) == true;
-        var makeHome = new CheckBox { Content = "Сделать главным экраном (кнопка Home)", IsChecked = !alreadyHome, IsEnabled = !alreadyHome };
+        var makeHome = new CheckBox { Content = Res.Get("MakeHomeScreen"), IsChecked = !alreadyHome, IsEnabled = !alreadyHome };
         var content = new StackPanel { Spacing = 10, MaxWidth = 560 };
         content.Children.Add(new TextBlock
         {
             TextWrapping = TextWrapping.Wrap,
-            Text = "Бесплатный лаунчер для Android TV без рекламы и рекомендаций: свои категории, обои, " +
-                   "скрытие приложений. Сторонний проект, APK скачивается с GitHub автора.",
+            Text = Res.Get("LauncherDescription"),
         });
         content.Children.Add(new TextBlock
         {
             TextWrapping = TextWrapping.Wrap,
-            Text = $"Последняя версия: {release.Version} ({PackageInfo.FormatSize(release.Size)})" + Environment.NewLine +
-                   $"На устройстве: {(installedVersion is null ? "не установлен" : installedVersion)}" +
-                   (alreadyHome ? " — уже главный экран" : ""),
+            Text = Res.Format("LatestVersionFormat", release.Version, PackageInfo.FormatSize(release.Size)) + Environment.NewLine +
+                   Res.Format("OnDeviceFormat", (installedVersion is null ? Res.Get("NotInstalled") : installedVersion)) +
+                   (alreadyHome ? Res.Get("AlreadyHomeScreen") : ""),
         });
-        content.Children.Add(new HyperlinkButton { Content = "Страница выпуска на GitHub", NavigateUri = new Uri(release.PageUrl), Padding = new Thickness(0) });
+        content.Children.Add(new HyperlinkButton { Content = Res.Get("ReleasePage"), NavigateUri = new Uri(release.PageUrl), Padding = new Thickness(0) });
         if (!isTv)
         {
             content.Children.Add(new InfoBar
             {
                 IsOpen = true, IsClosable = false, Severity = InfoBarSeverity.Warning,
-                Title = "Это не Android TV",
-                Message = "Projectivy рассчитан на телевизоры и приставки; на телефоне им неудобно пользоваться.",
+                Title = Res.Get("NotAndroidTvTitle"),
+                Message = Res.Get("NotAndroidTvMessage"),
             });
         }
         content.Children.Add(makeHome);
@@ -2229,18 +2295,16 @@ public sealed partial class MainWindow : Window
         {
             TextWrapping = TextWrapping.Wrap,
             Foreground = (Microsoft.UI.Xaml.Media.Brush)Application.Current.Resources["TextFillColorSecondaryBrush"],
-            Text = "Стандартный лаунчер останется. Если кнопка Home всё равно открывает его (так бывает на Google TV), " +
-                   "заморозьте его в таблице — защита снимется, когда появится второй лаунчер. " +
-                   "Отменить установку и смену главного экрана — «… → Вернуть как было».",
+            Text = Res.Get("LauncherKeepNote"),
         });
 
         var dialog = new ContentDialog
         {
             XamlRoot = Content.XamlRoot,
             Title = ProjectivyLauncher.Name,
-            PrimaryButtonText = installedVersion is null ? "Скачать и установить"
-                : installedVersion == release.Version ? "Переустановить" : "Обновить",
-            CloseButtonText = "Отмена",
+            PrimaryButtonText = installedVersion is null ? Res.Get("DownloadAndInstall")
+                : installedVersion == release.Version ? Res.Get("Reinstall") : Res.Get("Refresh"),
+            CloseButtonText = Res.Get("Cancel"),
             DefaultButton = ContentDialogButton.Primary,
             Content = content,
         };
@@ -2249,7 +2313,7 @@ public sealed partial class MainWindow : Window
 
         await RunBusyAsync(async () =>
         {
-            ShowStatus(InfoBarSeverity.Informational, "Загрузка…", release.ApkName);
+            ShowStatus(InfoBarSeverity.Informational, Res.Get("Loading"), release.ApkName);
             BusyBar.IsIndeterminate = false;
             string apk;
             try
@@ -2264,34 +2328,34 @@ public sealed partial class MainWindow : Window
             var journal = await GetJournalAsync(device);
             await journal.EnsureBackupAsync(_adb, device.Serial);
 
-            ShowStatus(InfoBarSeverity.Informational, "Установка…", release.ApkName);
+            ShowStatus(InfoBarSeverity.Informational, Res.Get("Installing"), release.ApkName);
             var r = await _adb.InstallAsync(device.Serial, [apk], allowDowngrade: false, grantPermissions: false);
             if (!r.Success || !r.Text.Contains("Success"))
             {
-                ShowStatus(InfoBarSeverity.Error, "Не удалось установить", LastLine(r.Text));
+                ShowStatus(InfoBarSeverity.Error, Res.Get("InstallFailed"), LastLine(r.Text));
                 return;
             }
             // В журнал — только новая установка: «вернуть» обновление значило бы удалить лаунчер целиком.
             if (installedVersion is null)
                 journal.Add(new JournalEntry(DateTime.Now, "install", ProjectivyLauncher.Package, ProjectivyLauncher.Name, false));
 
-            var message = $"Версия {release.Version} установлена.";
+            var message = Res.Format("VersionInstalledFormat", release.Version);
             if (setHome)
             {
                 var (before, candidates) = await _adb.GetHomeActivitiesAsync(device.Serial);
                 var component = candidates.FirstOrDefault(c => c.StartsWith(ProjectivyLauncher.Package + "/", StringComparison.Ordinal));
                 var h = component is null
-                    ? new AdbResult(1, "", "лаунчер не объявил activity главного экрана")
+                    ? new AdbResult(1, "", Res.Get("LauncherNoHomeActivity"))
                     : await _adb.SetHomeActivityAsync(device.Serial, component);
                 if (h.Success)
                 {
-                    journal.Add(new JournalEntry(DateTime.Now, "home", ChangeJournal.HomeKey, "Главный экран", false, before));
-                    message += " Теперь это главный экран — нажмите Home на пульте.";
+                    journal.Add(new JournalEntry(DateTime.Now, "home", ChangeJournal.HomeKey, Res.Get("HomeScreen"), false, before));
+                    message += Res.Get("NowHomeScreen");
                 }
                 else
                 {
-                    message += " Сделать главным экраном не удалось: " + LastLine(h.Text) +
-                               ". Выберите его на устройстве: Настройки → Приложения → Приложения по умолчанию → Главный экран.";
+                    message += Res.Get("MakeHomeFailedPrefix") + LastLine(h.Text) +
+                               Res.Get("MakeHomeManually");
                 }
             }
 
@@ -2305,21 +2369,21 @@ public sealed partial class MainWindow : Window
     /// <summary>Известные пакеты с понятной ролью (из отчётов CleanYourTV), а не догадки по имени.</summary>
     private static readonly Dictionary<string, (string Category, string Note)> PrivacyCatalog = new()
     {
-        ["com.google.android.katniss"] = ("voice", "Google Ассистент и голосовой поиск; без него перестанут работать кнопка микрофона на пульте и голосовой поиск в приложениях"),
-        ["com.google.android.speech.pumpkin"] = ("voice", "офлайн-модель для фразы-активации, не нужна без ассистента"),
-        ["org.droidtv.amazonalexa"] = ("voice", "Amazon Alexa на ТВ Philips; микрофон — в пульте"),
-        ["tv.inscape.tvclient.inscapeacr"] = ("acr", "Inscape ACR: распознаёт, что на экране (включая HDMI), по картинке — микрофон не нужен"),
-        ["com.skyworth.aisense"] = ("acr", "ACR Coocaa/Skyworth для таргетинга рекламы"),
-        ["tv.alphonso.alphonso_eula"] = ("acr", "Alphonso: рекламный трекинг, читает статистику использования приложений"),
-        ["org.droidtv.candeebug"] = ("telemetry", "аналитика «DAC» на ТВ Philips"),
-        ["org.droidtv.gel"] = ("telemetry", "аналитика «GEL» на ТВ Philips (работает в процессе candeebug)"),
-        ["org.droidtv.usagelogger"] = ("telemetry", "статистика загрузок, нажатий пульта и телеметрия панели"),
-        ["org.droidtv.tv.frameworklogger"] = ("telemetry", "журналирование фреймворка и перезагрузок"),
-        ["com.google.android.feedback"] = ("telemetry", "отправка отзывов и отчётов в Google"),
-        ["com.miui.tv.analytics"] = ("telemetry", "аналитика Xiaomi: журналы и статистика использования"),
-        ["com.xiaomi.statistic"] = ("telemetry", "статистика Xiaomi"),
-        ["com.tcl.bi"] = ("telemetry", "аналитика TCL"),
-        ["com.tcl.logkit"] = ("telemetry", "сбор журналов TCL"),
+        ["com.google.android.katniss"] = ("voice", Res.Get("PrivacyKatniss")),
+        ["com.google.android.speech.pumpkin"] = ("voice", Res.Get("PrivacyPumpkin")),
+        ["org.droidtv.amazonalexa"] = ("voice", Res.Get("PrivacyAlexa")),
+        ["tv.inscape.tvclient.inscapeacr"] = ("acr", Res.Get("PrivacyInscape")),
+        ["com.skyworth.aisense"] = ("acr", Res.Get("PrivacySkyworth")),
+        ["tv.alphonso.alphonso_eula"] = ("acr", Res.Get("PrivacyAlphonso")),
+        ["org.droidtv.candeebug"] = ("telemetry", Res.Get("PrivacyCandeebug")),
+        ["org.droidtv.gel"] = ("telemetry", Res.Get("PrivacyGel")),
+        ["org.droidtv.usagelogger"] = ("telemetry", Res.Get("PrivacyUsageLogger")),
+        ["org.droidtv.tv.frameworklogger"] = ("telemetry", Res.Get("PrivacyFrameworkLogger")),
+        ["com.google.android.feedback"] = ("telemetry", Res.Get("PrivacyFeedback")),
+        ["com.miui.tv.analytics"] = ("telemetry", Res.Get("PrivacyMiuiAnalytics")),
+        ["com.xiaomi.statistic"] = ("telemetry", Res.Get("PrivacyXiaomiStatistic")),
+        ["com.tcl.bi"] = ("telemetry", Res.Get("PrivacyTclBi")),
+        ["com.tcl.logkit"] = ("telemetry", Res.Get("PrivacyTclLogkit")),
     };
 
     private async void PrivacyAudit_Click(object sender, RoutedEventArgs e)
@@ -2332,7 +2396,7 @@ public sealed partial class MainWindow : Window
         var failed = true;
         await RunBusyAsync(async () =>
         {
-            ShowStatus(InfoBarSeverity.Informational, "Аудит приватности…", "Читаю настройки ассистента и историю доступа к микрофону (AppOps)");
+            ShowStatus(InfoBarSeverity.Informational, Res.Get("PrivacyAudit"), Res.Get("PrivacyAuditMessage"));
             (voice, mic) = await _adb.GetPrivacyAuditAsync(device.Serial);
             installed = await _adb.GetInstalledNamesAsync(device.Serial);
             StatusBar.IsOpen = false;
@@ -2349,24 +2413,24 @@ public sealed partial class MainWindow : Window
         {
             var list = lines.ToList();
             text.AppendLine(title);
-            text.AppendLine(list.Count == 0 ? "  — не найдено" : string.Join(Environment.NewLine, list.Select(l => "  • " + l)));
+            text.AppendLine(list.Count == 0 ? Res.Get("PrivacyNothingFound") : string.Join(Environment.NewLine, list.Select(l => "  • " + l)));
             text.AppendLine();
         }
 
-        Section("Голосовой ассистент (назначен в настройках системы)", voice.Select(v =>
+        Section(Res.Get("PrivacyVoiceSection"), voice.Select(v =>
         {
             found.Add(v.Key);
             var note = PrivacyCatalog.TryGetValue(v.Key, out var c) ? " — " + c.Note : "";
             return $"{Name(v.Key)}{note}";
         }));
 
-        Section("Обращались к микрофону (история AppOps)", mic.OrderByDescending(m => m.Running).Select(m =>
+        Section(Res.Get("PrivacyMicSection"), mic.OrderByDescending(m => m.Running).Select(m =>
         {
             found.Add(m.Package);
-            return $"{Name(m.Package)} — {(m.Running ? "использует сейчас" : FormatAgo(m.Ago))}";
+            return $"{Name(m.Package)} — {(m.Running ? Res.Get("UsingNow") : FormatAgo(m.Ago))}";
         }));
 
-        foreach (var (category, title) in new[] { ("acr", "Распознавание контента на экране (ACR) — микрофон не нужен"), ("telemetry", "Телеметрия и аналитика") })
+        foreach (var (category, title) in new[] { ("acr", Res.Get("PrivacyAcrSection")), ("telemetry", Res.Get("PrivacyTelemetrySection")) })
         {
             Section(title, PrivacyCatalog.Where(c => c.Value.Category == category && installed.Contains(c.Key)).Select(c =>
             {
@@ -2374,16 +2438,15 @@ public sealed partial class MainWindow : Window
                 return $"{Name(c.Key)} — {c.Value.Note}";
             }));
         }
-        text.Append("Аудит не доказывает, что звук или данные уходят с устройства: AppOps показывает только факт обращения. " +
-                    "Отключая ассистент, вы теряете кнопку микрофона и голосовой поиск.");
+        text.Append(Res.Get("PrivacyDisclaimer"));
 
         var markable = Packages.Where(p => found.Contains(p.Name) && !p.IsBlocked).ToList();
         var dialog = new ContentDialog
         {
             XamlRoot = Content.XamlRoot,
-            Title = "Аудит приватности — " + device.DisplayName,
-            CloseButtonText = "Закрыть",
-            PrimaryButtonText = markable.Count > 0 ? $"Отметить в таблице ({markable.Count})" : "",
+            Title = Res.Get("PrivacyAuditTitlePrefix") + device.DisplayName,
+            CloseButtonText = Res.Get("Close"),
+            PrimaryButtonText = markable.Count > 0 ? Res.Format("MarkInTableFormat", markable.Count) : "",
             DefaultButton = ContentDialogButton.Close,
             Content = new ScrollViewer
             {
@@ -2394,8 +2457,8 @@ public sealed partial class MainWindow : Window
         if (await dialog.ShowAsync() == ContentDialogResult.Primary)
         {
             SetMarked(markable);
-            ShowStatus(InfoBarSeverity.Informational, $"Отмечено: {markable.Count}",
-                "Проверьте список и нажмите «Заморозить» — заморозку можно отменить в любой момент.");
+            ShowStatus(InfoBarSeverity.Informational, Res.Format("MarkedFormat", markable.Count),
+                Res.Get("MarkedFreezeHint"));
         }
     }
 
@@ -2404,10 +2467,10 @@ public sealed partial class MainWindow : Window
     {
         var parts = System.Text.RegularExpressions.Regex.Matches(ago, @"(\d+)(d|h|ms|m|s)")
             .Where(m => m.Groups[2].Value != "ms")
-            .Select(m => m.Groups[1].Value + " " + m.Groups[2].Value switch { "d" => "д", "h" => "ч", "m" => "мин", _ => "с" })
+            .Select(m => m.Groups[1].Value + " " + m.Groups[2].Value switch { "d" => Res.Get("UnitDays"), "h" => Res.Get("UnitHours"), "m" => Res.Get("UnitMinutes"), _ => Res.Get("UnitSeconds") })
             .Take(2)
             .ToList();
-        return parts.Count == 0 ? "недавно" : string.Join(" ", parts) + " назад";
+        return parts.Count == 0 ? Res.Get("Recently") : string.Join(" ", parts) + Res.Get("AgoSuffix");
     }
 
     // ----- Снимок экрана -----
@@ -2421,8 +2484,8 @@ public sealed partial class MainWindow : Window
         // Сигнатура PNG: иначе на экране защищённое содержимое или команда не поддерживается.
         if (png.Length < 8 || png[0] != 0x89 || png[1] != (byte)'P')
         {
-            ShowStatus(InfoBarSeverity.Error, "Не удалось сделать снимок экрана",
-                "Устройство не вернуло изображение. На некоторых экранах (видео с защитой, банковские приложения) снимок запрещён.");
+            ShowStatus(InfoBarSeverity.Error, Res.Get("ScreenshotFailedTitle"),
+                Res.Get("ScreenshotFailedMessage"));
             return;
         }
 
@@ -2433,17 +2496,17 @@ public sealed partial class MainWindow : Window
         if (file is null) return;
 
         await File.WriteAllBytesAsync(file.Path, png);
-        ShowStatus(InfoBarSeverity.Success, "Снимок экрана сохранён", file.Path);
+        ShowStatus(InfoBarSeverity.Success, Res.Get("ScreenshotSaved"), file.Path);
     }
 
     // ----- Частный DNS (идея ЧистогоТВ) -----
 
     private static readonly (string Title, string? Host, string Mode)[] DnsPresets =
     [
-        ("Автоматически (по умолчанию Android)", null, "opportunistic"),
-        ("Выключен", null, "off"),
-        ("AdGuard — блокировка рекламы и трекеров", "dns.adguard-dns.com", "hostname"),
-        ("AdGuard Семейный — плюс взрослый контент", "family.adguard-dns.com", "hostname"),
+        (Res.Get("DnsAutomatic"), null, "opportunistic"),
+        (Res.Get("DnsOff"), null, "off"),
+        (Res.Get("DnsAdGuard"), "dns.adguard-dns.com", "hostname"),
+        (Res.Get("DnsAdGuardFamily"), "family.adguard-dns.com", "hostname"),
     ];
 
     private static string DescribeDns(string? value)
@@ -2454,8 +2517,8 @@ public sealed partial class MainWindow : Window
         return mode switch
         {
             "hostname" => host,
-            "off" => "выключен",
-            _ => "автоматически",
+            "off" => Res.Get("DnsOffLower"),
+            _ => Res.Get("DnsAutomaticLower"),
         };
     }
 
@@ -2482,19 +2545,19 @@ public sealed partial class MainWindow : Window
         }
         catch (Exception ex)
         {
-            ShowStatus(InfoBarSeverity.Error, "Ошибка", ex.Message);
+            ShowStatus(InfoBarSeverity.Error, Res.Get("Error"), ex.Message);
             return;
         }
 
         if (props.Sdk is > 0 and < 28)
         {
-            ShowStatus(InfoBarSeverity.Warning, "Частный DNS недоступен", "Нужен Android 9 или новее.");
+            ShowStatus(InfoBarSeverity.Warning, Res.Get("DnsUnavailableTitle"), Res.Get("DnsUnavailableMessage"));
             return;
         }
 
         var radios = new RadioButtons();
         foreach (var preset in DnsPresets) radios.Items.Add(preset.Title);
-        radios.Items.Add("Свой сервер");
+        radios.Items.Add(Res.Get("DnsCustom"));
         var customBox = new TextBox { PlaceholderText = "dns.example.com", IsEnabled = false };
 
         var currentIndex = Array.FindIndex(DnsPresets, p => p.Mode == (mode.Length == 0 ? "opportunistic" : mode) &&
@@ -2511,9 +2574,9 @@ public sealed partial class MainWindow : Window
         var dialog = new ContentDialog
         {
             XamlRoot = Content.XamlRoot,
-            Title = "Частный DNS",
-            PrimaryButtonText = "Применить",
-            CloseButtonText = "Отмена",
+            Title = Res.Get("PrivateDns"),
+            PrimaryButtonText = Res.Get("Apply"),
+            CloseButtonText = Res.Get("Cancel"),
             DefaultButton = ContentDialogButton.Primary,
             Content = new StackPanel
             {
@@ -2523,9 +2586,7 @@ public sealed partial class MainWindow : Window
                     new TextBlock
                     {
                         TextWrapping = TextWrapping.Wrap,
-                        Text = $"Сейчас: {DescribeDns($"{mode}|{host}")}. Блокирующий DNS убирает рекламу и трекеры во всех приложениях " +
-                               "и браузере, но не рекламу внутри YouTube. Если какой-то сайт или приложение перестанет работать — " +
-                               "верните «Автоматически».",
+                        Text = Res.Format("DnsDialogFormat", DescribeDns($"{mode}|{host}")),
                     },
                     radios,
                     customBox,
@@ -2540,7 +2601,7 @@ public sealed partial class MainWindow : Window
             newHost = customBox.Text.Trim();
             if (!System.Text.RegularExpressions.Regex.IsMatch(newHost, @"^[A-Za-z0-9]([A-Za-z0-9\-\.]*[A-Za-z0-9])?$"))
             {
-                ShowStatus(InfoBarSeverity.Warning, "Неверный адрес", "Укажите имя DNS-over-TLS сервера, например dns.adguard-dns.com.");
+                ShowStatus(InfoBarSeverity.Warning, Res.Get("InvalidAddressTitle"), Res.Get("InvalidDnsMessage"));
                 return;
             }
             newMode = "hostname";
@@ -2562,12 +2623,12 @@ public sealed partial class MainWindow : Window
             var applied = await _adb.GetSettingAsync(device.Serial, "global", "private_dns_mode");
             if (!r.Success || applied != newMode)
             {
-                ShowStatus(InfoBarSeverity.Error, "Не удалось изменить DNS", r.Text);
+                ShowStatus(InfoBarSeverity.Error, Res.Get("DnsChangeFailed"), r.Text);
                 return;
             }
 
-            journal.Add(new JournalEntry(DateTime.Now, "dns", ChangeJournal.DnsKey, "Частный DNS", true, $"{mode}|{host}"));
-            ShowStatus(InfoBarSeverity.Success, "Частный DNS", $"Установлено: {DescribeDns($"{newMode}|{newHost}")}.");
+            journal.Add(new JournalEntry(DateTime.Now, "dns", ChangeJournal.DnsKey, Res.Get("PrivateDns"), true, $"{mode}|{host}"));
+            ShowStatus(InfoBarSeverity.Success, Res.Get("PrivateDns"), Res.Format("DnsSetFormat", DescribeDns($"{newMode}|{newHost}")));
         });
     }
 
@@ -2595,7 +2656,7 @@ public sealed partial class MainWindow : Window
         {
             var r = await _adb.PullApkAsync(device.Serial, pkg, file.Path);
             ShowStatus(r.Success ? InfoBarSeverity.Success : InfoBarSeverity.Error,
-                r.Success ? "APK сохранён" : "Ошибка", r.Success ? file.Path : r.Text);
+                r.Success ? Res.Get("ApkSaved") : Res.Get("Error"), r.Success ? file.Path : r.Text);
         });
     }
 
@@ -2614,15 +2675,15 @@ public sealed partial class MainWindow : Window
             for (int i = 0; i < packages.Count; i++)
             {
                 var pkg = packages[i];
-                ShowStatus(InfoBarSeverity.Informational, $"Сохранение APK: {i + 1} из {packages.Count}", pkg.DisplayName);
+                ShowStatus(InfoBarSeverity.Informational, Res.Format("SavingApkFormat", i + 1, packages.Count), pkg.DisplayName);
                 var r = await _adb.PullApkAsync(device.Serial, pkg, Path.Combine(folder.Path, pkg.Name + ".apk"));
                 if (!r.Success) failed.Add($"{pkg.DisplayName}: {r.Text}");
             }
 
             var saved = packages.Count - failed.Count;
             ShowStatus(failed.Count == 0 ? InfoBarSeverity.Success : InfoBarSeverity.Warning,
-                $"Сохранено APK: {saved} из {packages.Count}",
-                failed.Count == 0 ? folder.Path : folder.Path + Environment.NewLine + "Не удалось:" + Environment.NewLine + string.Join(Environment.NewLine, failed));
+                Res.Format("SavedApkFormat", saved, packages.Count),
+                failed.Count == 0 ? folder.Path : folder.Path + Environment.NewLine + Res.Get("FailedList") + Environment.NewLine + string.Join(Environment.NewLine, failed));
         });
     }
 
@@ -2650,7 +2711,7 @@ public sealed partial class MainWindow : Window
         }
         catch (Exception ex)
         {
-            ShowStatus(InfoBarSeverity.Error, "Ошибка", ex.Message);
+            ShowStatus(InfoBarSeverity.Error, Res.Get("Error"), ex.Message);
             AppendLog("! " + ex.Message);
         }
         finally
@@ -2676,5 +2737,5 @@ public sealed partial class MainWindow : Window
     private void ClearLog_Click(object sender, RoutedEventArgs e) => LogBox.Text = "";
 
     private static string LastLine(string text) =>
-        text.Split('\n', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).LastOrDefault() ?? "неизвестная ошибка";
+        text.Split('\n', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).LastOrDefault() ?? Res.Get("UnknownError");
 }

@@ -1,0 +1,1312 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="AdbExeNotFound" xml:space="preserve">
+    <value>adb.exe не найден</value>
+  </data>
+  <data name="AdbInsecureFormat" xml:space="preserve">
+    <value>{0} сообщает ro.adb.secure=0: порт adb 5555 даёт полный доступ к устройству любому в сети, без запроса «Разрешить отладку?». Закончив, выключите на устройстве отладку по USB и по сети и перезагрузите его.</value>
+  </data>
+  <data name="AdbInsecureTitle" xml:space="preserve">
+    <value>Отладка по сети без подтверждения</value>
+  </data>
+  <data name="AdbNotFound" xml:space="preserve">
+    <value>adb.exe не найден.</value>
+  </data>
+  <data name="AdbNotFoundMessage" xml:space="preserve">
+    <value>Нажмите «Скачать», чтобы загрузить Android platform-tools, или укажите путь к adb.exe.</value>
+  </data>
+  <data name="AdbNotFoundSpecify" xml:space="preserve">
+    <value>adb.exe не найден. Укажите путь к нему или скачайте platform-tools.</value>
+  </data>
+  <data name="AdbNotFoundTitle" xml:space="preserve">
+    <value>adb не найден</value>
+  </data>
+  <data name="AdbNotInArchive" xml:space="preserve">
+    <value>В архиве platform-tools не найден adb.exe</value>
+  </data>
+  <data name="AdbPathText.Text" xml:space="preserve">
+    <value>adb.exe не найден</value>
+  </data>
+  <data name="AdviceDisable" xml:space="preserve">
+    <value>Можно отключить</value>
+  </data>
+  <data name="AdviceKeep" xml:space="preserve">
+    <value>Не трогать</value>
+  </data>
+  <data name="AdviceOptional" xml:space="preserve">
+    <value>По желанию</value>
+  </data>
+  <data name="AdviceProtected" xml:space="preserve">
+    <value>Защищено</value>
+  </data>
+  <data name="AgoSuffix" xml:space="preserve">
+    <value> назад</value>
+  </data>
+  <data name="AllInPlace" xml:space="preserve">
+    <value>Всё на месте</value>
+  </data>
+  <data name="AllInPlaceFormat" xml:space="preserve">
+    <value>Всё, что программа замораживала и удаляла на этом устройстве ({0}), по-прежнему заморожено и удалено.</value>
+  </data>
+  <data name="AlreadyHomeScreen" xml:space="preserve">
+    <value> — уже главный экран</value>
+  </data>
+  <data name="AndMoreFormat" xml:space="preserve">
+    <value> и ещё {0}</value>
+  </data>
+  <data name="ApkDownloadIncomplete" xml:space="preserve">
+    <value>APK скачался не полностью — попробуйте ещё раз.</value>
+  </data>
+  <data name="ApkSaved" xml:space="preserve">
+    <value>APK сохранён</value>
+  </data>
+  <data name="AppListEmptyMessage" xml:space="preserve">
+    <value>Сначала подключите устройство и дождитесь загрузки списка.</value>
+  </data>
+  <data name="AppListEmptyTitle" xml:space="preserve">
+    <value>Список приложений пуст</value>
+  </data>
+  <data name="Apply" xml:space="preserve">
+    <value>Применить</value>
+  </data>
+  <data name="AppNoLaunchActivity" xml:space="preserve">
+    <value>У приложения нет экрана для запуска — откройте его на телефоне вручную.</value>
+  </data>
+  <data name="AppNotEnabledAfterLaunch" xml:space="preserve">
+    <value>Приложение не включилось после запуска.</value>
+  </data>
+  <data name="Apps" xml:space="preserve">
+    <value>Приложения</value>
+  </data>
+  <data name="AppsCountFormat" xml:space="preserve">
+    <value>Приложений: {0}</value>
+  </data>
+  <data name="AppsHeaderFormat" xml:space="preserve">
+    <value>Приложения — {0}</value>
+  </data>
+  <data name="BackupMessage" xml:space="preserve">
+    <value>Сохраняю состояние устройства перед изменениями</value>
+  </data>
+  <data name="BackupTitle" xml:space="preserve">
+    <value>Бэкап…</value>
+  </data>
+  <data name="BrowseAdbButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
+    <value>Указать путь к adb.exe</value>
+  </data>
+  <data name="BrowseAdbText.Text" xml:space="preserve">
+    <value>Указать</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Отмена</value>
+  </data>
+  <data name="ChangedErrorsFormat" xml:space="preserve">
+    <value>{0}: {1}, ошибок: {2}</value>
+  </data>
+  <data name="CheckDriftButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
+    <value>Обновление прошивки возвращает замороженное и удалённое — найти такие приложения и повторить</value>
+  </data>
+  <data name="CheckDriftButton.Label" xml:space="preserve">
+    <value>Проверить после обновления прошивки…</value>
+  </data>
+  <data name="Checking" xml:space="preserve">
+    <value>Проверка…</value>
+  </data>
+  <data name="CheckingDriftMessage" xml:space="preserve">
+    <value>Сравниваю журнал изменений с устройством</value>
+  </data>
+  <data name="CheckingLatestVersion" xml:space="preserve">
+    <value>Узнаю последнюю версию на GitHub…</value>
+  </data>
+  <data name="CheckingTvInputs" xml:space="preserve">
+    <value>Проверяю, не обслуживают ли пакеты входы ТВ (HDMI/AV)</value>
+  </data>
+  <data name="CheckNamesTitle" xml:space="preserve">
+    <value>Проверьте названия</value>
+  </data>
+  <data name="CheckUpdatesButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
+    <value>Узнать, вышла ли новая версия ADB Manager на GitHub</value>
+  </data>
+  <data name="CheckUpdatesButton.Label" xml:space="preserve">
+    <value>Проверить обновления</value>
+  </data>
+  <data name="CleanYourTvNoteFormat" xml:space="preserve">
+    <value>CleanYourTV: отключён на {0} моделях ТВ</value>
+  </data>
+  <data name="CleanYourTvNoteOne" xml:space="preserve">
+    <value>CleanYourTV: отключён на одной модели ТВ</value>
+  </data>
+  <data name="ClearLogButton.Content" xml:space="preserve">
+    <value>Очистить</value>
+  </data>
+  <data name="Close" xml:space="preserve">
+    <value>Закрыть</value>
+  </data>
+  <data name="Connect" xml:space="preserve">
+    <value>Подключить</value>
+  </data>
+  <data name="ConnectButton.Content" xml:space="preserve">
+    <value>Подключить</value>
+  </data>
+  <data name="Connected" xml:space="preserve">
+    <value>Подключено</value>
+  </data>
+  <data name="ConnectFailed" xml:space="preserve">
+    <value>Не удалось подключиться</value>
+  </data>
+  <data name="ConnectHeader.Text" xml:space="preserve">
+    <value>Подключение по Wi-Fi</value>
+  </data>
+  <data name="ConnectingTitle" xml:space="preserve">
+    <value>Подключение…</value>
+  </data>
+  <data name="CopyListButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
+    <value>Скопировать показанный список приложений (с учётом поиска и фильтров) в виде таблицы с запросом для консультации у ИИ</value>
+  </data>
+  <data name="CopyListButton.Label" xml:space="preserve">
+    <value>Копировать список для LLM</value>
+  </data>
+  <data name="CopyNameButton.Label" xml:space="preserve">
+    <value>Копировать имя пакета</value>
+  </data>
+  <data name="CriticalComponentNote" xml:space="preserve">
+    <value>Без него устройство может перестать работать — заморозка и удаление заблокированы.</value>
+  </data>
+  <data name="CriticalComponentTitle" xml:space="preserve">
+    <value>Критичный системный компонент</value>
+  </data>
+  <data name="DeletedCountFormat" xml:space="preserve">
+    <value>, удалено: {0}</value>
+  </data>
+  <data name="DeletePreset" xml:space="preserve">
+    <value>Удалить пресет</value>
+  </data>
+  <data name="Description" xml:space="preserve">
+    <value>Описание</value>
+  </data>
+  <data name="DeviceKindPaired" xml:space="preserve">
+    <value>Беспроводная отладка</value>
+  </data>
+  <data name="DeviceNotConnectedHint" xml:space="preserve">
+    <value>Устройство не подключено — нажмите на него в списке слева</value>
+  </data>
+  <data name="DevicesFoundFormat" xml:space="preserve">
+    <value>Найдено устройств: {0}</value>
+  </data>
+  <data name="DevicesFoundMessage" xml:space="preserve">
+    <value>Они добавлены в список слева — нажмите на устройство, чтобы подключиться.</value>
+  </data>
+  <data name="DevicesHeader.Text" xml:space="preserve">
+    <value>Устройства</value>
+  </data>
+  <data name="DeviceStateAvailable" xml:space="preserve">
+    <value>Не подключено — нажмите, чтобы подключить</value>
+  </data>
+  <data name="DeviceStateMissing" xml:space="preserve">
+    <value>Сопряжено, сейчас не в сети</value>
+  </data>
+  <data name="DeviceStateOffline" xml:space="preserve">
+    <value>Офлайн</value>
+  </data>
+  <data name="DeviceStateUnauthorized" xml:space="preserve">
+    <value>Не авторизовано — подтвердите отладку на телефоне</value>
+  </data>
+  <data name="DeviceTypePhone" xml:space="preserve">
+    <value>Телефон</value>
+  </data>
+  <data name="DeviceTypeTablet" xml:space="preserve">
+    <value>Планшет</value>
+  </data>
+  <data name="DeviceTypeTv" xml:space="preserve">
+    <value>Android TV (телевизор или приставка)</value>
+  </data>
+  <data name="DeviceTypeUnknown" xml:space="preserve">
+    <value>Тип устройства станет известен после подключения</value>
+  </data>
+  <data name="DeviceUnavailableFormat" xml:space="preserve">
+    <value>Устройство недоступно: {0}</value>
+  </data>
+  <data name="DisableExpertModeButton.Content" xml:space="preserve">
+    <value>Выключить</value>
+  </data>
+  <data name="Disconnect" xml:space="preserve">
+    <value>Отключить</value>
+  </data>
+  <data name="DisconnectButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
+    <value>Отключить беспроводное устройство или забыть сопряжённое</value>
+  </data>
+  <data name="DisconnectButtonText.Text" xml:space="preserve">
+    <value>Отключить</value>
+  </data>
+  <data name="DnsAdGuard" xml:space="preserve">
+    <value>AdGuard — блокировка рекламы и трекеров</value>
+  </data>
+  <data name="DnsAdGuardFamily" xml:space="preserve">
+    <value>AdGuard Семейный — плюс взрослый контент</value>
+  </data>
+  <data name="DnsAutomatic" xml:space="preserve">
+    <value>Автоматически (по умолчанию Android)</value>
+  </data>
+  <data name="DnsAutomaticLower" xml:space="preserve">
+    <value>автоматически</value>
+  </data>
+  <data name="DnsChangeFailed" xml:space="preserve">
+    <value>Не удалось изменить DNS</value>
+  </data>
+  <data name="DnsCustom" xml:space="preserve">
+    <value>Свой сервер</value>
+  </data>
+  <data name="DnsDialogFormat" xml:space="preserve">
+    <value>Сейчас: {0}. Блокирующий DNS убирает рекламу и трекеры во всех приложениях и браузере, но не рекламу внутри YouTube. Если какой-то сайт или приложение перестанет работать — верните «Автоматически».</value>
+  </data>
+  <data name="DnsOff" xml:space="preserve">
+    <value>Выключен</value>
+  </data>
+  <data name="DnsOffLower" xml:space="preserve">
+    <value>выключен</value>
+  </data>
+  <data name="DnsSetFormat" xml:space="preserve">
+    <value>Установлено: {0}.</value>
+  </data>
+  <data name="DnsUnavailableMessage" xml:space="preserve">
+    <value>Нужен Android 9 или новее.</value>
+  </data>
+  <data name="DnsUnavailableTitle" xml:space="preserve">
+    <value>Частный DNS недоступен</value>
+  </data>
+  <data name="DoneTitle" xml:space="preserve">
+    <value>Готово</value>
+  </data>
+  <data name="DownloadAdbButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
+    <value>Скачать Android platform-tools с dl.google.com</value>
+  </data>
+  <data name="DownloadAdbText.Text" xml:space="preserve">
+    <value>Скачать</value>
+  </data>
+  <data name="DownloadAndInstall" xml:space="preserve">
+    <value>Скачать и установить</value>
+  </data>
+  <data name="DownloadFromGitHubAnd" xml:space="preserve">
+    <value>Скачать с GitHub и установить Projectivy Launcher — главный экран для Android TV без рекламы</value>
+  </data>
+  <data name="DownloadPlatformToolsMessage" xml:space="preserve">
+    <value>Скачивание platform-tools с dl.google.com…</value>
+  </data>
+  <data name="DownloadTitle" xml:space="preserve">
+    <value>Загрузка</value>
+  </data>
+  <data name="DriftMessage" xml:space="preserve">
+    <value>Эти приложения программа замораживала или удаляла, но сейчас они снова работают — обычно так бывает после обновления прошивки. Отмеченные будут заморожены или удалены заново.</value>
+  </data>
+  <data name="DriftTitle" xml:space="preserve">
+    <value>После обновления прошивки</value>
+  </data>
+  <data name="DropApkHint.Text" xml:space="preserve">
+    <value>APK-файлы можно перетащить в окно для установки</value>
+  </data>
+  <data name="EmptyPackagesText.Text" xml:space="preserve">
+    <value>Выберите устройство слева</value>
+  </data>
+  <data name="Enable" xml:space="preserve">
+    <value>Включить</value>
+  </data>
+  <data name="EnableWifiButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
+    <value>Перевести USB-устройство в режим отладки по Wi-Fi (adb tcpip 5555)</value>
+  </data>
+  <data name="EnableWifiText.Text" xml:space="preserve">
+    <value>Wi-Fi режим</value>
+  </data>
+  <data name="EnableWirelessDebuggingHint" xml:space="preserve">
+    <value>Включите на телефоне «Беспроводную отладку». Если не поможет — выполните сопряжение по коду заново.</value>
+  </data>
+  <data name="EnablingByLaunch" xml:space="preserve">
+    <value>Включение (запуск на телефоне)…</value>
+  </data>
+  <data name="Error" xml:space="preserve">
+    <value>Ошибка</value>
+  </data>
+  <data name="ErrorApkIncomplete" xml:space="preserve">
+    <value>Неполные данные APK: </value>
+  </data>
+  <data name="ErrorBytesExpected" xml:space="preserve">
+    <value>Ожидалось {0} байт, получено {1}</value>
+  </data>
+  <data name="ErrorEmptyXml" xml:space="preserve">
+    <value>Пустой XML</value>
+  </data>
+  <data name="ErrorNotBinaryXml" xml:space="preserve">
+    <value>Не бинарный XML</value>
+  </data>
+  <data name="ErrorNotResourcesArsc" xml:space="preserve">
+    <value>Не resources.arsc</value>
+  </data>
+  <data name="ErrorOffsetOutOfFile" xml:space="preserve">
+    <value>Смещение за пределами файла</value>
+  </data>
+  <data name="ErrorReadApk" xml:space="preserve">
+    <value>Не удалось прочитать APK на устройстве: </value>
+  </data>
+  <data name="ErrorZip64" xml:space="preserve">
+    <value>ZIP64 не поддерживается</value>
+  </data>
+  <data name="ErrorZipLocalHeader" xml:space="preserve">
+    <value>Повреждён локальный заголовок ZIP: </value>
+  </data>
+  <data name="ErrorZipMethod" xml:space="preserve">
+    <value>Метод сжатия {0} не поддерживается</value>
+  </data>
+  <data name="ErrorZipNoDirectory" xml:space="preserve">
+    <value>Не найдено оглавление ZIP: </value>
+  </data>
+  <data name="ExpertModeBar.Message" xml:space="preserve">
+    <value>Защита отключена: можно заморозить и удалить любые системные приложения, включая критичные. Выключить — «… → Экспертный режим».</value>
+  </data>
+  <data name="ExpertModeBar.Title" xml:space="preserve">
+    <value>Экспертный режим</value>
+  </data>
+  <data name="ExpertModeButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
+    <value>Снять защиту: разрешить заморозку и удаление любых системных приложений, включая критичные</value>
+  </data>
+  <data name="ExpertModeButton.Label" xml:space="preserve">
+    <value>Экспертный режим</value>
+  </data>
+  <data name="ExpertModeQuestion" xml:space="preserve">
+    <value>Включить экспертный режим?</value>
+  </data>
+  <data name="ExpertModeUntilClose" xml:space="preserve">
+    <value>Режим действует до закрытия программы.</value>
+  </data>
+  <data name="ExpertModeWarning1" xml:space="preserve">
+    <value>Защита будет снята: можно заморозить и удалить любые системные приложения — системный интерфейс, телефонию, Wi-Fi, установщик, Google Play, главный экран, входы ТВ.</value>
+  </data>
+  <data name="ExpertModeWarning2" xml:space="preserve">
+    <value>Удаление системного приложения выполняется только для текущего пользователя (pm uninstall --user 0): оно остаётся в прошивке, и его можно вернуть через «Вернуть как было» или «Восстановить удалённые системные». Но без критичного компонента устройство может зависнуть на загрузке, потерять сеть или экран — тогда вернуть пакет можно по adb (он обычно работает и при зависшем интерфейсе), в крайнем случае поможет только сброс к заводским настройкам.</value>
+  </data>
+  <data name="ExpertRiskConfirm" xml:space="preserve">
+    <value>Я понимаю риск и знаю, что делаю</value>
+  </data>
+  <data name="ExpertRiskMessageSuffix" xml:space="preserve">
+    <value>. Без них устройство может перестать загружаться, потерять сеть, экран, звук или входы ТВ. Вернуть: «… → Вернуть как было» или «Восстановить удалённые системные».</value>
+  </data>
+  <data name="ExpertRiskTitleFormat" xml:space="preserve">
+    <value>Экспертный режим: защищённых пакетов — {0}</value>
+  </data>
+  <data name="ExportToFile" xml:space="preserve">
+    <value>Экспорт в файл</value>
+  </data>
+  <data name="FailedList" xml:space="preserve">
+    <value>Не удалось:</value>
+  </data>
+  <data name="FindInNetworkButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
+    <value>Ищет устройства с отладкой по сети (порт 5555 в домашней сети и беспроводную отладку Android 11+ по mDNS) и добавляет их в список</value>
+  </data>
+  <data name="FindInNetworkText.Text" xml:space="preserve">
+    <value>Найти в сети</value>
+  </data>
+  <data name="Forget" xml:space="preserve">
+    <value>Забыть</value>
+  </data>
+  <data name="FoundOfFormat" xml:space="preserve">
+    <value>Найдено: {0} из {1}</value>
+  </data>
+  <data name="Freeze" xml:space="preserve">
+    <value>Заморозить</value>
+  </data>
+  <data name="FreezeButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
+    <value>Отключить приложение (pm disable-user). Данные сохраняются.</value>
+  </data>
+  <data name="FreezeButton.Label" xml:space="preserve">
+    <value>Заморозить</value>
+  </data>
+  <data name="FreezeExplanation" xml:space="preserve">
+    <value>Замороженное приложение не запускается, не получает уведомлений и пропадает из меню. Данные сохраняются — его можно разморозить в любой момент.</value>
+  </data>
+  <data name="FreezeManyQuestionFormat" xml:space="preserve">
+    <value>Заморозить приложения ({0})?</value>
+  </data>
+  <data name="FreezeOneQuestion" xml:space="preserve">
+    <value>Заморозить приложение?</value>
+  </data>
+  <data name="FreezeSystemWarning" xml:space="preserve">
+    <value>Заморозка важных системных компонентов может нарушить работу телефона (вплоть до циклической перезагрузки). Замораживайте только то, назначение чего знаете.</value>
+  </data>
+  <data name="Freezing" xml:space="preserve">
+    <value>Заморозка…</value>
+  </data>
+  <data name="Frozen" xml:space="preserve">
+    <value>Заморожено</value>
+  </data>
+  <data name="FrozenBadgeText.Text" xml:space="preserve">
+    <value>Заморожено</value>
+  </data>
+  <data name="FrozenCountFormat" xml:space="preserve">
+    <value> · заморожено: {0}</value>
+  </data>
+  <data name="HomeGuardNote" xml:space="preserve">
+    <value>Единственное приложение главного экрана: без него устройству нечего показать по кнопке Home. Установите и выберите другой лаунчер — тогда защита снимется.</value>
+  </data>
+  <data name="HomeScreen" xml:space="preserve">
+    <value>Главный экран</value>
+  </data>
+  <data name="ImportFromFile" xml:space="preserve">
+    <value>Импорт из файла…</value>
+  </data>
+  <data name="ImportPresetsToolTip" xml:space="preserve">
+    <value>Пресеты ADB Manager (*.json) или список имён пакетов (*.txt, по одному в строке)</value>
+  </data>
+  <data name="Install" xml:space="preserve">
+    <value>Установить</value>
+  </data>
+  <data name="InstallButton.Label" xml:space="preserve">
+    <value>Установить APK</value>
+  </data>
+  <data name="InstallDowngrade" xml:space="preserve">
+    <value>Разрешить установку более старой версии (-d)</value>
+  </data>
+  <data name="Installed" xml:space="preserve">
+    <value>Установлено</value>
+  </data>
+  <data name="InstalledCountFormat" xml:space="preserve">
+    <value>Установлено пакетов: {0}</value>
+  </data>
+  <data name="InstallError" xml:space="preserve">
+    <value>Ошибка установки</value>
+  </data>
+  <data name="InstallFailed" xml:space="preserve">
+    <value>Не удалось установить</value>
+  </data>
+  <data name="InstallGrant" xml:space="preserve">
+    <value>Сразу выдать все разрешения (-g)</value>
+  </data>
+  <data name="Installing" xml:space="preserve">
+    <value>Установка…</value>
+  </data>
+  <data name="InstallLauncherButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
+    <value>Скачать с GitHub и установить Projectivy Launcher — главный экран для Android TV без рекламы</value>
+  </data>
+  <data name="InstallLauncherButton.Label" xml:space="preserve">
+    <value>Установить лаунчер Projectivy…</value>
+  </data>
+  <data name="InstallOnFormat" xml:space="preserve">
+    <value>Установка на {0}</value>
+  </data>
+  <data name="InstallOnPrefix" xml:space="preserve">
+    <value>Установить на </value>
+  </data>
+  <data name="InstallSplit" xml:space="preserve">
+    <value>Это части одного приложения (split APK, install-multiple)</value>
+  </data>
+  <data name="InvalidAdbFileMessage" xml:space="preserve">
+    <value>Нужно выбрать adb.exe из папки platform-tools.</value>
+  </data>
+  <data name="InvalidAddressTitle" xml:space="preserve">
+    <value>Неверный адрес</value>
+  </data>
+  <data name="InvalidDnsMessage" xml:space="preserve">
+    <value>Укажите имя DNS-over-TLS сервера, например dns.adguard-dns.com.</value>
+  </data>
+  <data name="InvalidFileTitle" xml:space="preserve">
+    <value>Неверный файл</value>
+  </data>
+  <data name="KeepDataAndCache" xml:space="preserve">
+    <value>Сохранить данные и кэш (-k)</value>
+  </data>
+  <data name="KindSystem" xml:space="preserve">
+    <value>Системное</value>
+  </data>
+  <data name="KindUser" xml:space="preserve">
+    <value>Пользовательское</value>
+  </data>
+  <data name="LanguageButton.Label" xml:space="preserve">
+    <value>Язык / Language</value>
+  </data>
+  <data name="LanguageSystemItem.Text" xml:space="preserve">
+    <value>Как в Windows</value>
+  </data>
+  <data name="LanguageTag" xml:space="preserve">
+    <value>ru-RU</value>
+  </data>
+  <data name="Later" xml:space="preserve">
+    <value>Позже</value>
+  </data>
+  <data name="LatestVersionFormat" xml:space="preserve">
+    <value>Последняя версия: {0} ({1})</value>
+  </data>
+  <data name="LauncherDescription" xml:space="preserve">
+    <value>Бесплатный лаунчер для Android TV без рекламы и рекомендаций: свои категории, обои, скрытие приложений. Сторонний проект, APK скачивается с GitHub автора.</value>
+  </data>
+  <data name="LauncherKeepNote" xml:space="preserve">
+    <value>Стандартный лаунчер останется. Если кнопка Home всё равно открывает его (так бывает на Google TV), заморозьте его в таблице — защита снимется, когда появится второй лаунчер. Отменить установку и смену главного экрана — «… → Вернуть как было».</value>
+  </data>
+  <data name="LauncherNoHomeActivity" xml:space="preserve">
+    <value>лаунчер не объявил activity главного экрана</value>
+  </data>
+  <data name="LauncherTvOnlyToolTip" xml:space="preserve">
+    <value>Projectivy Launcher — главный экран для Android TV; на телефонах и планшетах не устанавливается</value>
+  </data>
+  <data name="ListCopied" xml:space="preserve">
+    <value>Список скопирован</value>
+  </data>
+  <data name="ListCopiedFormat" xml:space="preserve">
+    <value>Приложений: {0}. Вставьте его в чат с ИИ (Ctrl+V).</value>
+  </data>
+  <data name="LlmAppsCountFormat" xml:space="preserve">
+    <value>Приложений в списке: {0}</value>
+  </data>
+  <data name="LlmFilterFormat" xml:space="preserve">
+    <value>, фильтр: «{0}»</value>
+  </data>
+  <data name="LlmIncludingSystem" xml:space="preserve">
+    <value> (включая системные)</value>
+  </data>
+  <data name="LlmIntroFormat" xml:space="preserve">
+    <value>Ниже список приложений на моём Android-смартфоне{0}{1}.</value>
+  </data>
+  <data name="LlmNoteAdvice" xml:space="preserve">
+    <value>- Совет — из базы проекта ЧистыйТВ (в основном Android TV), списка рекламных предустановок телефонов и встроенной защиты критичных системных пакетов; «Защищено» и «Не трогать» программа отключать не даёт.</value>
+  </data>
+  <data name="LlmNoteFreeze" xml:space="preserve">
+    <value>- Заморозка — `pm disable-user`: приложение не запускается, данные сохраняются, можно включить обратно.</value>
+  </data>
+  <data name="LlmNotesHeader" xml:space="preserve">
+    <value>Пояснения к таблице:</value>
+  </data>
+  <data name="LlmNoteSize" xml:space="preserve">
+    <value>- Размер — приложение вместе с данными.</value>
+  </data>
+  <data name="LlmNoteStatus" xml:space="preserve">
+    <value>- Статус «Заморожено» — отключено вручную; «Не используется» — Android сам остановил давно не используемое приложение.</value>
+  </data>
+  <data name="LlmNoteUninstall" xml:space="preserve">
+    <value>- Удаление системных приложений — только для текущего пользователя (`pm uninstall --user 0`), восстанавливается командой `cmd package install-existing`.</value>
+  </data>
+  <data name="LlmRequest" xml:space="preserve">
+    <value>Подскажи, какие из них можно безопасно удалить или заморозить, а какие трогать нельзя. Для каждого рекомендуемого приложения кратко объясни, что оно делает и чем грозит его отключение. Сгруппируй ответ: «можно удалить», «лучше заморозить», «не трогать».</value>
+  </data>
+  <data name="LlmTableHeader" xml:space="preserve">
+    <value>| Название | Пакет | Тип | Статус | Совет | Размер | Расположение |</value>
+  </data>
+  <data name="LlmUserOnly" xml:space="preserve">
+    <value> (только пользовательские)</value>
+  </data>
+  <data name="Loading" xml:space="preserve">
+    <value>Загрузка…</value>
+  </data>
+  <data name="LoadingIconsFormat" xml:space="preserve">
+    <value>Загрузка иконок: {0} из {1}</value>
+  </data>
+  <data name="LogExpander.Header" xml:space="preserve">
+    <value>Журнал adb</value>
+  </data>
+  <data name="MakeHomeFailedPrefix" xml:space="preserve">
+    <value> Сделать главным экраном не удалось: </value>
+  </data>
+  <data name="MakeHomeManually" xml:space="preserve">
+    <value>. Выберите его на устройстве: Настройки → Приложения → Приложения по умолчанию → Главный экран.</value>
+  </data>
+  <data name="MakeHomeScreen" xml:space="preserve">
+    <value>Сделать главным экраном (кнопка Home)</value>
+  </data>
+  <data name="ManagePresets" xml:space="preserve">
+    <value>Управление пресетами…</value>
+  </data>
+  <data name="MarkAllItem.Text" xml:space="preserve">
+    <value>Все</value>
+  </data>
+  <data name="MarkButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
+    <value>Быстро отметить приложения среди показанных</value>
+  </data>
+  <data name="MarkButtonText.Text" xml:space="preserve">
+    <value>Отметить</value>
+  </data>
+  <data name="MarkedCountFormat" xml:space="preserve">
+    <value> · отмечено: {0}</value>
+  </data>
+  <data name="MarkedFormat" xml:space="preserve">
+    <value>Отмечено: {0}</value>
+  </data>
+  <data name="MarkedFreezeHint" xml:space="preserve">
+    <value>Проверьте список и нажмите «Заморозить» — заморозку можно отменить в любой момент.</value>
+  </data>
+  <data name="MarkEnabledItem.Text" xml:space="preserve">
+    <value>Включённые</value>
+  </data>
+  <data name="MarkFrozenItem.Text" xml:space="preserve">
+    <value>Замороженные</value>
+  </data>
+  <data name="MarkInTableFormat" xml:space="preserve">
+    <value>Отметить в таблице ({0})</value>
+  </data>
+  <data name="MarkInvertItem.Text" xml:space="preserve">
+    <value>Инвертировать</value>
+  </data>
+  <data name="MarkNoneItem.Text" xml:space="preserve">
+    <value>Снять отметку</value>
+  </data>
+  <data name="MarkRecommendedItem.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
+    <value>Включённые приложения, которые советуется отключить: реклама, телеметрия, скрытые установщики (база ЧистогоТВ и список предустановок телефонов)</value>
+  </data>
+  <data name="MarkRecommendedItem.Text" xml:space="preserve">
+    <value>Рекомендуемые к отключению</value>
+  </data>
+  <data name="MarkSystemItem.Text" xml:space="preserve">
+    <value>Системные</value>
+  </data>
+  <data name="MarkUnusedItem.Text" xml:space="preserve">
+    <value>Не используемые</value>
+  </data>
+  <data name="MarkUserItem.Text" xml:space="preserve">
+    <value>Пользовательские</value>
+  </data>
+  <data name="MissingOnDeviceFormat" xml:space="preserve">
+    <value>Нет на устройстве ({0}): </value>
+  </data>
+  <data name="Name" xml:space="preserve">
+    <value>Название</value>
+  </data>
+  <data name="NetworkSearchMessage" xml:space="preserve">
+    <value>Проверяю порт 5555 в домашней сети и беспроводную отладку (mDNS)</value>
+  </data>
+  <data name="NetworkSearchTitle" xml:space="preserve">
+    <value>Поиск в сети…</value>
+  </data>
+  <data name="NewPresetMessageFormat" xml:space="preserve">
+    <value>Отмеченных приложений: {0}. Пресет можно загрузить на любом устройстве: «Отметить → Пресеты».</value>
+  </data>
+  <data name="NewPresetTitle" xml:space="preserve">
+    <value>Новый пресет</value>
+  </data>
+  <data name="NoApkMessage" xml:space="preserve">
+    <value>Перетащите файлы с расширением .apk.</value>
+  </data>
+  <data name="NoApkTitle" xml:space="preserve">
+    <value>Нет APK</value>
+  </data>
+  <data name="NoAppsFound" xml:space="preserve">
+    <value>Приложения не найдены</value>
+  </data>
+  <data name="NoDescription" xml:space="preserve">
+    <value>Без описания</value>
+  </data>
+  <data name="NoDeviceMessage" xml:space="preserve">
+    <value>Сначала выберите подключённое устройство.</value>
+  </data>
+  <data name="NoDevicesFoundMessage" xml:space="preserve">
+    <value>Проверьте, что устройство в той же Wi-Fi сети и на нём включена отладка по сети (или «Беспроводная отладка» на Android 11+). Для беспроводной отладки без сопряжения используйте «Сопряжение по коду». VPN на компьютере может закрывать доступ к домашней сети.</value>
+  </data>
+  <data name="NoDevicesFoundTitle" xml:space="preserve">
+    <value>Устройства не найдены</value>
+  </data>
+  <data name="NoDevicesText.Text" xml:space="preserve">
+    <value>Нет устройств.
+Подключите телефон по USB с включённой «Отладкой по USB», нажмите «Найти в сети» или выполните сопряжение по коду.</value>
+  </data>
+  <data name="NoDeviceTitle" xml:space="preserve">
+    <value>Нет устройства</value>
+  </data>
+  <data name="NoPackageNamesFormat" xml:space="preserve">
+    <value>{0}: нет имён пакетов</value>
+  </data>
+  <data name="NoRemovedSystemAppsMessage" xml:space="preserve">
+    <value>Все системные приложения установлены для текущего пользователя.</value>
+  </data>
+  <data name="NoRemovedSystemAppsTitle" xml:space="preserve">
+    <value>Удалённых системных приложений нет</value>
+  </data>
+  <data name="NotAndroidTvMessage" xml:space="preserve">
+    <value>Projectivy рассчитан на телевизоры и приставки; на телефоне им неудобно пользоваться.</value>
+  </data>
+  <data name="NotAndroidTvTitle" xml:space="preserve">
+    <value>Это не Android TV</value>
+  </data>
+  <data name="NothingChangedYet" xml:space="preserve">
+    <value>Программа ещё ничего не замораживала и не удаляла на этом устройстве.</value>
+  </data>
+  <data name="NothingToCheck" xml:space="preserve">
+    <value>Нечего проверять</value>
+  </data>
+  <data name="NothingToUndoMessage" xml:space="preserve">
+    <value>В журнале нет изменений этой программы, которые можно отменить.</value>
+  </data>
+  <data name="NothingToUndoTitle" xml:space="preserve">
+    <value>Нечего возвращать</value>
+  </data>
+  <data name="NotInstalled" xml:space="preserve">
+    <value>не установлен</value>
+  </data>
+  <data name="NotPresetsFile" xml:space="preserve">
+    <value>Файл не похож на пресеты ADB Manager: </value>
+  </data>
+  <data name="NowHomeScreen" xml:space="preserve">
+    <value> Теперь это главный экран — нажмите Home на пульте.</value>
+  </data>
+  <data name="OnDeviceFormat" xml:space="preserve">
+    <value>На устройстве: {0}</value>
+  </data>
+  <data name="OpenBackupsButton.Label" xml:space="preserve">
+    <value>Открыть папку бэкапов и журнала</value>
+  </data>
+  <data name="OpenFolderFailed" xml:space="preserve">
+    <value>Не удалось открыть папку</value>
+  </data>
+  <data name="PackagesHeader.Text" xml:space="preserve">
+    <value>Приложения</value>
+  </data>
+  <data name="PackageVersionFormat" xml:space="preserve">
+    <value>{0} · версия {1}</value>
+  </data>
+  <data name="PairAddressHeader" xml:space="preserve">
+    <value>IP-адрес и порт сопряжения</value>
+  </data>
+  <data name="PairButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
+    <value>Беспроводная отладка Android 11+: подключение по коду</value>
+  </data>
+  <data name="PairButton.Content" xml:space="preserve">
+    <value>Сопряжение по коду…</value>
+  </data>
+  <data name="PairCodeHeader" xml:space="preserve">
+    <value>Код сопряжения (6 цифр)</value>
+  </data>
+  <data name="PairConnectAddressHeader" xml:space="preserve">
+    <value>IP-адрес и порт для подключения (с главного экрана «Беспроводной отладки»)</value>
+  </data>
+  <data name="PairDoneMessage" xml:space="preserve">
+    <value>Устройство появится в списке, когда телефон объявит адрес подключения. Если нет — введите адрес с экрана «Беспроводной отладки».</value>
+  </data>
+  <data name="PairDoneTitle" xml:space="preserve">
+    <value>Сопряжение выполнено</value>
+  </data>
+  <data name="PairFailed" xml:space="preserve">
+    <value>Сопряжение не удалось</value>
+  </data>
+  <data name="PairInstructions" xml:space="preserve">
+    <value>На телефоне: Настройки → Для разработчиков → Беспроводная отладка → «Подключить устройство с помощью кода». Введите показанные адрес и код.</value>
+  </data>
+  <data name="PairTitle" xml:space="preserve">
+    <value>Сопряжение по коду</value>
+  </data>
+  <data name="PlatformToolsDownloadFailed" xml:space="preserve">
+    <value>Не удалось скачать platform-tools</value>
+  </data>
+  <data name="PlatformToolsInstalled" xml:space="preserve">
+    <value>platform-tools установлены: </value>
+  </data>
+  <data name="PresetAppliedFormat" xml:space="preserve">
+    <value>Пресет «{0}»: отмечено {1} из {2}</value>
+  </data>
+  <data name="PresetDescriptionPlaceholder" xml:space="preserve">
+    <value>Что входит в пресет и для чего он нужен</value>
+  </data>
+  <data name="PresetExistsMessage" xml:space="preserve">
+    <value>Его список приложений и описание будут заменены.</value>
+  </data>
+  <data name="PresetExistsTitle" xml:space="preserve">
+    <value>Пресет с таким названием уже есть</value>
+  </data>
+  <data name="PresetInfoFormat" xml:space="preserve">
+    <value>Приложений: {0} · создан {1:dd.MM.yyyy HH:mm}</value>
+  </data>
+  <data name="PresetNameDuplicateFormat" xml:space="preserve">
+    <value>Название «{0}» повторяется.</value>
+  </data>
+  <data name="PresetNameEmpty" xml:space="preserve">
+    <value>Название пресета не может быть пустым.</value>
+  </data>
+  <data name="PresetNamePlaceholder" xml:space="preserve">
+    <value>Например: Реклама Xiaomi</value>
+  </data>
+  <data name="Presets" xml:space="preserve">
+    <value>Пресеты</value>
+  </data>
+  <data name="PresetsAdded" xml:space="preserve">
+    <value>Добавлены: </value>
+  </data>
+  <data name="PresetsAlreadyExistFormat" xml:space="preserve">
+    <value>Уже были: {0}</value>
+  </data>
+  <data name="PresetSaved" xml:space="preserve">
+    <value>Пресет сохранён</value>
+  </data>
+  <data name="PresetSavedFormat" xml:space="preserve">
+    <value>«{0}» — приложений: {1}. Загрузить: «Отметить → Пресеты».</value>
+  </data>
+  <data name="PresetsCountFormat" xml:space="preserve">
+    <value>Пресетов: {0}</value>
+  </data>
+  <data name="PresetsExportedFormat" xml:space="preserve">
+    <value>Экспортировано пресетов: {0}</value>
+  </data>
+  <data name="PresetsFileType" xml:space="preserve">
+    <value>Пресеты ADB Manager</value>
+  </data>
+  <data name="PresetsImportedFormat" xml:space="preserve">
+    <value>Импортировано пресетов: {0}</value>
+  </data>
+  <data name="PresetsMenu.Text" xml:space="preserve">
+    <value>Пресеты</value>
+  </data>
+  <data name="PresetsSaved" xml:space="preserve">
+    <value>Пресеты сохранены</value>
+  </data>
+  <data name="PreviousHome" xml:space="preserve">
+    <value>прежний</value>
+  </data>
+  <data name="PreviousHomeUnknown" xml:space="preserve">
+    <value>прежний главный экран неизвестен — выберите его на устройстве</value>
+  </data>
+  <data name="PrivacyAcrSection" xml:space="preserve">
+    <value>Распознавание контента на экране (ACR) — микрофон не нужен</value>
+  </data>
+  <data name="PrivacyAlexa" xml:space="preserve">
+    <value>Amazon Alexa на ТВ Philips; микрофон — в пульте</value>
+  </data>
+  <data name="PrivacyAlphonso" xml:space="preserve">
+    <value>Alphonso: рекламный трекинг, читает статистику использования приложений</value>
+  </data>
+  <data name="PrivacyAudit" xml:space="preserve">
+    <value>Аудит приватности…</value>
+  </data>
+  <data name="PrivacyAuditButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
+    <value>Голосовой ассистент, доступ к микрофону по истории AppOps, ACR и телеметрия</value>
+  </data>
+  <data name="PrivacyAuditButton.Label" xml:space="preserve">
+    <value>Аудит приватности…</value>
+  </data>
+  <data name="PrivacyAuditMessage" xml:space="preserve">
+    <value>Читаю настройки ассистента и историю доступа к микрофону (AppOps)</value>
+  </data>
+  <data name="PrivacyAuditTitlePrefix" xml:space="preserve">
+    <value>Аудит приватности — </value>
+  </data>
+  <data name="PrivacyCandeebug" xml:space="preserve">
+    <value>аналитика «DAC» на ТВ Philips</value>
+  </data>
+  <data name="PrivacyDisclaimer" xml:space="preserve">
+    <value>Аудит не доказывает, что звук или данные уходят с устройства: AppOps показывает только факт обращения. Отключая ассистент, вы теряете кнопку микрофона и голосовой поиск.</value>
+  </data>
+  <data name="PrivacyFeedback" xml:space="preserve">
+    <value>отправка отзывов и отчётов в Google</value>
+  </data>
+  <data name="PrivacyFrameworkLogger" xml:space="preserve">
+    <value>журналирование фреймворка и перезагрузок</value>
+  </data>
+  <data name="PrivacyGel" xml:space="preserve">
+    <value>аналитика «GEL» на ТВ Philips (работает в процессе candeebug)</value>
+  </data>
+  <data name="PrivacyInscape" xml:space="preserve">
+    <value>Inscape ACR: распознаёт, что на экране (включая HDMI), по картинке — микрофон не нужен</value>
+  </data>
+  <data name="PrivacyKatniss" xml:space="preserve">
+    <value>Google Ассистент и голосовой поиск; без него перестанут работать кнопка микрофона на пульте и голосовой поиск в приложениях</value>
+  </data>
+  <data name="PrivacyMicSection" xml:space="preserve">
+    <value>Обращались к микрофону (история AppOps)</value>
+  </data>
+  <data name="PrivacyMiuiAnalytics" xml:space="preserve">
+    <value>аналитика Xiaomi: журналы и статистика использования</value>
+  </data>
+  <data name="PrivacyNothingFound" xml:space="preserve">
+    <value>  — не найдено</value>
+  </data>
+  <data name="PrivacyPumpkin" xml:space="preserve">
+    <value>офлайн-модель для фразы-активации, не нужна без ассистента</value>
+  </data>
+  <data name="PrivacySkyworth" xml:space="preserve">
+    <value>ACR Coocaa/Skyworth для таргетинга рекламы</value>
+  </data>
+  <data name="PrivacyTclBi" xml:space="preserve">
+    <value>аналитика TCL</value>
+  </data>
+  <data name="PrivacyTclLogkit" xml:space="preserve">
+    <value>сбор журналов TCL</value>
+  </data>
+  <data name="PrivacyTelemetrySection" xml:space="preserve">
+    <value>Телеметрия и аналитика</value>
+  </data>
+  <data name="PrivacyUsageLogger" xml:space="preserve">
+    <value>статистика загрузок, нажатий пульта и телеметрия панели</value>
+  </data>
+  <data name="PrivacyVoiceSection" xml:space="preserve">
+    <value>Голосовой ассистент (назначен в настройках системы)</value>
+  </data>
+  <data name="PrivacyXiaomiStatistic" xml:space="preserve">
+    <value>статистика Xiaomi</value>
+  </data>
+  <data name="PrivateDns" xml:space="preserve">
+    <value>Частный DNS</value>
+  </data>
+  <data name="PrivateDnsButton.Label" xml:space="preserve">
+    <value>Частный DNS (блокировка рекламы)…</value>
+  </data>
+  <data name="PullApkButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
+    <value>Одно приложение — в выбранный файл, несколько отмеченных — в выбранную папку (файлы по имени пакета)</value>
+  </data>
+  <data name="PullApkButton.Label" xml:space="preserve">
+    <value>Сохранить APK на ПК…</value>
+  </data>
+  <data name="Recently" xml:space="preserve">
+    <value>недавно</value>
+  </data>
+  <data name="RecommendedCountFormat" xml:space="preserve">
+    <value>Рекомендуемых к отключению: {0}</value>
+  </data>
+  <data name="RecommendedHint" xml:space="preserve">
+    <value>Проверьте список и нажмите «Заморозить». Пояснения — в подсказке колонки «Совет».</value>
+  </data>
+  <data name="RecommendedNone" xml:space="preserve">
+    <value>Рекомендуемых к отключению нет</value>
+  </data>
+  <data name="RecommendedNoneHint" xml:space="preserve">
+    <value>Среди показанных включённых приложений не найдено известной рекламы и мусора. Включите «Системные», если они скрыты.</value>
+  </data>
+  <data name="RefreezeFormat" xml:space="preserve">
+    <value>Заморозить снова: {0} ({1}) — снова включено</value>
+  </data>
+  <data name="Refresh" xml:space="preserve">
+    <value>Обновить</value>
+  </data>
+  <data name="RefreshDevicesButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
+    <value>Обновить список устройств</value>
+  </data>
+  <data name="RefreshPackagesButton.Label" xml:space="preserve">
+    <value>Обновить</value>
+  </data>
+  <data name="Reinstall" xml:space="preserve">
+    <value>Переустановить</value>
+  </data>
+  <data name="ReleaseNoApkFormat" xml:space="preserve">
+    <value>В выпуске {0} нет APK — см. {1}</value>
+  </data>
+  <data name="ReleasePage" xml:space="preserve">
+    <value>Страница выпуска на GitHub</value>
+  </data>
+  <data name="RepeatAction" xml:space="preserve">
+    <value>Повторить</value>
+  </data>
+  <data name="Repeated" xml:space="preserve">
+    <value>Повторено</value>
+  </data>
+  <data name="RepeatedErrorsFormat" xml:space="preserve">
+    <value>Повторено: {0}, ошибок: {1}</value>
+  </data>
+  <data name="Repeating" xml:space="preserve">
+    <value>Повторяю…</value>
+  </data>
+  <data name="Replace" xml:space="preserve">
+    <value>Заменить</value>
+  </data>
+  <data name="RestartAction" xml:space="preserve">
+    <value>Перезапустить</value>
+  </data>
+  <data name="RestartFailed" xml:space="preserve">
+    <value>Не удалось перезапустить программу</value>
+  </data>
+  <data name="RestartMessage" xml:space="preserve">
+    <value>Язык сменится после перезапуска программы. Выполняемые операции будут прерваны.</value>
+  </data>
+  <data name="RestartQuestion" xml:space="preserve">
+    <value>Перезапустить ADB Manager?</value>
+  </data>
+  <data name="RestoreAction" xml:space="preserve">
+    <value>Восстановить</value>
+  </data>
+  <data name="RestoreButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
+    <value>Отменить заморозку, удаление системных приложений и смену DNS, сделанные этой программой</value>
+  </data>
+  <data name="RestoreButton.Label" xml:space="preserve">
+    <value>Вернуть как было…</value>
+  </data>
+  <data name="Restored" xml:space="preserve">
+    <value>Восстановлено</value>
+  </data>
+  <data name="RestoredErrorsFormat" xml:space="preserve">
+    <value>Восстановлено: {0}, ошибок: {1}</value>
+  </data>
+  <data name="RestoreRemovedButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
+    <value>Системные приложения, удалённые для пользователя (кем угодно), возвращаются через install-existing</value>
+  </data>
+  <data name="RestoreRemovedButton.Label" xml:space="preserve">
+    <value>Восстановить удалённые системные…</value>
+  </data>
+  <data name="RestoreRemovedMessage" xml:space="preserve">
+    <value>Эти системные приложения удалены для текущего пользователя (pm uninstall --user 0), но остались в прошивке. Отмеченные будут возвращены командой cmd package install-existing.</value>
+  </data>
+  <data name="RestoreRemovedTitle" xml:space="preserve">
+    <value>Восстановить удалённые системные приложения</value>
+  </data>
+  <data name="Restoring" xml:space="preserve">
+    <value>Восстановление…</value>
+  </data>
+  <data name="ReuninstallFormat" xml:space="preserve">
+    <value>Удалить снова: {0} ({1}) — снова установлено</value>
+  </data>
+  <data name="Save" xml:space="preserve">
+    <value>Сохранить</value>
+  </data>
+  <data name="SavedApkFormat" xml:space="preserve">
+    <value>Сохранено APK: {0} из {1}</value>
+  </data>
+  <data name="SaveFileFailed" xml:space="preserve">
+    <value>Не удалось сохранить файл</value>
+  </data>
+  <data name="SaveMarkedAsPreset" xml:space="preserve">
+    <value>Сохранить отмеченные как пресет…</value>
+  </data>
+  <data name="SavingApkFormat" xml:space="preserve">
+    <value>Сохранение APK: {0} из {1}</value>
+  </data>
+  <data name="ScreenshotButton.Label" xml:space="preserve">
+    <value>Снимок экрана устройства…</value>
+  </data>
+  <data name="ScreenshotFailedMessage" xml:space="preserve">
+    <value>Устройство не вернуло изображение. На некоторых экранах (видео с защитой, банковские приложения) снимок запрещён.</value>
+  </data>
+  <data name="ScreenshotFailedTitle" xml:space="preserve">
+    <value>Не удалось сделать снимок экрана</value>
+  </data>
+  <data name="ScreenshotSaved" xml:space="preserve">
+    <value>Снимок экрана сохранён</value>
+  </data>
+  <data name="SearchBox.PlaceholderText" xml:space="preserve">
+    <value>Поиск по названию или имени пакета</value>
+  </data>
+  <data name="SelectADeviceOn" xml:space="preserve">
+    <value>Выберите устройство слева</value>
+  </data>
+  <data name="SelectAllCheckBox.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
+    <value>Отметить все показанные приложения</value>
+  </data>
+  <data name="ShellCannotChangeState" xml:space="preserve">
+    <value>Android не разрешает adb менять состояние этого приложения.</value>
+  </data>
+  <data name="ShowSystemToggle.OffContent" xml:space="preserve">
+    <value>Системные: скрыты</value>
+  </data>
+  <data name="ShowSystemToggle.OnContent" xml:space="preserve">
+    <value>Системные: показаны</value>
+  </data>
+  <data name="SizeToolTipFormat" xml:space="preserve">
+    <value>Приложение: {0}
+Данные: {1}
+в т.ч. кэш: {2}</value>
+  </data>
+  <data name="SizeUnknown" xml:space="preserve">
+    <value>Нет данных о размере (Android ещё не посчитал его)</value>
+  </data>
+  <data name="SkippedProtectedFormat" xml:space="preserve">
+    <value>Пропущено защищённых: {0}</value>
+  </data>
+  <data name="SkippedProtectedMessage" xml:space="preserve">
+    <value>Эти пакеты не будут затронуты — без них устройство может перестать работать: </value>
+  </data>
+  <data name="SkippedTvInputs" xml:space="preserve">
+    <value>Пропущено — входы ТВ</value>
+  </data>
+  <data name="SkippedTvInputsFormat" xml:space="preserve">
+    <value>Пропущено — входы ТВ: {0}</value>
+  </data>
+  <data name="SortByAdviceButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
+    <value>Совет из базы ЧистогоТВ и списка рекламных предустановок телефонов; встроенная защита критичных системных пакетов</value>
+  </data>
+  <data name="SortByAdviceText.Text" xml:space="preserve">
+    <value>Совет</value>
+  </data>
+  <data name="SortByKindText.Text" xml:space="preserve">
+    <value>Тип</value>
+  </data>
+  <data name="SortByNameText.Text" xml:space="preserve">
+    <value>Название</value>
+  </data>
+  <data name="SortByPackageText.Text" xml:space="preserve">
+    <value>Пакет</value>
+  </data>
+  <data name="SortBySizeText.Text" xml:space="preserve">
+    <value>Размер</value>
+  </data>
+  <data name="SortByStatusText.Text" xml:space="preserve">
+    <value>Статус</value>
+  </data>
+  <data name="StatusEnabled" xml:space="preserve">
+    <value>Включено</value>
+  </data>
+  <data name="StockHomeScreen" xml:space="preserve">
+    <value>штатный главный экран</value>
+  </data>
+  <data name="SystemApps" xml:space="preserve">
+    <value>Системные приложения</value>
+  </data>
+  <data name="TcpipEnabledTitle" xml:space="preserve">
+    <value>Режим TCP/IP включён</value>
+  </data>
+  <data name="TcpipFailed" xml:space="preserve">
+    <value>Не удалось включить режим TCP/IP</value>
+  </data>
+  <data name="TcpipNoIpMessage" xml:space="preserve">
+    <value>Не удалось определить IP телефона — убедитесь, что он подключён к Wi-Fi, и введите адрес вручную.</value>
+  </data>
+  <data name="TotalFormat" xml:space="preserve">
+    <value>Всего: {0}</value>
+  </data>
+  <data name="TvInputDriversMessage" xml:space="preserve">
+    <value>Запрашивают android.permission.TV_INPUT_HARDWARE — это программная часть входов HDMI/AV/тюнера. Если их отключить, вход видит кабель, но показывает «Нет сигнала», и картинку возвращает только полное восстановление и холодная перезагрузка.</value>
+  </data>
+  <data name="TvInputsGuardNote" xml:space="preserve">
+    <value>Обслуживает входы телевизора. Если отключить, вход видит кабель, но показывает «Нет сигнала».</value>
+  </data>
+  <data name="TvInputsGuardTitle" xml:space="preserve">
+    <value>Входы ТВ (HDMI / AV / тюнер)</value>
+  </data>
+  <data name="UndoAction" xml:space="preserve">
+    <value>Вернуть</value>
+  </data>
+  <data name="UndoDnsFormat" xml:space="preserve">
+    <value>Частный DNS: вернуть прежнюю настройку ({0}) — изменено {1:dd.MM HH:mm}</value>
+  </data>
+  <data name="UndoFreezeFormat" xml:space="preserve">
+    <value>Разморозить: {0} ({1}) — заморожено {2:dd.MM HH:mm}</value>
+  </data>
+  <data name="UndoHomeFormat" xml:space="preserve">
+    <value>Главный экран: вернуть {0} — изменено {1:dd.MM HH:mm}</value>
+  </data>
+  <data name="Undoing" xml:space="preserve">
+    <value>Возвращаю…</value>
+  </data>
+  <data name="UndoInstallFormat" xml:space="preserve">
+    <value>Удалить установленное программой: {0} ({1}) — установлено {2:dd.MM HH:mm}</value>
+  </data>
+  <data name="UndoMessage" xml:space="preserve">
+    <value>Изменения, сделанные этой программой на устройстве. Снимите отметку с того, что возвращать не нужно.</value>
+  </data>
+  <data name="UndoneErrorsFormat" xml:space="preserve">
+    <value>Возвращено: {0}, ошибок: {1}</value>
+  </data>
+  <data name="UndoneMessageFormat" xml:space="preserve">
+    <value>Изменений отменено: {0}. Перезагрузите устройство, если что-то работало неправильно.</value>
+  </data>
+  <data name="UndoneTitle" xml:space="preserve">
+    <value>Возвращено</value>
+  </data>
+  <data name="UndoTitle" xml:space="preserve">
+    <value>Вернуть как было</value>
+  </data>
+  <data name="UndoUninstallFormat" xml:space="preserve">
+    <value>Вернуть: {0} ({1}) — удалено {2:dd.MM HH:mm}</value>
+  </data>
+  <data name="UnfreezeButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
+    <value>Разморозить приложение или включить остановленное системой</value>
+  </data>
+  <data name="UnfreezeButton.Label" xml:space="preserve">
+    <value>Включить</value>
+  </data>
+  <data name="Unfreezing" xml:space="preserve">
+    <value>Разморозка…</value>
+  </data>
+  <data name="Uninstall" xml:space="preserve">
+    <value>Удалить</value>
+  </data>
+  <data name="UninstallButton.Label" xml:space="preserve">
+    <value>Удалить</value>
+  </data>
+  <data name="Uninstalled" xml:space="preserve">
+    <value>Удалено</value>
+  </data>
+  <data name="UninstalledErrorsFormat" xml:space="preserve">
+    <value>Удалено: {0}, ошибок: {1}</value>
+  </data>
+  <data name="Uninstalling" xml:space="preserve">
+    <value>Удаление…</value>
+  </data>
+  <data name="UninstallManyQuestionFormat" xml:space="preserve">
+    <value>Удалить приложения ({0})?</value>
+  </data>
+  <data name="UninstallOneQuestion" xml:space="preserve">
+    <value>Удалить приложение?</value>
+  </data>
+  <data name="UninstallSystemWarning" xml:space="preserve">
+    <value>Будут удалены только для текущего пользователя (pm uninstall --user 0). Удаление важных системных компонентов может нарушить работу телефона. Вернуть можно через «… → Вернуть как было» или «Восстановить удалённые системные».</value>
+  </data>
+  <data name="UninstallTitle" xml:space="preserve">
+    <value>Удаление</value>
+  </data>
+  <data name="UnitBytes" xml:space="preserve">
+    <value>Б</value>
+  </data>
+  <data name="UnitDays" xml:space="preserve">
+    <value>д</value>
+  </data>
+  <data name="UnitGigabytes" xml:space="preserve">
+    <value>ГБ</value>
+  </data>
+  <data name="UnitHours" xml:space="preserve">
+    <value>ч</value>
+  </data>
+  <data name="UnitKilobytes" xml:space="preserve">
+    <value>КБ</value>
+  </data>
+  <data name="UnitMegabytes" xml:space="preserve">
+    <value>МБ</value>
+  </data>
+  <data name="UnitMinutes" xml:space="preserve">
+    <value>мин</value>
+  </data>
+  <data name="UnitSeconds" xml:space="preserve">
+    <value>с</value>
+  </data>
+  <data name="UnitTerabytes" xml:space="preserve">
+    <value>ТБ</value>
+  </data>
+  <data name="UnknownAction" xml:space="preserve">
+    <value>неизвестное действие</value>
+  </data>
+  <data name="UnknownError" xml:space="preserve">
+    <value>неизвестная ошибка</value>
+  </data>
+  <data name="Unused" xml:space="preserve">
+    <value>Не используется</value>
+  </data>
+  <data name="UnusedBadge.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
+    <value>Android остановил приложение, так как им давно не пользовались. Оно включится при запуске.</value>
+  </data>
+  <data name="UnusedBadgeText.Text" xml:space="preserve">
+    <value>Не используется</value>
+  </data>
+  <data name="UnusedCountFormat" xml:space="preserve">
+    <value> · не используется: {0}</value>
+  </data>
+  <data name="UpdateAvailableFormat" xml:space="preserve">
+    <value>Доступна версия {0}</value>
+  </data>
+  <data name="UpdateAvailableMessageFormat" xml:space="preserve">
+    <value>У вас версия {0}. Скачайте архив со страницы выпуска и распакуйте его поверх прежней папки. Закройте уведомление — и об этой версии программа больше не напомнит.</value>
+  </data>
+  <data name="UpdateBar.Title" xml:space="preserve">
+    <value>Доступна новая версия</value>
+  </data>
+  <data name="UpdateCheckFailed" xml:space="preserve">
+    <value>Не удалось проверить обновления</value>
+  </data>
+  <data name="UpdateDownloadButton.Content" xml:space="preserve">
+    <value>Открыть страницу загрузки</value>
+  </data>
+  <data name="UpToDateFormat" xml:space="preserve">
+    <value>Установлена последняя версия — {0}.</value>
+  </data>
+  <data name="UpToDateTitle" xml:space="preserve">
+    <value>Обновлений нет</value>
+  </data>
+  <data name="UsbCanBeUnplugged" xml:space="preserve">
+    <value>Теперь USB-кабель можно отключить.</value>
+  </data>
+  <data name="UsingNow" xml:space="preserve">
+    <value>использует сейчас</value>
+  </data>
+  <data name="VersionInstalledFormat" xml:space="preserve">
+    <value>Версия {0} установлена.</value>
+  </data>
+  <data name="VpnBlocksFormat" xml:space="preserve">
+    <value>Трафик к устройству идёт через «{0}» — VPN на компьютере закрывает доступ к домашней сети. Выключите его или разрешите в нём доступ к локальной сети.</value>
+  </data>
+</root>

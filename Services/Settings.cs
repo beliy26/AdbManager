@@ -10,6 +10,12 @@ public sealed class Settings
     public string? SortColumn { get; set; }
     public bool SortDescending { get; set; }
 
+    /// <summary>Язык интерфейса: «ru-RU», «en-US» или null — по языкам Windows.</summary>
+    public string? Language { get; set; }
+
+    /// <summary>Версия, уведомление о которой закрыли, — о ней больше не напоминаем.</summary>
+    public string? SkippedUpdateVersion { get; set; }
+
     /// <summary>Устройства, сопряжённые по коду (беспроводная отладка Android 11+).</summary>
     public List<PairedDevice> PairedDevices { get; set; } = [];
 

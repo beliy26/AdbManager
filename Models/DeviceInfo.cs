@@ -1,3 +1,5 @@
+using AdbManager.Services;
+
 namespace AdbManager.Models;
 
 /// <summary>Как устройство попало в список.</summary>
@@ -60,7 +62,7 @@ public sealed class DeviceInfo(string serial, string state, string model, string
     public string KindText => Kind switch
     {
         DeviceKind.Usb => "USB",
-        DeviceKind.Paired => "Беспроводная отладка",
+        DeviceKind.Paired => Res.Get("DeviceKindPaired"),
         _ => "Wi-Fi",
     };
 
@@ -68,11 +70,11 @@ public sealed class DeviceInfo(string serial, string state, string model, string
 
     public string StateText => State switch
     {
-        "device" => "Подключено",
-        AvailableState => "Не подключено — нажмите, чтобы подключить",
-        MissingState => "Сопряжено, сейчас не в сети",
-        "unauthorized" => "Не авторизовано — подтвердите отладку на телефоне",
-        "offline" => "Офлайн",
+        "device" => Res.Get("Connected"),
+        AvailableState => Res.Get("DeviceStateAvailable"),
+        MissingState => Res.Get("DeviceStateMissing"),
+        "unauthorized" => Res.Get("DeviceStateUnauthorized"),
+        "offline" => Res.Get("DeviceStateOffline"),
         "recovery" => "Recovery",
         "sideload" => "Sideload",
         "bootloader" => "Bootloader",
@@ -83,10 +85,10 @@ public sealed class DeviceInfo(string serial, string state, string model, string
 
     public string TypeText => Type switch
     {
-        DeviceType.Phone => "Телефон",
-        DeviceType.Tablet => "Планшет",
-        DeviceType.Tv => "Android TV (телевизор или приставка)",
-        _ => "Тип устройства станет известен после подключения",
+        DeviceType.Phone => Res.Get("DeviceTypePhone"),
+        DeviceType.Tablet => Res.Get("DeviceTypeTablet"),
+        DeviceType.Tv => Res.Get("DeviceTypeTv"),
+        _ => Res.Get("DeviceTypeUnknown"),
     };
 
     /// <summary>Иконка по типу устройства; пока тип неизвестен — по способу подключения.</summary>

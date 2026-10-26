@@ -1,4 +1,5 @@
 using System.ComponentModel;
+using AdbManager.Services;
 
 namespace AdbManager.Models;
 
@@ -107,8 +108,8 @@ public sealed class PackageInfo(string name, bool isSystem, string apkPath) : IN
     public string SizeText => TotalSize is { } total ? FormatSize(total) : "—";
 
     public string SizeToolTip => TotalSize is null
-        ? "Нет данных о размере (Android ещё не посчитал его)"
-        : $"Приложение: {FormatSize(AppSize ?? 0)}\nДанные: {FormatSize(DataSize ?? 0)}\nв т.ч. кэш: {FormatSize(CacheSize ?? 0)}";
+        ? Res.Get("SizeUnknown")
+        : Res.Format("SizeToolTipFormat", FormatSize(AppSize ?? 0), FormatSize(DataSize ?? 0), FormatSize(CacheSize ?? 0));
 
     public void SetSizes(long? app, long? data, long? cache)
     {
@@ -122,7 +123,7 @@ public sealed class PackageInfo(string name, bool isSystem, string apkPath) : IN
 
     public static string FormatSize(long bytes)
     {
-        string[] units = ["Б", "КБ", "МБ", "ГБ", "ТБ"];
+        string[] units = [Res.Get("UnitBytes"), Res.Get("UnitKilobytes"), Res.Get("UnitMegabytes"), Res.Get("UnitGigabytes"), Res.Get("UnitTerabytes")];
         double value = bytes;
         int unit = 0;
         while (value >= 1024 && unit < units.Length - 1)
@@ -135,8 +136,8 @@ public sealed class PackageInfo(string name, bool isSystem, string apkPath) : IN
 
     public string StatusText => State switch
     {
-        PackageState.Frozen => "Заморожено",
-        PackageState.Unused => "Не используется",
+        PackageState.Frozen => Res.Get("Frozen"),
+        PackageState.Unused => Res.Get("Unused"),
         _ => "",
     };
 
@@ -155,10 +156,10 @@ public sealed class PackageInfo(string name, bool isSystem, string apkPath) : IN
 
     public string AdviceText => Advice switch
     {
-        PackageAdvice.Disable => "Можно отключить",
-        PackageAdvice.Optional => "По желанию",
-        PackageAdvice.Keep => "Не трогать",
-        PackageAdvice.Protected => "Защищено",
+        PackageAdvice.Disable => Res.Get("AdviceDisable"),
+        PackageAdvice.Optional => Res.Get("AdviceOptional"),
+        PackageAdvice.Keep => Res.Get("AdviceKeep"),
+        PackageAdvice.Protected => Res.Get("AdviceProtected"),
         _ => "",
     };
 
@@ -178,7 +179,7 @@ public sealed class PackageInfo(string name, bool isSystem, string apkPath) : IN
 
     public string DisplayName => string.IsNullOrWhiteSpace(Label) ? Name : Label;
 
-    public string KindText => IsSystem ? "Системное" : "Пользовательское";
+    public string KindText => IsSystem ? Res.Get("KindSystem") : Res.Get("KindUser");
 
     public string Glyph => IsSystem ? "\uE770" : "\uE74C"; // шестерёнка / приложение
 

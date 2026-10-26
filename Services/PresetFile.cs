@@ -58,7 +58,7 @@ public static class PresetFile
             }
             catch (JsonException ex)
             {
-                throw new FormatException("Файл не похож на пресеты ADB Manager: " + ex.Message, ex);
+                throw new FormatException(Res.Get("NotPresetsFile") + ex.Message, ex);
             }
         }
 

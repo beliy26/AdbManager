@@ -67,7 +67,8 @@ def main():
             "platform": "any",
             "action": action,
             "title": title or name,
-            "note": f"CleanYourTV: отключён на {count} моделях ТВ" if count > 1 else "CleanYourTV: отключён на одной модели ТВ",
+            # Пояснение «отключён на N моделях ТВ» программа строит из ресурсов на языке интерфейса.
+            "models": count,
         })
 
     commit = subprocess.run(["git", "-C", str(src), "rev-parse", "HEAD"], capture_output=True, text=True).stdout.strip()

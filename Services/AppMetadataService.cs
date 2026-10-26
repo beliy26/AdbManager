@@ -18,7 +18,9 @@ public sealed class AppMetadataService(AdbService adb)
 
     private static string CacheDir(string serial, PackageInfo package)
     {
-        var hash = SHA1.HashData(Encoding.UTF8.GetBytes(serial + "|" + package.Name + "|" + package.ApkPath));
+        // Название приложения зависит от языка интерфейса — у не-русского свой кэш (русский — прежний).
+        var lang = Res.Language == Res.Russian ? "" : "|" + Res.Language;
+        var hash = SHA1.HashData(Encoding.UTF8.GetBytes(serial + "|" + package.Name + "|" + package.ApkPath + lang));
         return Path.Combine(CacheRoot, Convert.ToHexString(hash)[..20]);
     }
 

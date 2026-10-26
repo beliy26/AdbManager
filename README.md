@@ -68,6 +68,8 @@
 ![Установка лаунчера Projectivy](docs/launcher.png)
 
 **Прочее**
+- **Русский и английский интерфейс** — «… → Language / Язык»; по умолчанию — язык интерфейса Windows. Пояснения из баз советов тоже переведены.
+- **Уведомление о новой версии** — при запуске программа проверяет GitHub Releases; «… → Проверить обновления» — вручную.
 - Журнал всех выполненных команд adb.
 
 **adb**
@@ -156,9 +158,16 @@ Services/
   ChangeJournal.cs      журнал изменений и бэкапы по устройству
   NetworkScanner.cs     поиск устройств в сети, проверка маршрута через VPN
   LauncherInstaller.cs  загрузка Projectivy Launcher с GitHub Releases
+  UpdateChecker.cs      проверка новой версии программы
+  Res.cs                строки интерфейса из ресурсов (MRT Core)
   PresetFile.cs         экспорт и импорт пресетов отметки
   Settings.cs           настройки и пресеты (%LOCALAPPDATA%\AdbManager\settings.json)
+Strings/
+  ru-RU/Resources.resw  строки интерфейса на русском
+  en-US/Resources.resw  строки интерфейса на английском
+  en-US/Advice.resw     перевод названий и пояснений из баз советов
 MainWindow.xaml(.cs)    интерфейс
 tools/make-icon.ps1     генерация иконки приложения
 tools/import-cleanyourtv.py  сборка базы из списков CleanYourTV
+tools/check-resources.py     проверка строковых ресурсов (ключи, подстановки, забытые литералы)
 ```

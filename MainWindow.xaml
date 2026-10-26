@@ -51,23 +51,21 @@
                     <!-- adb.exe -->
                     <StackPanel Spacing="6">
                         <TextBlock Text="ADB" Style="{StaticResource BodyStrongTextBlockStyle}" />
-                        <TextBlock x:Name="AdbPathText"
-                                   Text="adb.exe не найден"
+                        <TextBlock x:Uid="AdbPathText" x:Name="AdbPathText"
                                    TextWrapping="Wrap"
                                    Style="{StaticResource CaptionTextBlockStyle}"
                                    Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
                         <StackPanel Orientation="Horizontal" Spacing="6">
-                            <Button Click="BrowseAdb_Click" ToolTipService.ToolTip="Указать путь к adb.exe">
+                            <Button x:Uid="BrowseAdbButton" Click="BrowseAdb_Click">
                                 <StackPanel Orientation="Horizontal" Spacing="6">
                                     <FontIcon Glyph="&#xE8DA;" FontSize="14" />
-                                    <TextBlock Text="Указать" />
+                                    <TextBlock x:Uid="BrowseAdbText" />
                                 </StackPanel>
                             </Button>
-                            <Button x:Name="DownloadAdbButton" Click="DownloadAdb_Click"
-                                    ToolTipService.ToolTip="Скачать Android platform-tools с dl.google.com">
+                            <Button x:Uid="DownloadAdbButton" x:Name="DownloadAdbButton" Click="DownloadAdb_Click">
                                 <StackPanel Orientation="Horizontal" Spacing="6">
                                     <FontIcon Glyph="&#xE896;" FontSize="14" />
-                                    <TextBlock Text="Скачать" />
+                                    <TextBlock x:Uid="DownloadAdbText" />
                                 </StackPanel>
                             </Button>
                         </StackPanel>
@@ -75,9 +73,8 @@
 
                     <!-- Заголовок списка устройств -->
                     <Grid Grid.Row="1" Margin="0,8,0,0">
-                        <TextBlock Text="Устройства" Style="{StaticResource BodyStrongTextBlockStyle}" VerticalAlignment="Center" />
-                        <Button HorizontalAlignment="Right" Click="RefreshDevices_Click"
-                                ToolTipService.ToolTip="Обновить список устройств"
+                        <TextBlock x:Uid="DevicesHeader" Style="{StaticResource BodyStrongTextBlockStyle}" VerticalAlignment="Center" />
+                        <Button x:Uid="RefreshDevicesButton" HorizontalAlignment="Right" Click="RefreshDevices_Click"
                                 Style="{StaticResource SubtleButtonStyle}">
                             <FontIcon Glyph="&#xE72C;" FontSize="14" />
                         </Button>
@@ -110,8 +107,7 @@
                                 </DataTemplate>
                             </ListView.ItemTemplate>
                         </ListView>
-                        <TextBlock x:Name="NoDevicesText"
-                                   Text="Нет устройств.&#x0a;Подключите телефон по USB с включённой «Отладкой по USB», нажмите «Найти в сети» или выполните сопряжение по коду."
+                        <TextBlock x:Uid="NoDevicesText" x:Name="NoDevicesText"
                                    TextWrapping="Wrap" TextAlignment="Center"
                                    VerticalAlignment="Center" Margin="12"
                                    Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
@@ -119,43 +115,39 @@
 
                     <!-- Действия с выбранным устройством -->
                     <StackPanel Grid.Row="3" Orientation="Horizontal" Spacing="6">
-                        <Button x:Name="EnableWifiButton" Click="EnableWifi_Click" IsEnabled="False"
-                                ToolTipService.ToolTip="Перевести USB-устройство в режим отладки по Wi-Fi (adb tcpip 5555)">
+                        <Button x:Uid="EnableWifiButton" x:Name="EnableWifiButton" Click="EnableWifi_Click" IsEnabled="False">
                             <StackPanel Orientation="Horizontal" Spacing="6">
                                 <FontIcon Glyph="&#xE701;" FontSize="14" />
-                                <TextBlock Text="Wi-Fi режим" />
+                                <TextBlock x:Uid="EnableWifiText" />
                             </StackPanel>
                         </Button>
-                        <Button x:Name="DisconnectButton" Click="Disconnect_Click" IsEnabled="False"
-                                ToolTipService.ToolTip="Отключить беспроводное устройство или забыть сопряжённое">
+                        <Button x:Uid="DisconnectButton" x:Name="DisconnectButton" Click="Disconnect_Click" IsEnabled="False">
                             <StackPanel Orientation="Horizontal" Spacing="6">
                                 <FontIcon Glyph="&#xE8CD;" FontSize="14" />
-                                <TextBlock x:Name="DisconnectButtonText" Text="Отключить" />
+                                <TextBlock x:Uid="DisconnectButtonText" x:Name="DisconnectButtonText" />
                             </StackPanel>
                         </Button>
                     </StackPanel>
 
                     <!-- Подключение по сети -->
                     <StackPanel Grid.Row="4" Spacing="6">
-                        <TextBlock Text="Подключение по Wi-Fi" Style="{StaticResource BodyStrongTextBlockStyle}" />
+                        <TextBlock x:Uid="ConnectHeader" Style="{StaticResource BodyStrongTextBlockStyle}" />
                         <Grid ColumnSpacing="6">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*" />
                                 <ColumnDefinition Width="Auto" />
                             </Grid.ColumnDefinitions>
                             <TextBox x:Name="ConnectAddressBox" PlaceholderText="192.168.1.10:5555" KeyDown="ConnectAddressBox_KeyDown" />
-                            <Button Grid.Column="1" Content="Подключить" Click="Connect_Click" Style="{StaticResource AccentButtonStyle}" />
+                            <Button x:Uid="ConnectButton" Grid.Column="1" Click="Connect_Click" Style="{StaticResource AccentButtonStyle}" />
                         </Grid>
                         <StackPanel Orientation="Horizontal" Spacing="16">
-                            <HyperlinkButton x:Name="FindInNetworkButton" Click="FindInNetwork_Click" Padding="0,4"
-                                             ToolTipService.ToolTip="Ищет устройства с отладкой по сети (порт 5555 в домашней сети и беспроводную отладку Android 11+ по mDNS) и добавляет их в список">
+                            <HyperlinkButton x:Uid="FindInNetworkButton" x:Name="FindInNetworkButton" Click="FindInNetwork_Click" Padding="0,4">
                                 <StackPanel Orientation="Horizontal" Spacing="6">
                                     <FontIcon Glyph="&#xE721;" FontSize="12" />
-                                    <TextBlock Text="Найти в сети" />
+                                    <TextBlock x:Uid="FindInNetworkText" />
                                 </StackPanel>
                             </HyperlinkButton>
-                            <HyperlinkButton Content="Сопряжение по коду…" Click="Pair_Click" Padding="0,4"
-                                             ToolTipService.ToolTip="Беспроводная отладка Android 11+: подключение по коду" />
+                            <HyperlinkButton x:Uid="PairButton" Click="Pair_Click" Padding="0,4" />
                         </StackPanel>
                     </StackPanel>
                 </Grid>
@@ -180,7 +172,7 @@
                             <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
                         <StackPanel VerticalAlignment="Center">
-                            <TextBlock x:Name="PackagesHeader" Text="Приложения" Style="{StaticResource SubtitleTextBlockStyle}" />
+                            <TextBlock x:Uid="PackagesHeader" x:Name="PackagesHeader" Style="{StaticResource SubtitleTextBlockStyle}" />
                             <StackPanel Orientation="Horizontal" Spacing="12">
                                 <TextBlock x:Name="PackagesCountText" Style="{StaticResource CaptionTextBlockStyle}"
                                            Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
@@ -192,105 +184,114 @@
                             </StackPanel>
                         </StackPanel>
                         <CommandBar Grid.Column="1" DefaultLabelPosition="Right" Background="Transparent" IsOpen="False">
-                            <AppBarButton x:Name="InstallButton" Label="Установить APK" Click="Install_Click" IsEnabled="False">
+                            <AppBarButton x:Uid="InstallButton" x:Name="InstallButton" Click="Install_Click" IsEnabled="False">
                                 <AppBarButton.Icon>
                                     <FontIcon Glyph="&#xE896;" />
                                 </AppBarButton.Icon>
                             </AppBarButton>
-                            <AppBarButton x:Name="UninstallButton" Label="Удалить" Click="Uninstall_Click" IsEnabled="False">
+                            <AppBarButton x:Uid="UninstallButton" x:Name="UninstallButton" Click="Uninstall_Click" IsEnabled="False">
                                 <AppBarButton.Icon>
                                     <FontIcon Glyph="&#xE74D;" />
                                 </AppBarButton.Icon>
                             </AppBarButton>
-                            <AppBarButton x:Name="FreezeButton" Label="Заморозить" Click="Freeze_Click" IsEnabled="False"
-                                          ToolTipService.ToolTip="Отключить приложение (pm disable-user). Данные сохраняются.">
+                            <AppBarButton x:Uid="FreezeButton" x:Name="FreezeButton" Click="Freeze_Click" IsEnabled="False">
                                 <AppBarButton.Icon>
                                     <FontIcon Glyph="&#xE769;" />
                                 </AppBarButton.Icon>
                             </AppBarButton>
-                            <AppBarButton x:Name="UnfreezeButton" Label="Включить" Click="Unfreeze_Click" IsEnabled="False"
-                                          ToolTipService.ToolTip="Разморозить приложение или включить остановленное системой">
+                            <AppBarButton x:Uid="UnfreezeButton" x:Name="UnfreezeButton" Click="Unfreeze_Click" IsEnabled="False">
                                 <AppBarButton.Icon>
                                     <FontIcon Glyph="&#xE768;" />
                                 </AppBarButton.Icon>
                             </AppBarButton>
-                            <AppBarButton x:Name="RefreshPackagesButton" Label="Обновить" Click="RefreshPackages_Click" IsEnabled="False">
+                            <AppBarButton x:Uid="RefreshPackagesButton" x:Name="RefreshPackagesButton" Click="RefreshPackages_Click" IsEnabled="False">
                                 <AppBarButton.Icon>
                                     <FontIcon Glyph="&#xE72C;" />
                                 </AppBarButton.Icon>
                             </AppBarButton>
                             <CommandBar.SecondaryCommands>
-                                <AppBarButton x:Name="PullApkButton" Label="Сохранить APK на ПК…" Click="PullApk_Click" IsEnabled="False"
-                                              ToolTipService.ToolTip="Одно приложение — в выбранный файл, несколько отмеченных — в выбранную папку (файлы по имени пакета)">
+                                <AppBarButton x:Uid="PullApkButton" x:Name="PullApkButton" Click="PullApk_Click" IsEnabled="False">
                                     <AppBarButton.Icon>
                                         <FontIcon Glyph="&#xE74E;" />
                                     </AppBarButton.Icon>
                                 </AppBarButton>
-                                <AppBarButton x:Name="CopyListButton" Label="Копировать список для LLM" Click="CopyListForLlm_Click" IsEnabled="False"
-                                              ToolTipService.ToolTip="Скопировать показанный список приложений (с учётом поиска и фильтров) в виде таблицы с запросом для консультации у ИИ">
+                                <AppBarButton x:Uid="CopyListButton" x:Name="CopyListButton" Click="CopyListForLlm_Click" IsEnabled="False">
                                     <AppBarButton.Icon>
                                         <FontIcon Glyph="&#xE8C8;" />
                                     </AppBarButton.Icon>
                                 </AppBarButton>
-                                <AppBarButton x:Name="CopyNameButton" Label="Копировать имя пакета" Click="CopyName_Click" IsEnabled="False">
+                                <AppBarButton x:Uid="CopyNameButton" x:Name="CopyNameButton" Click="CopyName_Click" IsEnabled="False">
                                     <AppBarButton.Icon>
                                         <FontIcon Glyph="&#xE8C8;" />
                                     </AppBarButton.Icon>
                                 </AppBarButton>
                                 <AppBarSeparator />
-                                <AppBarButton x:Name="RestoreButton" Label="Вернуть как было…" Click="Restore_Click" IsEnabled="False"
-                                              ToolTipService.ToolTip="Отменить заморозку, удаление системных приложений и смену DNS, сделанные этой программой">
+                                <AppBarButton x:Uid="RestoreButton" x:Name="RestoreButton" Click="Restore_Click" IsEnabled="False">
                                     <AppBarButton.Icon>
                                         <FontIcon Glyph="&#xE7A7;" />
                                     </AppBarButton.Icon>
                                 </AppBarButton>
-                                <AppBarButton x:Name="RestoreRemovedButton" Label="Восстановить удалённые системные…" Click="RestoreRemoved_Click" IsEnabled="False"
-                                              ToolTipService.ToolTip="Системные приложения, удалённые для пользователя (кем угодно), возвращаются через install-existing">
+                                <AppBarButton x:Uid="RestoreRemovedButton" x:Name="RestoreRemovedButton" Click="RestoreRemoved_Click" IsEnabled="False">
                                     <AppBarButton.Icon>
                                         <FontIcon Glyph="&#xE777;" />
                                     </AppBarButton.Icon>
                                 </AppBarButton>
-                                <AppBarButton x:Name="CheckDriftButton" Label="Проверить после обновления прошивки…" Click="CheckDrift_Click" IsEnabled="False"
-                                              ToolTipService.ToolTip="Обновление прошивки возвращает замороженное и удалённое — найти такие приложения и повторить">
+                                <AppBarButton x:Uid="CheckDriftButton" x:Name="CheckDriftButton" Click="CheckDrift_Click" IsEnabled="False">
                                     <AppBarButton.Icon>
                                         <FontIcon Glyph="&#xE895;" />
                                     </AppBarButton.Icon>
                                 </AppBarButton>
                                 <AppBarSeparator />
-                                <AppBarButton x:Name="InstallLauncherButton" Label="Установить лаунчер Projectivy…" Click="InstallLauncher_Click" IsEnabled="False"
-                                              ToolTipService.ToolTip="Скачать с GitHub и установить Projectivy Launcher — главный экран для Android TV без рекламы">
+                                <AppBarButton x:Uid="InstallLauncherButton" x:Name="InstallLauncherButton" Click="InstallLauncher_Click" IsEnabled="False">
                                     <AppBarButton.Icon>
                                         <FontIcon Glyph="&#xE80F;" />
                                     </AppBarButton.Icon>
                                 </AppBarButton>
-                                <AppBarButton x:Name="PrivacyAuditButton" Label="Аудит приватности…" Click="PrivacyAudit_Click" IsEnabled="False"
-                                              ToolTipService.ToolTip="Голосовой ассистент, доступ к микрофону по истории AppOps, ACR и телеметрия">
+                                <AppBarButton x:Uid="PrivacyAuditButton" x:Name="PrivacyAuditButton" Click="PrivacyAudit_Click" IsEnabled="False">
                                     <AppBarButton.Icon>
                                         <FontIcon Glyph="&#xE720;" />
                                     </AppBarButton.Icon>
                                 </AppBarButton>
-                                <AppBarButton x:Name="PrivateDnsButton" Label="Частный DNS (блокировка рекламы)…" Click="PrivateDns_Click" IsEnabled="False">
+                                <AppBarButton x:Uid="PrivateDnsButton" x:Name="PrivateDnsButton" Click="PrivateDns_Click" IsEnabled="False">
                                     <AppBarButton.Icon>
                                         <FontIcon Glyph="&#xE72E;" />
                                     </AppBarButton.Icon>
                                 </AppBarButton>
-                                <AppBarButton x:Name="OpenBackupsButton" Label="Открыть папку бэкапов и журнала" Click="OpenBackups_Click" IsEnabled="False">
+                                <AppBarButton x:Uid="OpenBackupsButton" x:Name="OpenBackupsButton" Click="OpenBackups_Click" IsEnabled="False">
                                     <AppBarButton.Icon>
                                         <FontIcon Glyph="&#xE838;" />
                                     </AppBarButton.Icon>
                                 </AppBarButton>
-                                <AppBarButton x:Name="ScreenshotButton" Label="Снимок экрана устройства…" Click="Screenshot_Click" IsEnabled="False">
+                                <AppBarButton x:Uid="ScreenshotButton" x:Name="ScreenshotButton" Click="Screenshot_Click" IsEnabled="False">
                                     <AppBarButton.Icon>
                                         <FontIcon Glyph="&#xE722;" />
                                     </AppBarButton.Icon>
                                 </AppBarButton>
                                 <AppBarSeparator />
-                                <AppBarToggleButton x:Name="ExpertModeButton" Label="Экспертный режим" Click="ExpertMode_Click"
-                                                    ToolTipService.ToolTip="Снять защиту: разрешить заморозку и удаление любых системных приложений, включая критичные">
+                                <AppBarToggleButton x:Uid="ExpertModeButton" x:Name="ExpertModeButton" Click="ExpertMode_Click">
                                     <AppBarToggleButton.Icon>
                                         <FontIcon Glyph="&#xE7BA;" />
                                     </AppBarToggleButton.Icon>
                                 </AppBarToggleButton>
+                                <AppBarSeparator />
+                                <AppBarButton x:Uid="CheckUpdatesButton" x:Name="CheckUpdatesButton" Click="CheckUpdates_Click">
+                                    <AppBarButton.Icon>
+                                        <FontIcon Glyph="&#xE895;" />
+                                    </AppBarButton.Icon>
+                                </AppBarButton>
+                                <AppBarButton x:Uid="LanguageButton" x:Name="LanguageButton">
+                                    <AppBarButton.Icon>
+                                        <FontIcon Glyph="&#xF2B7;" />
+                                    </AppBarButton.Icon>
+                                    <AppBarButton.Flyout>
+                                        <MenuFlyout>
+                                            <RadioMenuFlyoutItem x:Uid="LanguageSystemItem" x:Name="LanguageSystemItem" Tag="" GroupName="Language" Click="Language_Click" />
+                                            <!-- Названия языков — на самих языках, не переводятся -->
+                                            <RadioMenuFlyoutItem x:Name="LanguageRussianItem" Text="Русский" Tag="ru-RU" GroupName="Language" Click="Language_Click" />
+                                            <RadioMenuFlyoutItem x:Name="LanguageEnglishItem" Text="English" Tag="en-US" GroupName="Language" Click="Language_Click" />
+                                        </MenuFlyout>
+                                    </AppBarButton.Flyout>
+                                </AppBarButton>
                             </CommandBar.SecondaryCommands>
                         </CommandBar>
                     </Grid>
@@ -301,48 +302,50 @@
                             <ColumnDefinition Width="Auto" />
                             <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
-                        <AutoSuggestBox x:Name="SearchBox" PlaceholderText="Поиск по названию или имени пакета"
+                        <AutoSuggestBox x:Uid="SearchBox" x:Name="SearchBox"
                                         QueryIcon="Find" TextChanged="SearchBox_TextChanged" />
-                        <DropDownButton x:Name="MarkButton" Grid.Column="1" VerticalAlignment="Center"
-                                        ToolTipService.ToolTip="Быстро отметить приложения среди показанных">
+                        <DropDownButton x:Uid="MarkButton" x:Name="MarkButton" Grid.Column="1" VerticalAlignment="Center">
                             <StackPanel Orientation="Horizontal" Spacing="6">
                                 <FontIcon Glyph="&#xE73A;" FontSize="14" />
-                                <TextBlock Text="Отметить" />
+                                <TextBlock x:Uid="MarkButtonText" />
                             </StackPanel>
                             <DropDownButton.Flyout>
                                 <MenuFlyout Placement="BottomEdgeAlignedRight" Opening="MarkFlyout_Opening">
-                                    <MenuFlyoutItem Text="Все" Tag="All" Click="Mark_Click" />
-                                    <MenuFlyoutItem Text="Включённые" Tag="Enabled" Click="Mark_Click" />
-                                    <MenuFlyoutItem Text="Замороженные" Tag="Frozen" Click="Mark_Click" />
-                                    <MenuFlyoutItem Text="Не используемые" Tag="Unused" Click="Mark_Click" />
-                                    <MenuFlyoutItem Text="Пользовательские" Tag="User" Click="Mark_Click" />
-                                    <MenuFlyoutItem Text="Системные" Tag="System" Click="Mark_Click" />
+                                    <MenuFlyoutItem x:Uid="MarkAllItem" Tag="All" Click="Mark_Click" />
+                                    <MenuFlyoutItem x:Uid="MarkEnabledItem" Tag="Enabled" Click="Mark_Click" />
+                                    <MenuFlyoutItem x:Uid="MarkFrozenItem" Tag="Frozen" Click="Mark_Click" />
+                                    <MenuFlyoutItem x:Uid="MarkUnusedItem" Tag="Unused" Click="Mark_Click" />
+                                    <MenuFlyoutItem x:Uid="MarkUserItem" Tag="User" Click="Mark_Click" />
+                                    <MenuFlyoutItem x:Uid="MarkSystemItem" Tag="System" Click="Mark_Click" />
                                     <MenuFlyoutSeparator />
-                                    <MenuFlyoutItem Text="Рекомендуемые к отключению" Tag="Recommended" Click="Mark_Click"
-                                                    ToolTipService.ToolTip="Включённые приложения, которые советуется отключить: реклама, телеметрия, скрытые установщики (база ЧистогоТВ и список предустановок телефонов)" />
-                                    <MenuFlyoutSubItem x:Name="PresetsMenu" Text="Пресеты">
+                                    <MenuFlyoutItem x:Uid="MarkRecommendedItem" Tag="Recommended" Click="Mark_Click" />
+                                    <MenuFlyoutSubItem x:Uid="PresetsMenu" x:Name="PresetsMenu">
                                         <MenuFlyoutSubItem.Icon>
                                             <FontIcon Glyph="&#xE728;" />
                                         </MenuFlyoutSubItem.Icon>
                                     </MenuFlyoutSubItem>
                                     <MenuFlyoutSeparator />
-                                    <MenuFlyoutItem Text="Инвертировать" Tag="Invert" Click="Mark_Click" />
-                                    <MenuFlyoutItem Text="Снять отметку" Tag="None" Click="Mark_Click" />
+                                    <MenuFlyoutItem x:Uid="MarkInvertItem" Tag="Invert" Click="Mark_Click" />
+                                    <MenuFlyoutItem x:Uid="MarkNoneItem" Tag="None" Click="Mark_Click" />
                                 </MenuFlyout>
                             </DropDownButton.Flyout>
                         </DropDownButton>
-                        <ToggleSwitch x:Name="ShowSystemToggle" Grid.Column="2"
-                                      OnContent="Системные: показаны" OffContent="Системные: скрыты"
+                        <ToggleSwitch x:Uid="ShowSystemToggle" x:Name="ShowSystemToggle" Grid.Column="2"
                                       Toggled="ShowSystemToggle_Toggled" MinWidth="0" />
                     </Grid>
 
                     <StackPanel Grid.Row="2" Spacing="4">
                         <ProgressBar x:Name="BusyBar" IsIndeterminate="True" Visibility="Collapsed" />
-                        <InfoBar x:Name="ExpertModeBar" IsOpen="False" IsClosable="False" Severity="Error"
-                                 Title="Экспертный режим"
-                                 Message="Защита отключена: можно заморозить и удалить любые системные приложения, включая критичные. Выключить — «… → Экспертный режим».">
+                        <InfoBar x:Uid="ExpertModeBar" x:Name="ExpertModeBar" IsOpen="False" IsClosable="False" Severity="Error">
                             <InfoBar.ActionButton>
-                                <Button Content="Выключить" Click="DisableExpertMode_Click" />
+                                <Button x:Uid="DisableExpertModeButton" Click="DisableExpertMode_Click" />
+                            </InfoBar.ActionButton>
+                        </InfoBar>
+                        <!-- Новая версия программы: крестик — больше не напоминать об этой версии -->
+                        <InfoBar x:Uid="UpdateBar" x:Name="UpdateBar" IsOpen="False" IsClosable="True" Severity="Informational"
+                                 CloseButtonClick="UpdateBar_CloseButtonClick">
+                            <InfoBar.ActionButton>
+                                <Button x:Uid="UpdateDownloadButton" Click="UpdateDownload_Click" />
                             </InfoBar.ActionButton>
                         </InfoBar>
                         <InfoBar x:Name="StatusBar" IsOpen="False" IsClosable="True" />
@@ -366,40 +369,38 @@
                                 <ColumnDefinition Width="90" />
                             </Grid.ColumnDefinitions>
                             <!-- Отметить / снять все показанные; промежуточное состояние — отмечена часть -->
-                            <CheckBox x:Name="SelectAllCheckBox" MinWidth="0" Width="20" Padding="0"
+                            <CheckBox x:Uid="SelectAllCheckBox" x:Name="SelectAllCheckBox" MinWidth="0" Width="20" Padding="0"
                                       IsThreeState="False" VerticalAlignment="Center"
-                                      Click="SelectAllCheckBox_Click"
-                                      ToolTipService.ToolTip="Отметить все показанные приложения" />
+                                      Click="SelectAllCheckBox_Click" />
                             <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="4" Margin="-8,0,0,0">
                                 <Button x:Name="SortByNameButton" Tag="Name" Click="SortHeader_Click" Style="{StaticResource SubtleButtonStyle}" Padding="8,4">
                                     <StackPanel Orientation="Horizontal" Spacing="6">
-                                        <TextBlock Text="Название" Style="{StaticResource CaptionTextBlockStyle}" />
+                                        <TextBlock x:Uid="SortByNameText" Style="{StaticResource CaptionTextBlockStyle}" />
                                         <FontIcon x:Name="SortByNameArrow" FontSize="10" />
                                     </StackPanel>
                                 </Button>
                                 <Button x:Name="SortByPackageButton" Tag="Package" Click="SortHeader_Click" Style="{StaticResource SubtleButtonStyle}" Padding="8,4">
                                     <StackPanel Orientation="Horizontal" Spacing="6">
-                                        <TextBlock Text="Пакет" Style="{StaticResource CaptionTextBlockStyle}" />
+                                        <TextBlock x:Uid="SortByPackageText" Style="{StaticResource CaptionTextBlockStyle}" />
                                         <FontIcon x:Name="SortByPackageArrow" FontSize="10" />
                                     </StackPanel>
                                 </Button>
                             </StackPanel>
                             <Button Grid.Column="3" Tag="Status" Click="SortHeader_Click" Style="{StaticResource SubtleButtonStyle}" Padding="8,4" Margin="-8,0,0,0">
                                 <StackPanel Orientation="Horizontal" Spacing="6">
-                                    <TextBlock Text="Статус" Style="{StaticResource CaptionTextBlockStyle}" />
+                                    <TextBlock x:Uid="SortByStatusText" Style="{StaticResource CaptionTextBlockStyle}" />
                                     <FontIcon x:Name="SortByStatusArrow" FontSize="10" />
                                 </StackPanel>
                             </Button>
-                            <Button Grid.Column="4" Tag="Advice" Click="SortHeader_Click" Style="{StaticResource SubtleButtonStyle}" Padding="8,4" Margin="-8,0,0,0"
-                                    ToolTipService.ToolTip="Совет из базы ЧистогоТВ и списка рекламных предустановок телефонов; встроенная защита критичных системных пакетов">
+                            <Button x:Uid="SortByAdviceButton" Grid.Column="4" Tag="Advice" Click="SortHeader_Click" Style="{StaticResource SubtleButtonStyle}" Padding="8,4" Margin="-8,0,0,0">
                                 <StackPanel Orientation="Horizontal" Spacing="6">
-                                    <TextBlock Text="Совет" Style="{StaticResource CaptionTextBlockStyle}" />
+                                    <TextBlock x:Uid="SortByAdviceText" Style="{StaticResource CaptionTextBlockStyle}" />
                                     <FontIcon x:Name="SortByAdviceArrow" FontSize="10" />
                                 </StackPanel>
                             </Button>
                             <Button Grid.Column="5" Tag="Kind" Click="SortHeader_Click" Style="{StaticResource SubtleButtonStyle}" Padding="8,4" Margin="-8,0,0,0">
                                 <StackPanel Orientation="Horizontal" Spacing="6">
-                                    <TextBlock Text="Тип" Style="{StaticResource CaptionTextBlockStyle}" />
+                                    <TextBlock x:Uid="SortByKindText" Style="{StaticResource CaptionTextBlockStyle}" />
                                     <FontIcon x:Name="SortByKindArrow" FontSize="10" />
                                 </StackPanel>
                             </Button>
@@ -407,7 +408,7 @@
                                     HorizontalAlignment="Right" Margin="0,0,-8,0">
                                 <StackPanel Orientation="Horizontal" Spacing="6">
                                     <FontIcon x:Name="SortBySizeArrow" FontSize="10" />
-                                    <TextBlock Text="Размер" Style="{StaticResource CaptionTextBlockStyle}" />
+                                    <TextBlock x:Uid="SortBySizeText" Style="{StaticResource CaptionTextBlockStyle}" />
                                 </StackPanel>
                             </Button>
                         </Grid>
@@ -437,14 +438,13 @@
                                                        Foreground="{ThemeResource TextFillColorSecondaryBrush}" TextTrimming="CharacterEllipsis" />
                                         </StackPanel>
                                         <Grid Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Left">
-                                            <Border Visibility="{x:Bind IsUnused, Mode=OneWay}"
+                                            <Border x:Uid="UnusedBadge" Visibility="{x:Bind IsUnused, Mode=OneWay}"
                                                     Background="{ThemeResource SystemFillColorNeutralBackgroundBrush}"
-                                                    CornerRadius="4" Padding="8,2"
-                                                    ToolTipService.ToolTip="Android остановил приложение, так как им давно не пользовались. Оно включится при запуске.">
+                                                    CornerRadius="4" Padding="8,2">
                                                 <StackPanel Orientation="Horizontal" Spacing="4">
                                                     <FontIcon Glyph="&#xE708;" FontSize="10"
                                                               Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
-                                                    <TextBlock Text="Не используется" Style="{StaticResource CaptionTextBlockStyle}"
+                                                    <TextBlock x:Uid="UnusedBadgeText" Style="{StaticResource CaptionTextBlockStyle}"
                                                                Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
                                                 </StackPanel>
                                             </Border>
@@ -454,7 +454,7 @@
                                                 <StackPanel Orientation="Horizontal" Spacing="4">
                                                     <FontIcon Glyph="&#xE769;" FontSize="10"
                                                               Foreground="{ThemeResource SystemFillColorCautionBrush}" />
-                                                    <TextBlock Text="Заморожено" Style="{StaticResource CaptionTextBlockStyle}"
+                                                    <TextBlock x:Uid="FrozenBadgeText" Style="{StaticResource CaptionTextBlockStyle}"
                                                                Foreground="{ThemeResource SystemFillColorCautionBrush}" />
                                                 </StackPanel>
                                             </Border>
@@ -490,10 +490,10 @@
                         </ListView>
                         <StackPanel x:Name="EmptyPackagesPanel" Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center" Spacing="8">
                             <FontIcon Glyph="&#xE8EA;" FontSize="40" Foreground="{ThemeResource TextFillColorTertiaryBrush}" />
-                            <TextBlock x:Name="EmptyPackagesText" Text="Выберите устройство слева"
+                            <TextBlock x:Uid="EmptyPackagesText" x:Name="EmptyPackagesText"
                                        TextAlignment="Center" TextWrapping="Wrap"
                                        Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
-                            <TextBlock Text="APK-файлы можно перетащить в окно для установки"
+                            <TextBlock x:Uid="DropApkHint"
                                        Style="{StaticResource CaptionTextBlockStyle}" TextAlignment="Center"
                                        Foreground="{ThemeResource TextFillColorTertiaryBrush}" />
                         </StackPanel>
@@ -503,7 +503,7 @@
         </Grid>
 
         <!-- Журнал команд -->
-        <Expander Grid.Row="2" Header="Журнал adb" HorizontalAlignment="Stretch"
+        <Expander x:Uid="LogExpander" Grid.Row="2" HorizontalAlignment="Stretch"
                   HorizontalContentAlignment="Stretch" Margin="12,0,12,12">
             <Grid RowSpacing="6">
                 <Grid.RowDefinitions>
@@ -513,7 +513,7 @@
                 <TextBox x:Name="LogBox" IsReadOnly="True" AcceptsReturn="True" TextWrapping="Wrap"
                          Height="180" FontFamily="Cascadia Mono, Consolas"
                          ScrollViewer.VerticalScrollBarVisibility="Auto" />
-                <Button Grid.Row="1" Content="Очистить" Click="ClearLog_Click" HorizontalAlignment="Right" />
+                <Button x:Uid="ClearLogButton" Grid.Row="1" Click="ClearLog_Click" HorizontalAlignment="Right" />
             </Grid>
         </Expander>
     </Grid>

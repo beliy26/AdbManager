@@ -1,3 +1,4 @@
+using AdbManager.Services;
 using Microsoft.UI.Xaml;
 
 namespace AdbManager;
@@ -8,6 +9,8 @@ public partial class App : Application
 
     public App()
     {
+        // До загрузки XAML: x:Uid берёт строки на выбранном языке.
+        Res.Init(Settings.Load().Language);
         InitializeComponent();
     }
 

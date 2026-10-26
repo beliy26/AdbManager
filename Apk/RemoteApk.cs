@@ -40,20 +40,20 @@ internal sealed class RemoteApk
 
         int nl = Array.IndexOf(raw, (byte)'\n');
         if (nl <= 0 || nl > 20 || !long.TryParse(Encoding.ASCII.GetString(raw, 0, nl).Trim(), out var size))
-            throw new IOException("Не удалось прочитать APK на устройстве: " + path);
+            throw new IOException(Res.Get("ErrorReadApk") + path);
 
         var tail = raw.AsSpan(nl + 1).ToArray();
         if (tail.Length != Math.Min(size, TailSize))
-            throw new IOException("Неполные данные APK: " + path);
+            throw new IOException(Res.Get("ErrorApkIncomplete") + path);
 
         int eocd = -1;
         for (int i = tail.Length - 22; i >= 0; i--)
             if (Le.U32(tail, i) == 0x06054b50) { eocd = i; break; }
-        if (eocd < 0) throw new InvalidDataException("Не найдено оглавление ZIP: " + path);
+        if (eocd < 0) throw new InvalidDataException(Res.Get("ErrorZipNoDirectory") + path);
 
         long cdSize = Le.U32(tail, eocd + 12);
         long cdOffset = Le.U32(tail, eocd + 16);
-        if (cdOffset == 0xFFFFFFFF) throw new NotSupportedException("ZIP64 не поддерживается");
+        if (cdOffset == 0xFFFFFFFF) throw new NotSupportedException(Res.Get("ErrorZip64"));
 
         long tailStart = size - tail.Length;
         byte[] cd = cdOffset >= tailStart
@@ -99,7 +99,7 @@ internal sealed class RemoteApk
             var e = todo[i];
             var chunk = chunks[i];
             if (chunk.Length < 30 || Le.U32(chunk, 0) != 0x04034b50)
-                throw new InvalidDataException("Повреждён локальный заголовок ZIP: " + e.Name);
+                throw new InvalidDataException(Res.Get("ErrorZipLocalHeader") + e.Name);
 
             int dataStart = 30 + Le.U16(chunk, 26) + Le.U16(chunk, 28);
             byte[] compressed = dataStart + e.CompressedSize <= chunk.Length
@@ -116,7 +116,7 @@ internal sealed class RemoteApk
     private static byte[] Inflate(byte[] data, int method)
     {
         if (method == 0) return data;
-        if (method != 8) throw new NotSupportedException($"Метод сжатия {method} не поддерживается");
+        if (method != 8) throw new NotSupportedException(Res.Format("ErrorZipMethod", method));
 
         using var input = new MemoryStream(data);
         using var deflate = new DeflateStream(input, CompressionMode.Decompress);
@@ -134,7 +134,7 @@ internal sealed class RemoteApk
         foreach (var (offset, length) in ranges)
         {
             long len = Math.Min(length, size - offset);
-            if (len < 0) throw new InvalidDataException("Смещение за пределами файла");
+            if (len < 0) throw new InvalidDataException(Res.Get("ErrorOffsetOutOfFile"));
             long skip = offset / BlockSize;
             int startInBlock = (int)(offset % BlockSize);
             long count = (startInBlock + len + BlockSize - 1) / BlockSize;
@@ -146,7 +146,7 @@ internal sealed class RemoteApk
 
         var raw = await adb.ExecOutAsync(serial, string.Join("; ", commands), ct);
         if (raw.Length != parts.Sum(p => p.Expected))
-            throw new IOException($"Ожидалось {parts.Sum(p => p.Expected)} байт, получено {raw.Length}");
+            throw new IOException(Res.Format("ErrorBytesExpected", parts.Sum(p => p.Expected), raw.Length));
 
         var result = new List<byte[]>();
         long pos = 0;
