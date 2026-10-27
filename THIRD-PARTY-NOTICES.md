@@ -1,13 +1,14 @@
 # Сторонние компоненты
 
-Projectivy Launcher (https://github.com/spocky/miproja1) в приложение не входит: по запросу
-пользователя программа скачивает его APK с GitHub Releases автора и устанавливает на устройство.
+Projectivy Launcher (https://github.com/spocky/miproja1) и LTvLauncher (https://github.com/leanbitlab-org/LtvLauncher,
+GPL-3.0) в приложение не входят: по запросу пользователя программа скачивает APK выбранного лаунчера
+с GitHub Releases автора и устанавливает на устройство.
 
 ## ЧистыйТВ — база пакетов и правила защиты
 
 Файл `Assets/Data/chistytv-packages.json` и список защищённых пакетов в `Services/PackageAdvisor.cs`
 взяты из проекта [ЧистыйТВ](https://github.com/by-sonic/chistytv)
-(коммит `3ca906bf24da52423462ec88cd5b1c43c3826eaf`). Источники данных базы перечислены в
+(коммит `4290bfe7f7d889d8fb66aae10b67112842d0ffec`). Источники данных базы перечислены в
 [docs/SOURCES.md](https://github.com/by-sonic/chistytv/blob/main/docs/SOURCES.md) проекта.
 
 ```

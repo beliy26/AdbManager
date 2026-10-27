@@ -28,6 +28,9 @@
   <data name="Note_com_cleanmaster_security" xml:space="preserve">
     <value>An “antivirus” with aggressive ads</value>
   </data>
+  <data name="Note_com_cultraview_osupdate" xml:space="preserve">
+    <value>a firmware update may bring the ads back; without it there will be no new firmware either</value>
+  </data>
   <data name="Note_com_facebook_appmanager" xml:space="preserve">
     <value>Preinstall: updates and installs Facebook apps in the background, even if you don't have them</value>
   </data>
@@ -348,6 +351,9 @@
   </data>
   <data name="Title_com_android_tv_feedbackconsent" xml:space="preserve">
     <value>Report consent</value>
+  </data>
+  <data name="Title_com_cultraview_osupdate" xml:space="preserve">
+    <value>Firmware update (CVTE)</value>
   </data>
   <data name="Title_com_google_android_apps_tv_launcherx" xml:space="preserve">
     <value>Google TV home screen</value>

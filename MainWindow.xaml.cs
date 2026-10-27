@@ -699,7 +699,7 @@ public sealed partial class MainWindow : Window
         UpdateLauncherButton();
     }
 
-    /// <summary>Projectivy — лаунчер для Android TV: на телефонах и планшетах пункт неактивен.</summary>
+    /// <summary>Лаунчеры — для Android TV: на телефонах и планшетах пункт неактивен.</summary>
     private void UpdateLauncherButton()
     {
         var device = SelectedDevice;
@@ -1575,7 +1575,7 @@ public sealed partial class MainWindow : Window
 
                 var r = await _adb.InstallAsync(device.Serial, group, downgrade.IsChecked == true, grant.IsChecked == true);
                 if (!r.Success || !r.Text.Contains("Success"))
-                    errors.Add($"{name}: {LastLine(r.Text)}");
+                    errors.Add($"{name}: {await _adb.DescribeInstallErrorAsync(device.Serial, group, r.Text)}");
             }
 
             if (errors.Count == 0)
@@ -1788,9 +1788,22 @@ public sealed partial class MainWindow : Window
             UpdatePackagesCountText();
             UpdatePackageButtons();
 
+            var props = await GetPropsAsync(device);
+            var hint = "";
+            if (props.Type == DeviceType.Tv && changed.Count > 0)
+            {
+                var names = changed.Select(p => p.Name);
+                await (frozen ? _adb.AddToTvJournalAsync(device.Serial, names) : _adb.RemoveFromTvJournalAsync(device.Serial, names));
+                // Рекламные ряды на главном экране рисует сам штатный лаунчер — заморозка рекламных сервисов
+                // их не убирает, и кажется, что ничего не произошло (идея ЧистогоТВ).
+                if (frozen && changed.Any(p => p.Advice is PackageAdvice.Disable or PackageAdvice.Optional) &&
+                    !_allPackages.Any(p => TvLauncher.All.Any(l => l.Package == p.Name)))
+                    hint = Environment.NewLine + Res.Get("HomeRowsHint");
+            }
+
             var verb = frozen ? Res.Get("Frozen") : Res.Get("StatusEnabled");
             if (errors.Count == 0)
-                ShowStatus(InfoBarSeverity.Success, verb, string.Join(", ", changed.Select(p => p.DisplayName)));
+                ShowStatus(InfoBarSeverity.Success, verb, string.Join(", ", changed.Select(p => p.DisplayName)) + hint);
             else
                 ShowStatus(InfoBarSeverity.Error, Res.Format("ChangedErrorsFormat", verb, changed.Count, errors.Count),
                     string.Join(Environment.NewLine, errors));
@@ -2033,10 +2046,14 @@ public sealed partial class MainWindow : Window
 
         ChangeJournal journal;
         List<JournalEntry> restorable;
+        DeviceProps props;
         try
         {
             journal = await GetJournalAsync(device);
             restorable = journal.GetRestorable();
+            props = await GetPropsAsync(device);
+            if (props.Type == DeviceType.Tv)
+                restorable.AddRange(await GetTvJournalEntriesAsync(device, restorable));
         }
         catch (Exception ex)
         {
@@ -2058,6 +2075,7 @@ public sealed partial class MainWindow : Window
             "dns" => Res.Format("UndoDnsFormat", DescribeDns(e.OldValue), e.Time),
             "home" => Res.Format("UndoHomeFormat", e.OldValue?.Split('/')[0] ?? Res.Get("PreviousHome"), e.Time),
             "install" => Res.Format("UndoInstallFormat", e.Label, e.Package, e.Time),
+            "tvjournal" => Res.Format("UndoTvJournalFormat", e.Label, e.Package),
             _ => e.Package,
         };
 
@@ -2076,7 +2094,7 @@ public sealed partial class MainWindow : Window
                 ShowStatus(InfoBarSeverity.Informational, Res.Get("Undoing"), entry.Label ?? entry.Package);
                 AdbResult r = entry.Action switch
                 {
-                    "freeze" => await _adb.SetFrozenAsync(device.Serial, entry.Package, frozen: false),
+                    "freeze" or "tvjournal" => await _adb.SetFrozenAsync(device.Serial, entry.Package, frozen: false),
                     "uninstall" => await _adb.InstallExistingAsync(device.Serial, entry.Package),
                     "dns" => await RestoreDnsAsync(device, entry.OldValue),
                     "home" => string.IsNullOrEmpty(entry.OldValue)
@@ -2096,12 +2114,32 @@ public sealed partial class MainWindow : Window
                 }
             }
 
+            if (props.Type == DeviceType.Tv)
+                await _adb.RemoveFromTvJournalAsync(device.Serial,
+                    chosen.Where(c => c.Action is "freeze" or "tvjournal").Select(c => c.Package));
             await ReloadPackagesCoreAsync(device);
             if (errors.Count == 0)
                 ShowStatus(InfoBarSeverity.Success, Res.Get("UndoneTitle"), Res.Format("UndoneMessageFormat", ok));
             else
                 ShowStatus(InfoBarSeverity.Error, Res.Format("UndoneErrorsFormat", ok, errors.Count), string.Join(Environment.NewLine, errors));
         });
+    }
+
+    /// <summary>
+    /// Пакеты из журнала на самом ТВ (общего с ЧистымТВ), которые сейчас заморожены, а в локальном журнале
+    /// их нет: заморожены с другого компьютера или приложением ЧистыйТВ.
+    /// </summary>
+    private async Task<List<JournalEntry>> GetTvJournalEntriesAsync(DeviceInfo device, List<JournalEntry> known)
+    {
+        var onTv = await _adb.ReadTvJournalAsync(device.Serial);
+        if (onTv.Count == 0) return [];
+        var states = await _adb.GetDisabledStatesAsync(device.Serial);
+        var knownNames = known.Select(k => k.Package).ToHashSet();
+        return onTv.Where(p => !knownNames.Contains(p) && states.GetValueOrDefault(p) == PackageState.Frozen)
+            .Select(p => _allPackages.FirstOrDefault(x => x.Name == p) is { } pkg
+                ? new JournalEntry(DateTime.MinValue, "tvjournal", p, pkg.DisplayName, pkg.IsSystem)
+                : new JournalEntry(DateTime.MinValue, "tvjournal", p, p, true))
+            .ToList();
     }
 
     private async void RestoreRemoved_Click(object sender, RoutedEventArgs e)
@@ -2243,44 +2281,72 @@ public sealed partial class MainWindow : Window
         });
     }
 
-    // ----- Лаунчер Projectivy -----
+    // ----- Лаунчер для ТВ: Projectivy или LTvLauncher -----
+
+    /// <summary>Что известно о лаунчере перед диалогом: выпуск на GitHub (или ошибка) и установленная версия.</summary>
+    private sealed record LauncherState(TvLauncher Launcher, LauncherRelease? Release, string? Error, string? InstalledVersion, bool IsHome);
 
     private async void InstallLauncher_Click(object sender, RoutedEventArgs e)
     {
         if (SelectedDevice is not { IsOnline: true } device) return;
 
-        LauncherRelease? release = null;
-        string? installedVersion = null;
+        List<LauncherState> states = [];
         var isTv = true;
-        string? currentHome = null;
         await RunBusyAsync(async () =>
         {
-            ShowStatus(InfoBarSeverity.Informational, ProjectivyLauncher.Name, Res.Get("CheckingLatestVersion"));
-            release = await ProjectivyLauncher.GetLatestAsync();
-            if ((await _adb.GetInstalledNamesAsync(device.Serial)).Contains(ProjectivyLauncher.Package))
-                installedVersion = await _adb.GetVersionAsync(device.Serial, ProjectivyLauncher.Package) ?? "?";
+            ShowStatus(InfoBarSeverity.Informational, Res.Get("TvLaunchers"), Res.Get("CheckingLatestVersion"));
+            var abis = await _adb.GetAbiListAsync(device.Serial);
+            var installed = await _adb.GetInstalledNamesAsync(device.Serial);
+            var (currentHome, _) = await _adb.GetHomeActivitiesAsync(device.Serial);
             isTv = (await GetPropsAsync(device)).Type == DeviceType.Tv;
-            (currentHome, _) = await _adb.GetHomeActivitiesAsync(device.Serial);
+
+            var releases = TvLauncher.All.Select(async l =>
+            {
+                try { return (Release: await l.GetLatestAsync(abis), Error: (string?)null); }
+                catch (Exception ex) when (ex is HttpRequestException or TaskCanceledException or InvalidOperationException or System.Text.Json.JsonException)
+                {
+                    return (Release: (LauncherRelease?)null, Error: ex.Message);
+                }
+            }).ToList();
+            await Task.WhenAll(releases);
+
+            for (var i = 0; i < TvLauncher.All.Count; i++)
+            {
+                var l = TvLauncher.All[i];
+                var version = installed.Contains(l.Package) ? await _adb.GetVersionAsync(device.Serial, l.Package) ?? "?" : null;
+                states.Add(new LauncherState(l, releases[i].Result.Release, releases[i].Result.Error, version,
+                    currentHome?.StartsWith(l.Package + "/", StringComparison.Ordinal) == true));
+            }
             StatusBar.IsOpen = false;
         });
-        if (release is null) return;
+        if (states.Count == 0) return;
+        if (states.All(s => s.Release is null))
+        {
+            ShowStatus(InfoBarSeverity.Error, Res.Get("TvLaunchers"), string.Join(Environment.NewLine, states.Select(s => $"{s.Launcher.Name}: {s.Error}")));
+            return;
+        }
 
-        var alreadyHome = currentHome?.StartsWith(ProjectivyLauncher.Package + "/", StringComparison.Ordinal) == true;
-        var makeHome = new CheckBox { Content = Res.Get("MakeHomeScreen"), IsChecked = !alreadyHome, IsEnabled = !alreadyHome };
+        var secondary = (Microsoft.UI.Xaml.Media.Brush)Application.Current.Resources["TextFillColorSecondaryBrush"];
+        var radios = new RadioButtons();
+        foreach (var s in states)
+        {
+            radios.Items.Add(new RadioButton
+            {
+                Content = s.Launcher.Name + " — " + (s.Release is null ? Res.Get("LauncherUnavailable")
+                    : s.InstalledVersion is null ? Res.Get("NotInstalled") : Res.Format("InstalledVersionFormat", s.InstalledVersion)),
+                IsEnabled = s.Release is not null,
+            });
+        }
+        var description = new TextBlock { TextWrapping = TextWrapping.Wrap };
+        var versions = new TextBlock { TextWrapping = TextWrapping.Wrap };
+        var link = new HyperlinkButton { Content = Res.Get("ReleasePage"), Padding = new Thickness(0) };
+        var makeHome = new CheckBox { Content = Res.Get("MakeHomeScreen") };
+
         var content = new StackPanel { Spacing = 10, MaxWidth = 560 };
-        content.Children.Add(new TextBlock
-        {
-            TextWrapping = TextWrapping.Wrap,
-            Text = Res.Get("LauncherDescription"),
-        });
-        content.Children.Add(new TextBlock
-        {
-            TextWrapping = TextWrapping.Wrap,
-            Text = Res.Format("LatestVersionFormat", release.Version, PackageInfo.FormatSize(release.Size)) + Environment.NewLine +
-                   Res.Format("OnDeviceFormat", (installedVersion is null ? Res.Get("NotInstalled") : installedVersion)) +
-                   (alreadyHome ? Res.Get("AlreadyHomeScreen") : ""),
-        });
-        content.Children.Add(new HyperlinkButton { Content = Res.Get("ReleasePage"), NavigateUri = new Uri(release.PageUrl), Padding = new Thickness(0) });
+        content.Children.Add(radios);
+        content.Children.Add(description);
+        content.Children.Add(versions);
+        content.Children.Add(link);
         if (!isTv)
         {
             content.Children.Add(new InfoBar
@@ -2291,25 +2357,43 @@ public sealed partial class MainWindow : Window
             });
         }
         content.Children.Add(makeHome);
-        content.Children.Add(new TextBlock
-        {
-            TextWrapping = TextWrapping.Wrap,
-            Foreground = (Microsoft.UI.Xaml.Media.Brush)Application.Current.Resources["TextFillColorSecondaryBrush"],
-            Text = Res.Get("LauncherKeepNote"),
-        });
+        content.Children.Add(new TextBlock { TextWrapping = TextWrapping.Wrap, Foreground = secondary, Text = Res.Get("LauncherKeepNote") });
 
         var dialog = new ContentDialog
         {
             XamlRoot = Content.XamlRoot,
-            Title = ProjectivyLauncher.Name,
-            PrimaryButtonText = installedVersion is null ? Res.Get("DownloadAndInstall")
-                : installedVersion == release.Version ? Res.Get("Reinstall") : Res.Get("Refresh"),
+            Title = Res.Get("TvLaunchers"),
             CloseButtonText = Res.Get("Cancel"),
             DefaultButton = ContentDialogButton.Primary,
             Content = content,
         };
+
+        LauncherState Selected() => states[Math.Max(0, radios.SelectedIndex)];
+        void Show()
+        {
+            var s = Selected();
+            description.Text = s.Launcher.Description;
+            versions.Text = Res.Format("LatestVersionFormat", s.Release!.Version, PackageInfo.FormatSize(s.Release.Size)) + Environment.NewLine +
+                            Res.Format("OnDeviceFormat", s.InstalledVersion ?? Res.Get("NotInstalled")) +
+                            (s.IsHome ? Res.Get("AlreadyHomeScreen") : "");
+            link.NavigateUri = new Uri(s.Release.PageUrl);
+            makeHome.IsChecked = !s.IsHome;
+            makeHome.IsEnabled = !s.IsHome;
+            dialog.PrimaryButtonText = s.InstalledVersion is null ? Res.Get("DownloadAndInstall")
+                : s.InstalledVersion == s.Release.Version ? Res.Get("Reinstall") : Res.Get("Refresh");
+        }
+
+        // По умолчанию — уже установленный лаунчер (обновить), иначе первый доступный.
+        var preferred = states.FindIndex(s => s.Release is not null && s.InstalledVersion is not null);
+        radios.SelectedIndex = preferred >= 0 ? preferred : states.FindIndex(s => s.Release is not null);
+        Show();
+        radios.SelectionChanged += (_, _) => Show();
+
         if (await dialog.ShowAsync() != ContentDialogResult.Primary) return;
-        var setHome = makeHome.IsChecked == true && !alreadyHome;
+        var state = Selected();
+        var launcher = state.Launcher;
+        var release = state.Release!;
+        var setHome = makeHome.IsChecked == true && !state.IsHome;
 
         await RunBusyAsync(async () =>
         {
@@ -2318,7 +2402,7 @@ public sealed partial class MainWindow : Window
             string apk;
             try
             {
-                apk = await ProjectivyLauncher.DownloadAsync(release, new Progress<double>(p => BusyBar.Value = p * 100));
+                apk = await launcher.DownloadAsync(release, new Progress<double>(p => BusyBar.Value = p * 100));
             }
             finally
             {
@@ -2332,18 +2416,18 @@ public sealed partial class MainWindow : Window
             var r = await _adb.InstallAsync(device.Serial, [apk], allowDowngrade: false, grantPermissions: false);
             if (!r.Success || !r.Text.Contains("Success"))
             {
-                ShowStatus(InfoBarSeverity.Error, Res.Get("InstallFailed"), LastLine(r.Text));
+                ShowStatus(InfoBarSeverity.Error, Res.Get("InstallFailed"), await _adb.DescribeInstallErrorAsync(device.Serial, [apk], r.Text));
                 return;
             }
             // В журнал — только новая установка: «вернуть» обновление значило бы удалить лаунчер целиком.
-            if (installedVersion is null)
-                journal.Add(new JournalEntry(DateTime.Now, "install", ProjectivyLauncher.Package, ProjectivyLauncher.Name, false));
+            if (state.InstalledVersion is null)
+                journal.Add(new JournalEntry(DateTime.Now, "install", launcher.Package, launcher.Name, false));
 
             var message = Res.Format("VersionInstalledFormat", release.Version);
             if (setHome)
             {
                 var (before, candidates) = await _adb.GetHomeActivitiesAsync(device.Serial);
-                var component = candidates.FirstOrDefault(c => c.StartsWith(ProjectivyLauncher.Package + "/", StringComparison.Ordinal));
+                var component = candidates.FirstOrDefault(c => c.StartsWith(launcher.Package + "/", StringComparison.Ordinal));
                 var h = component is null
                     ? new AdbResult(1, "", Res.Get("LauncherNoHomeActivity"))
                     : await _adb.SetHomeActivityAsync(device.Serial, component);
@@ -2360,7 +2444,7 @@ public sealed partial class MainWindow : Window
             }
 
             await ReloadPackagesCoreAsync(device);
-            ShowStatus(InfoBarSeverity.Success, ProjectivyLauncher.Name, message);
+            ShowStatus(InfoBarSeverity.Success, launcher.Name, message);
         });
     }
 
@@ -2618,6 +2702,11 @@ public sealed partial class MainWindow : Window
             var journal = await GetJournalAsync(device);
             await journal.EnsureBackupAsync(_adb, device.Serial);
 
+            // Частный DNS ходит по порту 853 (DNS-over-TLS). Если его режет провайдер или роутер, устройство
+            // остаётся без интернета — проверяем после включения и при неудаче возвращаем как было (идея ЧистогоТВ).
+            var check = newMode == "hostname";
+            var online = check && await _adb.CanResolveAsync(device.Serial);
+
             if (newHost.Length > 0) await _adb.PutSettingAsync(device.Serial, "global", "private_dns_specifier", newHost);
             var r = await _adb.PutSettingAsync(device.Serial, "global", "private_dns_mode", newMode);
             var applied = await _adb.GetSettingAsync(device.Serial, "global", "private_dns_mode");
@@ -2627,8 +2716,31 @@ public sealed partial class MainWindow : Window
                 return;
             }
 
+            if (online)
+            {
+                ShowStatus(InfoBarSeverity.Informational, Res.Get("PrivateDns"), Res.Get("DnsCheckingInternet"));
+                var works = false;
+                for (var i = 0; i < 4 && !works; i++)
+                {
+                    await Task.Delay(TimeSpan.FromSeconds(2));
+                    works = await _adb.CanResolveAsync(device.Serial);
+                }
+                if (!works)
+                {
+                    var back = await RestoreDnsAsync(device, $"{mode}|{host}");
+                    if (host.Length == 0) await _adb.DeleteSettingAsync(device.Serial, "global", "private_dns_specifier");
+                    ShowStatus(back.Success ? InfoBarSeverity.Warning : InfoBarSeverity.Error, Res.Get("DnsNoInternetTitle"),
+                        Res.Format("DnsNoInternetFormat", newHost) + Environment.NewLine +
+                        (back.Success ? Res.Format("DnsRolledBackFormat", DescribeDns($"{mode}|{host}"))
+                            : Res.Get("DnsRollbackFailed") + " " + back.Text));
+                    return;
+                }
+            }
+
             journal.Add(new JournalEntry(DateTime.Now, "dns", ChangeJournal.DnsKey, Res.Get("PrivateDns"), true, $"{mode}|{host}"));
-            ShowStatus(InfoBarSeverity.Success, Res.Get("PrivateDns"), Res.Format("DnsSetFormat", DescribeDns($"{newMode}|{newHost}")));
+            var done = Res.Format("DnsSetFormat", DescribeDns($"{newMode}|{newHost}"));
+            if (check) done += Environment.NewLine + (online ? Res.Get("DnsInternetWorks") : Res.Get("DnsNotChecked"));
+            ShowStatus(InfoBarSeverity.Success, Res.Get("PrivateDns"), done);
         });
     }
 

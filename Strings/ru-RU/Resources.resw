@@ -100,6 +100,9 @@
   <data name="BrowseAdbText.Text" xml:space="preserve">
     <value>Указать</value>
   </data>
+  <data name="CacheTrimmedFormat" xml:space="preserve">
+    <value>Кэш приложений очищен: свободно {0} МБ (было {1} МБ).</value>
+  </data>
   <data name="Cancel" xml:space="preserve">
     <value>Отмена</value>
   </data>
@@ -126,6 +129,9 @@
   </data>
   <data name="CheckNamesTitle" xml:space="preserve">
     <value>Проверьте названия</value>
+  </data>
+  <data name="ChecksumMismatch" xml:space="preserve">
+    <value>контрольная сумма не совпала, файл отброшен</value>
   </data>
   <data name="CheckUpdatesButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
     <value>Узнать, вышла ли новая версия ADB Manager на GitHub</value>
@@ -256,17 +262,38 @@
   <data name="DnsChangeFailed" xml:space="preserve">
     <value>Не удалось изменить DNS</value>
   </data>
+  <data name="DnsCheckingInternet" xml:space="preserve">
+    <value>Проверяю, что интернет работает с новым DNS…</value>
+  </data>
   <data name="DnsCustom" xml:space="preserve">
     <value>Свой сервер</value>
   </data>
   <data name="DnsDialogFormat" xml:space="preserve">
     <value>Сейчас: {0}. Блокирующий DNS убирает рекламу и трекеры во всех приложениях и браузере, но не рекламу внутри YouTube. Если какой-то сайт или приложение перестанет работать — верните «Автоматически».</value>
   </data>
+  <data name="DnsInternetWorks" xml:space="preserve">
+    <value>Интернет работает.</value>
+  </data>
+  <data name="DnsNoInternetFormat" xml:space="preserve">
+    <value>С частным DNS {0} устройство осталось без интернета: провайдер или роутер не пропускают DNS-over-TLS (порт 853).</value>
+  </data>
+  <data name="DnsNoInternetTitle" xml:space="preserve">
+    <value>С этим DNS нет интернета</value>
+  </data>
+  <data name="DnsNotChecked" xml:space="preserve">
+    <value>У устройства сейчас нет интернета — проверить DNS не удалось. Если после появления сети будет «нет связи», верните DNS здесь же или через «Вернуть как было».</value>
+  </data>
   <data name="DnsOff" xml:space="preserve">
     <value>Выключен</value>
   </data>
   <data name="DnsOffLower" xml:space="preserve">
     <value>выключен</value>
+  </data>
+  <data name="DnsRollbackFailed" xml:space="preserve">
+    <value>Вернуть прежний DNS не удалось — выключите частный DNS в настройках сети устройства.</value>
+  </data>
+  <data name="DnsRolledBackFormat" xml:space="preserve">
+    <value>DNS возвращён как был ({0}). Можно прописать AdGuard DNS в роутере (94.140.14.14 и 94.140.15.15) — тогда реклама режется у всех устройств дома.</value>
   </data>
   <data name="DnsSetFormat" xml:space="preserve">
     <value>Установлено: {0}.</value>
@@ -290,7 +317,7 @@
     <value>Скачать и установить</value>
   </data>
   <data name="DownloadFromGitHubAnd" xml:space="preserve">
-    <value>Скачать с GitHub и установить Projectivy Launcher — главный экран для Android TV без рекламы</value>
+    <value>Скачать с GitHub и установить главный экран для Android TV без рекламы: Projectivy Launcher или LTvLauncher</value>
   </data>
   <data name="DownloadPlatformToolsMessage" xml:space="preserve">
     <value>Скачивание platform-tools с dl.google.com…</value>
@@ -448,6 +475,9 @@
   <data name="HomeGuardNote" xml:space="preserve">
     <value>Единственное приложение главного экрана: без него устройству нечего показать по кнопке Home. Установите и выберите другой лаунчер — тогда защита снимется.</value>
   </data>
+  <data name="HomeRowsHint" xml:space="preserve">
+    <value>Ряды с рекламой на главном экране рисует сам штатный лаунчер — заморозка рекламных сервисов их не убирает. Чтобы убрать и их: … → «Установить лаунчер…».</value>
+  </data>
   <data name="HomeScreen" xml:space="preserve">
     <value>Главный экран</value>
   </data>
@@ -472,6 +502,9 @@
   <data name="InstalledCountFormat" xml:space="preserve">
     <value>Установлено пакетов: {0}</value>
   </data>
+  <data name="InstalledVersionFormat" xml:space="preserve">
+    <value>установлен {0}</value>
+  </data>
   <data name="InstallError" xml:space="preserve">
     <value>Ошибка установки</value>
   </data>
@@ -485,10 +518,19 @@
     <value>Установка…</value>
   </data>
   <data name="InstallLauncherButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
-    <value>Скачать с GitHub и установить Projectivy Launcher — главный экран для Android TV без рекламы</value>
+    <value>Скачать с GitHub и установить главный экран для Android TV без рекламы: Projectivy Launcher или LTvLauncher</value>
   </data>
   <data name="InstallLauncherButton.Label" xml:space="preserve">
-    <value>Установить лаунчер Projectivy…</value>
+    <value>Установить лаунчер…</value>
+  </data>
+  <data name="InstallNoAbiFormat" xml:space="preserve">
+    <value>У приложения нет сборки под процессор этого устройства ({0}).</value>
+  </data>
+  <data name="InstallNoSpaceFormat" xml:space="preserve">
+    <value>Во внутренней памяти не хватает места даже после очистки кэша (нужно около {0} МБ). Удалите ненужные приложения и попробуйте снова.</value>
+  </data>
+  <data name="InstallNoSpaceFreeFormat" xml:space="preserve">
+    <value>Во внутренней памяти не хватает места даже после очистки кэша (свободно {0} МБ, нужно около {1} МБ). Удалите ненужные приложения — обычно больше всего весят игры и онлайн-кинотеатры — и попробуйте снова.</value>
   </data>
   <data name="InstallOnFormat" xml:space="preserve">
     <value>Установка на {0}</value>
@@ -498,6 +540,9 @@
   </data>
   <data name="InstallSplit" xml:space="preserve">
     <value>Это части одного приложения (split APK, install-multiple)</value>
+  </data>
+  <data name="InstallVerificationFailure" xml:space="preserve">
+    <value>Прошивка запрещает установку сторонних приложений по ADB.</value>
   </data>
   <data name="InvalidAdbFileMessage" xml:space="preserve">
     <value>Нужно выбрать adb.exe из папки platform-tools.</value>
@@ -535,9 +580,6 @@
   <data name="LatestVersionFormat" xml:space="preserve">
     <value>Последняя версия: {0} ({1})</value>
   </data>
-  <data name="LauncherDescription" xml:space="preserve">
-    <value>Бесплатный лаунчер для Android TV без рекламы и рекомендаций: свои категории, обои, скрытие приложений. Сторонний проект, APK скачивается с GitHub автора.</value>
-  </data>
   <data name="LauncherKeepNote" xml:space="preserve">
     <value>Стандартный лаунчер останется. Если кнопка Home всё равно открывает его (так бывает на Google TV), заморозьте его в таблице — защита снимется, когда появится второй лаунчер. Отменить установку и смену главного экрана — «… → Вернуть как было».</value>
   </data>
@@ -545,7 +587,10 @@
     <value>лаунчер не объявил activity главного экрана</value>
   </data>
   <data name="LauncherTvOnlyToolTip" xml:space="preserve">
-    <value>Projectivy Launcher — главный экран для Android TV; на телефонах и планшетах не устанавливается</value>
+    <value>Лаунчеры Projectivy и LTvLauncher — главный экран для Android TV; на телефонах и планшетах не устанавливаются</value>
+  </data>
+  <data name="LauncherUnavailable" xml:space="preserve">
+    <value>не удалось получить выпуск с GitHub</value>
   </data>
   <data name="ListCopied" xml:space="preserve">
     <value>Список скопирован</value>
@@ -600,6 +645,12 @@
   </data>
   <data name="LogExpander.Header" xml:space="preserve">
     <value>Журнал adb</value>
+  </data>
+  <data name="LowStorageTrimFormat" xml:space="preserve">
+    <value>На устройстве мало памяти: свободно {0} МБ, нужно около {1} МБ. Очищаю кэш приложений…</value>
+  </data>
+  <data name="LTvDescription" xml:space="preserve">
+    <value>Открытый лаунчер (GPL-3.0) без рекламных рядов и рекомендаций — его ставит ЧистыйТВ. Минималистичный, с виджетом трафика Wi-Fi и заставкой для OLED. APK под процессор устройства скачивается с GitHub автора. Если на Google TV кнопка Home всё равно открывает штатный экран: на ТВ «Настройки → Специальные возможности → Home Button Fix (LTvLauncher)» — включить.</value>
   </data>
   <data name="MakeHomeFailedPrefix" xml:space="preserve">
     <value> Сделать главным экраном не удалось: </value>
@@ -716,8 +767,11 @@
   <data name="NoRemovedSystemAppsTitle" xml:space="preserve">
     <value>Удалённых системных приложений нет</value>
   </data>
+  <data name="NoSpaceRetry" xml:space="preserve">
+    <value>Не хватило памяти — очищаю кэш приложений и пробую ещё раз…</value>
+  </data>
   <data name="NotAndroidTvMessage" xml:space="preserve">
-    <value>Projectivy рассчитан на телевизоры и приставки; на телефоне им неудобно пользоваться.</value>
+    <value>Эти лаунчеры рассчитаны на телевизоры и приставки; на телефоне ими неудобно пользоваться.</value>
   </data>
   <data name="NotAndroidTvTitle" xml:space="preserve">
     <value>Это не Android TV</value>
@@ -787,6 +841,11 @@
   </data>
   <data name="PairTitle" xml:space="preserve">
     <value>Сопряжение по коду</value>
+  </data>
+  <data name="PlatformToolsAllSourcesFailedFormat" xml:space="preserve">
+    <value>Не удалось скачать ADB ни с одного источника:
+{0}
+Скачайте platform-tools для Windows с developer.android.com/tools/releases/platform-tools и распакуйте так, чтобы получилось {1}, или укажите путь к adb.exe вручную.</value>
   </data>
   <data name="PlatformToolsDownloadFailed" xml:space="preserve">
     <value>Не удалось скачать platform-tools</value>
@@ -940,6 +999,9 @@
   </data>
   <data name="PrivateDnsButton.Label" xml:space="preserve">
     <value>Частный DNS (блокировка рекламы)…</value>
+  </data>
+  <data name="ProjectivyDescription" xml:space="preserve">
+    <value>Бесплатный лаунчер для Android TV без рекламы и рекомендаций: свои категории, обои, скрытие приложений. Сторонний проект, APK скачивается с GitHub автора.</value>
   </data>
   <data name="PullApkButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
     <value>Одно приложение — в выбранный файл, несколько отмеченных — в выбранную папку (файлы по имени пакета)</value>
@@ -1159,6 +1221,9 @@
   <data name="TvInputsGuardTitle" xml:space="preserve">
     <value>Входы ТВ (HDMI / AV / тюнер)</value>
   </data>
+  <data name="TvLaunchers" xml:space="preserve">
+    <value>Лаунчер для ТВ</value>
+  </data>
   <data name="UndoAction" xml:space="preserve">
     <value>Вернуть</value>
   </data>
@@ -1191,6 +1256,9 @@
   </data>
   <data name="UndoTitle" xml:space="preserve">
     <value>Вернуть как было</value>
+  </data>
+  <data name="UndoTvJournalFormat" xml:space="preserve">
+    <value>Разморозить: {0} ({1}) — заморожено с другого компьютера или ЧистымТВ (журнал на ТВ)</value>
   </data>
   <data name="UndoUninstallFormat" xml:space="preserve">
     <value>Вернуть: {0} ({1}) — удалено {2:dd.MM HH:mm}</value>

@@ -29,6 +29,18 @@ public sealed class AdbService
     private const string PlatformToolsUrl =
         "https://dl.google.com/android/repository/platform-tools-latest-windows.zip";
 
+    // У части провайдеров dl.google.com отдаёт на «latest» 404 (идея ЧистогоТВ). Тогда берём закреплённую версию
+    // с запасных хостов и сверяем SHA-256 — подменённый архив не пройдёт. Хэш — от архива, чья SHA-1 совпала
+    // с репозиторием Google (repository2-3.xml).
+    private const string PinnedPlatformToolsFile = "platform-tools_r37.0.1-win.zip";
+    private const string PinnedPlatformToolsSha256 = "45F4D63113E895EBDE0C90F194099A4676B6AC653BD28D54314A9E022BBC1A99";
+    private static readonly string[] PlatformToolsMirrors =
+    [
+        "https://dl.google.com/android/repository/",
+        "https://redirector.gvt1.com/edgedl/android/repository/",
+        "https://mirrors.cloud.tencent.com/AndroidSDK/",
+    ];
+
     public static string AppDataDir { get; } =
         Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "AdbManager");
 
@@ -70,30 +82,54 @@ public sealed class AdbService
         catch (ArgumentException) { return null; }
     }
 
-    /// <summary>Скачивает официальные platform-tools от Google в %LOCALAPPDATA%\AdbManager.</summary>
+    /// <summary>
+    /// Скачивает официальные platform-tools от Google в %LOCALAPPDATA%\AdbManager. Если последняя версия
+    /// не скачалась — закреплённая версия с запасных хостов с проверкой SHA-256.
+    /// </summary>
     public static async Task<string> DownloadPlatformToolsAsync(IProgress<double>? progress, CancellationToken ct = default)
     {
         Directory.CreateDirectory(AppDataDir);
         var zipPath = Path.Combine(AppDataDir, "platform-tools.zip");
 
-        using (var http = new HttpClient())
-        using (var response = await http.GetAsync(PlatformToolsUrl, HttpCompletionOption.ResponseHeadersRead, ct))
+        using var http = new HttpClient { Timeout = TimeSpan.FromMinutes(5) };
+        var errors = new List<string>();
+        var downloaded = false;
+        try
         {
-            response.EnsureSuccessStatusCode();
-            var total = response.Content.Headers.ContentLength ?? -1L;
-
-            await using var src = await response.Content.ReadAsStreamAsync(ct);
-            await using var dst = File.Create(zipPath);
-            var buffer = new byte[81920];
-            long read = 0;
-            int n;
-            while ((n = await src.ReadAsync(buffer, ct)) > 0)
-            {
-                await dst.WriteAsync(buffer.AsMemory(0, n), ct);
-                read += n;
-                if (total > 0) progress?.Report((double)read / total);
-            }
+            await DownloadFileAsync(http, PlatformToolsUrl, zipPath, progress, ct);
+            downloaded = true;
         }
+        catch (Exception ex) when (ex is HttpRequestException or TaskCanceledException && !ct.IsCancellationRequested)
+        {
+            errors.Add($"{new Uri(PlatformToolsUrl).Host}: {ex.Message}");
+        }
+
+        foreach (var mirror in PlatformToolsMirrors)
+        {
+            if (downloaded) break;
+            var url = mirror + PinnedPlatformToolsFile;
+            var host = new Uri(url).Host;
+            try
+            {
+                await DownloadFileAsync(http, url, zipPath, progress, ct);
+                await using (var zip = File.OpenRead(zipPath))
+                {
+                    var hash = Convert.ToHexString(await System.Security.Cryptography.SHA256.HashDataAsync(zip, ct));
+                    downloaded = hash.Equals(PinnedPlatformToolsSha256, StringComparison.OrdinalIgnoreCase);
+                }
+                if (downloaded) break;
+                errors.Add($"{host}: {Res.Get("ChecksumMismatch")}");
+            }
+            catch (Exception ex) when (ex is HttpRequestException or TaskCanceledException && !ct.IsCancellationRequested)
+            {
+                errors.Add($"{host}: {ex.Message}");
+            }
+            File.Delete(zipPath);
+        }
+
+        if (!downloaded)
+            throw new InvalidOperationException(Res.Format("PlatformToolsAllSourcesFailedFormat",
+                string.Join(Environment.NewLine, errors), Path.Combine(LocalPlatformToolsDir, "adb.exe")));
 
         if (Directory.Exists(LocalPlatformToolsDir))
             Directory.Delete(LocalPlatformToolsDir, recursive: true);
@@ -106,6 +142,25 @@ public sealed class AdbService
         if (!File.Exists(adb))
             throw new FileNotFoundException(Res.Get("AdbNotInArchive"), adb);
         return adb;
+    }
+
+    private static async Task DownloadFileAsync(HttpClient http, string url, string path, IProgress<double>? progress, CancellationToken ct)
+    {
+        using var response = await http.GetAsync(url, HttpCompletionOption.ResponseHeadersRead, ct);
+        response.EnsureSuccessStatusCode();
+        var total = response.Content.Headers.ContentLength ?? -1L;
+
+        await using var src = await response.Content.ReadAsStreamAsync(ct);
+        await using var dst = File.Create(path);
+        var buffer = new byte[81920];
+        long read = 0;
+        int n;
+        while ((n = await src.ReadAsync(buffer, ct)) > 0)
+        {
+            await dst.WriteAsync(buffer.AsMemory(0, n), ct);
+            read += n;
+            if (total > 0) progress?.Report((double)read / total);
+        }
     }
 
     // ---------- Запуск команд ----------
@@ -585,6 +640,59 @@ public sealed class AdbService
     public Task<AdbResult> PutSettingAsync(string serial, string ns, string key, string value) =>
         RunOnDeviceAsync(serial, "shell", "settings", "put", ns, key, value);
 
+    /// <summary>Процессоры устройства (<c>ro.product.cpu.abilist</c>), основной — первым.</summary>
+    public async Task<List<string>> GetAbiListAsync(string serial)
+    {
+        var r = await RunAsync(["-s", serial, "shell", "getprop", "ro.product.cpu.abilist"], quiet: true);
+        return r.Output.Trim().Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).ToList();
+    }
+
+    public Task<AdbResult> DeleteSettingAsync(string serial, string ns, string key) =>
+        RunOnDeviceAsync(serial, "shell", "settings", "delete", ns, key);
+
+    /// <summary>
+    /// Работает ли на устройстве поиск адресов (идея ЧистогоТВ). Строку «PING host (ip)» ping печатает,
+    /// только когда имя нашлось, — проверка не зависит от того, отвечает ли сервер на ping.
+    /// </summary>
+    public async Task<bool> CanResolveAsync(string serial)
+    {
+        var r = await RunAsync(["-s", serial, "shell", "ping -c 1 -W 2 connectivitycheck.gstatic.com 2>&1"], quiet: true);
+        return System.Text.RegularExpressions.Regex.IsMatch(r.Output, @"PING \S+ \(\d");
+    }
+
+    // ----- Журнал на самом телевизоре (общий с ЧистымТВ) -----
+
+    /// <summary>
+    /// Список замороженных пакетов на устройстве, по строке на пакет. Тот же файл ведут скрипт и приложение
+    /// ЧистыйТВ: заморозку можно откатить с другого компьютера или с телефона, а «Вернуть как было» здесь
+    /// видит и то, что отключил ЧистыйТВ.
+    /// </summary>
+    public const string TvJournalPath = "/data/local/tmp/chistytv/disabled-by-chistytv.txt";
+
+    public async Task<List<string>> ReadTvJournalAsync(string serial)
+    {
+        var r = await RunAsync(["-s", serial, "shell", $"cat {TvJournalPath} 2>/dev/null"], quiet: true);
+        return r.Output.Split('\n').Select(l => l.Trim()).Where(l => PackageNameRe.IsMatch(l)).Distinct().ToList();
+    }
+
+    public async Task AddToTvJournalAsync(string serial, IEnumerable<string> packages)
+    {
+        // Имена — только проверенные: они попадают в командную строку shell.
+        var names = packages.Where(p => PackageNameRe.IsMatch(p)).ToList();
+        if (names.Count == 0) return;
+        var dir = TvJournalPath[..TvJournalPath.LastIndexOf('/')];
+        await RunAsync(["-s", serial, "shell",
+            $"mkdir -p {dir} && " + string.Join(" && ", names.Select(n => $"echo {n} >> {TvJournalPath}"))], quiet: true);
+    }
+
+    public async Task RemoveFromTvJournalAsync(string serial, IEnumerable<string> packages)
+    {
+        var names = packages.Where(p => PackageNameRe.IsMatch(p)).ToList();
+        if (names.Count == 0) return;
+        var expr = string.Join(" ", names.Select(n => $"-e '/^{n.Replace(".", "\\.")}$/d'"));
+        await RunAsync(["-s", serial, "shell", $"[ -f {TvJournalPath} ] && sed -i {expr} {TvJournalPath}"], quiet: true);
+    }
+
     /// <summary>
     /// Устройства, которые adb видит по mDNS: беспроводная отладка Android 11+ (<c>_adb-tls-connect</c>)
     /// и отладка по сети на порту 5555 (<c>_adb</c>). Имя сервиса, адрес <c>IP:порт</c> и признак беспроводной отладки.
@@ -637,14 +745,98 @@ public sealed class AdbService
 
     /// <summary>
     /// Устанавливает APK. Несколько файлов одного приложения (split APK) ставятся через install-multiple.
+    /// Перед установкой проверяет свободное место: не хватает — очищает кэш приложений (идея ЧистогоТВ:
+    /// у недорогих ТВ 8 ГБ памяти) и при ошибке нехватки места пробует ещё раз.
     /// </summary>
-    public Task<AdbResult> InstallAsync(string serial, IReadOnlyList<string> apkPaths, bool allowDowngrade, bool grantPermissions)
+    public async Task<AdbResult> InstallAsync(string serial, IReadOnlyList<string> apkPaths, bool allowDowngrade, bool grantPermissions)
     {
         var args = new List<string> { "-s", serial, apkPaths.Count > 1 ? "install-multiple" : "install", "-r" };
         if (allowDowngrade) args.Add("-d");
         if (grantPermissions) args.Add("-g");
         args.AddRange(apkPaths);
-        return RunAsync(args);
+
+        var needMb = NeededMb(apkPaths);
+        var trimmed = false;
+        if (await GetFreeMbAsync(serial) is { } free && free < needMb)
+        {
+            Log?.Invoke(Res.Format("LowStorageTrimFormat", free, needMb));
+            await TrimCachesAsync(serial);
+            trimmed = true;
+        }
+
+        var r = await RunAsync(args);
+        if (!trimmed && IsNoSpace(r.Text))
+        {
+            Log?.Invoke(Res.Get("NoSpaceRetry"));
+            await TrimCachesAsync(serial);
+            r = await RunAsync(args);
+        }
+        return r;
+    }
+
+    /// <summary>Сколько места нужно с запасом: APK копируется на устройство и распаковывается при установке.</summary>
+    private static long NeededMb(IReadOnlyList<string> apkPaths) =>
+        (long)Math.Ceiling(apkPaths.Sum(p => new FileInfo(p).Length) * 3 / 1048576.0) + 50;
+
+    private static bool IsNoSpace(string text) =>
+        System.Text.RegularExpressions.Regex.IsMatch(text, "INSUFFICIENT_STORAGE|not enough space|No space left");
+
+    /// <summary>Свободно во внутренней памяти (/data), МБ; null — если устройство не ответило (stat -f есть в toybox с Android 6).</summary>
+    public async Task<long?> GetFreeMbAsync(string serial)
+    {
+        var r = await RunAsync(["-s", serial, "shell", "stat -f -c '%a %S' /data"], quiet: true);
+        var m = System.Text.RegularExpressions.Regex.Match(r.Output.Trim(), @"^(\d+) (\d+)$");
+        return m.Success ? (long)(double.Parse(m.Groups[1].Value) * double.Parse(m.Groups[2].Value) / 1048576) : null;
+    }
+
+    /// <summary>Система освобождает место за счёт кэша приложений (<c>pm trim-caches</c>); данные и настройки не трогаются.</summary>
+    public async Task TrimCachesAsync(string serial)
+    {
+        var before = await GetFreeMbAsync(serial);
+        await RunOnDeviceAsync(serial, "shell", "pm", "trim-caches", "999G");
+        if (before is not null && await GetFreeMbAsync(serial) is { } after)
+            Log?.Invoke(Res.Format("CacheTrimmedFormat", after, before));
+    }
+
+    /// <summary>
+    /// Ошибка установки одной строкой вместо стектрейса pm, с подсказкой для частых причин:
+    /// нет места, нет сборки под процессор, прошивка запрещает установку по adb.
+    /// </summary>
+    public async Task<string> DescribeInstallErrorAsync(string serial, IReadOnlyList<string> apkPaths, string output)
+    {
+        var text = ShortError(output);
+        if (IsNoSpace(output))
+        {
+            var need = NeededMb(apkPaths);
+            text += Environment.NewLine + (await GetFreeMbAsync(serial) is { } free
+                ? Res.Format("InstallNoSpaceFreeFormat", free, need)
+                : Res.Format("InstallNoSpaceFormat", need));
+        }
+        else if (output.Contains("NO_MATCHING_ABIS", StringComparison.Ordinal))
+        {
+            var abi = (await RunAsync(["-s", serial, "shell", "getprop", "ro.product.cpu.abilist"], quiet: true)).Output.Trim();
+            text += Environment.NewLine + Res.Format("InstallNoAbiFormat", abi);
+        }
+        else if (output.Contains("VERIFICATION_FAILURE", StringComparison.Ordinal))
+        {
+            text += Environment.NewLine + Res.Get("InstallVerificationFailure");
+        }
+        return text;
+    }
+
+    /// <summary>Суть ошибки pm: «Failure [...]» или текст последнего исключения, без строк стектрейса.</summary>
+    private static string ShortError(string output)
+    {
+        var failure = System.Text.RegularExpressions.Regex.Match(output, @"Failure \[[^\]]+\]");
+        if (failure.Success) return failure.Value;
+
+        var lines = output.Split('\n').Select(l => l.Trim())
+            .Where(l => l.Length > 0 && !System.Text.RegularExpressions.Regex.IsMatch(l, @"^(at |\.\.\. \d+ more|Caused by)"))
+            .ToList();
+        var reason = lines.Select(l => System.Text.RegularExpressions.Regex.Match(l, @"Exception: (?!.*Exception: )(.+)$"))
+            .FirstOrDefault(m => m.Success)?.Groups[1].Value;
+        var text = reason ?? lines.LastOrDefault() ?? "";
+        return text.Length > 300 ? text[..300] + "…" : text;
     }
 
     /// <summary>

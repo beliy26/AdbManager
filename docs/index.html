@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ADB Manager — убрать рекламу с Android TV и смартфона без root | Debloat Android TV from Windows</title>
+<meta name="description" content="Бесплатная программа для Windows: удалить рекламу, телеметрию и лишние приложения с Android TV, Google TV, ТВ-приставки и смартфона по ADB без root. Заморозка, удаление, установка APK, откат изменений.">
+<link rel="canonical" href="https://beliy26.github.io/AdbManager/">
+<meta property="og:type" content="website">
+<meta property="og:title" content="ADB Manager — убрать рекламу с Android TV и смартфона без root">
+<meta property="og:description" content="ADB GUI для Windows: удаление и заморозка приложений, очистка от рекламы и телеметрии, откат изменений. Debloat Android TV & phones.">
+<meta property="og:url" content="https://beliy26.github.io/AdbManager/">
+<meta property="og:image" content="https://beliy26.github.io/AdbManager/social-preview.png">
+<meta property="og:image:width" content="1280">
+<meta property="og:image:height" content="640">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="https://raw.githubusercontent.com/beliy26/AdbManager/main/Assets/AppIcon.png">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "ADB Manager",
+  "operatingSystem": "Windows 10, Windows 11",
+  "applicationCategory": "UtilitiesApplication",
+  "description": "ADB GUI for Windows: debloat Android TV, Google TV and Android phones without root — uninstall, freeze and install apps, remove ads and telemetry, undo changes.",
+  "url": "https://beliy26.github.io/AdbManager/",
+  "downloadUrl": "https://github.com/beliy26/AdbManager/releases/latest",
+  "license": "https://opensource.org/licenses/MIT",
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+}
+</script>
+<style>
+:root {
+  --bg: #f6f6f9; --surface: #ffffff; --text: #1b1b22; --muted: #5a5a6a; --accent: #8a3fb0; --border: #e2e2ea;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #14151d; --surface: #1d1e29; --text: #ececf2; --muted: #a9abbb; --accent: #dea0f0; --border: #2e3040;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #14151d; --surface: #1d1e29; --text: #ececf2; --muted: #a9abbb; --accent: #dea0f0; --border: #2e3040;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--text); font: 17px/1.6 "Segoe UI", system-ui, sans-serif; }
+main { max-width: 960px; margin: 0 auto; padding: 40px 16px 64px; }
+header { text-align: center; }
+header img { width: 88px; height: 88px; }
+h1 { font-size: clamp(30px, 6vw, 46px); margin: 12px 0 8px; line-height: 1.15; }
+.lead { font-size: 20px; color: var(--muted); max-width: 720px; margin: 0 auto 24px; }
+.buttons { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-bottom: 32px; }
+.btn { display: inline-block; padding: 12px 22px; border-radius: 8px; text-decoration: none; font-weight: 600; border: 1px solid var(--border); color: var(--text); background: var(--surface); }
+.btn.primary { background: var(--accent); color: #fff; border-color: var(--accent); }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .btn.primary { color: #1b1b22; } }
+:root[data-theme="dark"] .btn.primary { color: #1b1b22; }
+.shot { width: 100%; height: auto; border-radius: 10px; border: 1px solid var(--border); }
+h2 { margin-top: 40px; font-size: 26px; }
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 16px 18px; }
+.card h3 { margin: 0 0 6px; font-size: 18px; }
+.card p { margin: 0; color: var(--muted); font-size: 15px; }
+ol li { margin-bottom: 6px; }
+a { color: var(--accent); }
+footer { margin-top: 48px; color: var(--muted); font-size: 14px; text-align: center; }
+</style>
+</head>
+<body>
+<main>
+<header>
+  <img src="https://raw.githubusercontent.com/beliy26/AdbManager/main/Assets/AppIcon.png" alt="ADB Manager">
+  <h1>ADB Manager</h1>
+  <p class="lead">Убрать рекламу и лишние приложения с Android TV, Google TV, ТВ-приставки и смартфона — без root, с компьютера на Windows. Бесплатно и с открытым кодом.</p>
+  <div class="buttons">
+    <a class="btn primary" href="https://github.com/beliy26/AdbManager/releases/latest">Скачать для Windows</a>
+    <a class="btn" href="https://github.com/beliy26/AdbManager">Исходный код на GitHub</a>
+  </div>
+</header>
+
+<img class="shot" src="screenshot.png" width="2220" height="1380" alt="Главное окно ADB Manager: список приложений телевизора с советами, что можно отключить">
+
+<h2>Что умеет</h2>
+<div class="grid">
+  <div class="card"><h3>Очистка от рекламы</h3><p>Подсказывает, что можно отключить: рекламные сервисы и телеметрию Яндекс ТВ, Салют ТВ, Xiaomi, TCL, Haier, Hisense, Sony, Philips, Google TV — базы ЧистыйТВ и CleanYourTV (200+ моделей ТВ).</p></div>
+  <div class="card"><h3>Удаление и заморозка</h3><p>Удаление и заморозка приложений по ADB, в том числе предустановленных системных, без root. Массовые действия и пресеты.</p></div>
+  <div class="card"><h3>Защита и откат</h3><p>Критичные пакеты, главный экран и входы HDMI защищены. Перед изменениями — бэкап, «Вернуть как было» отменяет всё.</p></div>
+  <div class="card"><h3>Установка APK</h3><p>Перетащите APK в окно — программа проверит место на ТВ, при нехватке очистит кэш и установит.</p></div>
+  <div class="card"><h3>Лаунчер без рекламы</h3><p>Установка Projectivy Launcher или LTvLauncher с GitHub авторов — главный экран без рекламных рядов.</p></div>
+  <div class="card"><h3>DNS и приватность</h3><p>AdGuard DNS с проверкой интернета и автооткатом, аудит микрофона, голосового ассистента и ACR.</p></div>
+</div>
+
+<h2>Как начать</h2>
+<ol>
+  <li>Скачайте архив из <a href="https://github.com/beliy26/AdbManager/releases/latest">последнего релиза</a> (<code>win-x64</code> — обычный ПК, <code>win-arm64</code> — Snapdragon) и распакуйте.</li>
+  <li>На телевизоре или телефоне включите «Для разработчиков» и «Отладку по USB» или «Отладку по сети».</li>
+  <li>Запустите <code>AdbManager.exe</code>, подключитесь по USB, по адресу или кнопкой «Найти в сети».</li>
+  <li>«Отметить → Рекомендуемые к отключению» → «Заморозить». Что-то не так — «… → Вернуть как было».</li>
+</ol>
+
+<h2 lang="en">In English</h2>
+<p lang="en">ADB Manager is a free, open-source ADB GUI for Windows 10/11. Debloat Android TV, Google TV, TV boxes and Android phones without root: see every app with its name and icon, freeze or uninstall ads, telemetry and bloatware with advice from the ChistyTV and CleanYourTV databases, install APKs, set AdGuard private DNS, install an ad-free launcher, and undo any change. The interface is available in English and Russian. <a href="https://github.com/beliy26/AdbManager/blob/main/README.en.md">Read more</a> · <a href="https://github.com/beliy26/AdbManager/releases/latest">Download</a>.</p>
+
+<footer>MIT License · <a href="https://github.com/beliy26/AdbManager">github.com/beliy26/AdbManager</a></footer>
+</main>
+</body>
+</html>
