@@ -273,6 +273,11 @@
                                         <FontIcon Glyph="&#xE7BA;" />
                                     </AppBarToggleButton.Icon>
                                 </AppBarToggleButton>
+                                <AppBarButton x:Uid="McpButton" x:Name="McpButton" Click="Mcp_Click">
+                                    <AppBarButton.Icon>
+                                        <FontIcon Glyph="&#xE99A;" />
+                                    </AppBarButton.Icon>
+                                </AppBarButton>
                                 <AppBarSeparator />
                                 <AppBarButton x:Uid="CheckUpdatesButton" x:Name="CheckUpdatesButton" Click="CheckUpdates_Click">
                                     <AppBarButton.Icon>

@@ -8,7 +8,7 @@
     <AssemblyName>AdbManager</AssemblyName>
     <!-- Язык ресурсов по умолчанию (Strings/en-US): для систем без русского в списке языков -->
     <DefaultLanguage>en-US</DefaultLanguage>
-    <Version>1.7.0</Version>
+    <Version>1.8.0</Version>
     <Product>ADB Manager</Product>
     <Description>Управление приложениями Android по ADB</Description>
     <ApplicationManifest>app.manifest</ApplicationManifest>

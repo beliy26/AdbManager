@@ -67,6 +67,7 @@ public sealed partial class MainWindow : Window
             _devicePollTimer.Stop();
             _metadataCts?.Cancel();
         };
+        InitializeMcp();
     }
 
     // ======================= Размер окна =======================
@@ -1561,19 +1562,25 @@ public sealed partial class MainWindow : Window
 
         if (await dialog.ShowAsync() != ContentDialogResult.Primary) return;
 
+        await InstallCoreAsync(device, paths, split.IsChecked == true, downgrade.IsChecked == true, grant.IsChecked == true);
+    }
+
+    /// <summary>Установка без диалога (из окна и для агента). Возвращает ошибки по каждому APK или группе.</summary>
+    private async Task<List<string>> InstallCoreAsync(DeviceInfo device, List<string> paths, bool split, bool downgrade, bool grant)
+    {
+        var errors = new List<string>();
         await RunBusyAsync(async () =>
         {
-            List<List<string>> groups = split.IsChecked == true
+            List<List<string>> groups = split
                 ? [paths]
                 : paths.Select(p => new List<string> { p }).ToList();
 
-            var errors = new List<string>();
             foreach (var group in groups)
             {
                 var name = string.Join(", ", group.Select(Path.GetFileName));
                 ShowStatus(InfoBarSeverity.Informational, Res.Get("Installing"), name);
 
-                var r = await _adb.InstallAsync(device.Serial, group, downgrade.IsChecked == true, grant.IsChecked == true);
+                var r = await _adb.InstallAsync(device.Serial, group, downgrade, grant);
                 if (!r.Success || !r.Text.Contains("Success"))
                     errors.Add($"{name}: {await _adb.DescribeInstallErrorAsync(device.Serial, group, r.Text)}");
             }
@@ -1586,6 +1593,7 @@ public sealed partial class MainWindow : Window
 
             await ReloadPackagesCoreAsync(device);
         });
+        return errors;
     }
 
     // ----- Удаление -----
@@ -1645,18 +1653,27 @@ public sealed partial class MainWindow : Window
         AddExpertRiskConfirmation(dialog, content, selected.Where(p => p.IsBlocked || drivers.Contains(p)).ToList());
         if (await dialog.ShowAsync() != ContentDialogResult.Primary) return;
 
+        await UninstallCoreAsync(device, selected, keepData.IsChecked == true);
+    }
+
+    /// <summary>Результат пакетного действия: что получилось и ошибки «пакет: причина».</summary>
+    private sealed record PackagesActionResult(List<PackageInfo> Done, List<string> Errors);
+
+    /// <summary>Удаление без диалога (из окна и для агента): бэкап, журнал, обновление списка.</summary>
+    private async Task<PackagesActionResult> UninstallCoreAsync(DeviceInfo device, List<PackageInfo> selected, bool keepData)
+    {
+        var errors = new List<string>();
+        var removed = new List<PackageInfo>();
         await RunBusyAsync(async () =>
         {
             var journal = await GetJournalAsync(device);
             ShowStatus(InfoBarSeverity.Informational, Res.Get("BackupTitle"), Res.Get("BackupMessage"));
             await journal.EnsureBackupAsync(_adb, device.Serial);
 
-            var errors = new List<string>();
-            var removed = new List<PackageInfo>();
             foreach (var pkg in selected)
             {
                 ShowStatus(InfoBarSeverity.Informational, Res.Get("Uninstalling"), pkg.Name);
-                var r = await _adb.UninstallAsync(device.Serial, pkg, keepData.IsChecked == true);
+                var r = await _adb.UninstallAsync(device.Serial, pkg, keepData);
                 if (r.Success && r.Text.Contains("Success"))
                 {
                     removed.Add(pkg);
@@ -1668,7 +1685,8 @@ public sealed partial class MainWindow : Window
                 }
             }
 
-            _allPackages = _allPackages.Except(removed).ToList();
+            var removedNames = removed.Select(p => p.Name).ToHashSet();
+            _allPackages = _allPackages.Where(p => !removedNames.Contains(p.Name)).ToList();
             ApplyFilter();
 
             if (errors.Count == 0)
@@ -1677,6 +1695,7 @@ public sealed partial class MainWindow : Window
                 ShowStatus(InfoBarSeverity.Error, Res.Format("UninstalledErrorsFormat", removed.Count, errors.Count),
                     string.Join(Environment.NewLine, errors));
         });
+        return new PackagesActionResult(removed, errors);
     }
 
     // ----- Заморозка -----
@@ -1743,9 +1762,11 @@ public sealed partial class MainWindow : Window
         if (selected.Count > 0) await SetFrozenAsync(selected, frozen: false);
     }
 
-    private async Task SetFrozenAsync(List<PackageInfo> packages, bool frozen)
+    private async Task<PackagesActionResult> SetFrozenAsync(List<PackageInfo> packages, bool frozen)
     {
-        if (SelectedDevice is not { IsOnline: true } device) return;
+        var errors = new List<string>();
+        var changed = new List<PackageInfo>();
+        if (SelectedDevice is not { IsOnline: true } device) return new PackagesActionResult(changed, errors);
 
         await RunBusyAsync(async () =>
         {
@@ -1756,8 +1777,6 @@ public sealed partial class MainWindow : Window
                 await journal.EnsureBackupAsync(_adb, device.Serial);
             }
 
-            var errors = new List<string>();
-            var changed = new List<PackageInfo>();
             foreach (var pkg in packages)
             {
                 AdbResult r;
@@ -1808,6 +1827,7 @@ public sealed partial class MainWindow : Window
                 ShowStatus(InfoBarSeverity.Error, Res.Format("ChangedErrorsFormat", verb, changed.Count, errors.Count),
                     string.Join(Environment.NewLine, errors));
         });
+        return new PackagesActionResult(changed, errors);
     }
 
     /// <summary>Сообщение в диалоге о пакетах, которые пропущены из-за защиты.</summary>

@@ -712,6 +712,39 @@
   <data name="MarkUserItem.Text" xml:space="preserve">
     <value>Пользовательские</value>
   </data>
+  <data name="McpButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
+    <value>Подключить ИИ-агентов (Claude Code, Cursor, VS Code) к программе по протоколу MCP</value>
+  </data>
+  <data name="McpButton.Label" xml:space="preserve">
+    <value>Агенты (MCP)…</value>
+  </data>
+  <data name="McpClaudeCodeHeader" xml:space="preserve">
+    <value>Claude Code — выполните в терминале</value>
+  </data>
+  <data name="McpClaudeDesktopHeader" xml:space="preserve">
+    <value>Claude Desktop — claude_desktop_config.json (нужен Node.js)</value>
+  </data>
+  <data name="McpDialogTitle" xml:space="preserve">
+    <value>Агенты (MCP)</value>
+  </data>
+  <data name="McpIntro" xml:space="preserve">
+    <value>Пока программа открыта, ИИ-агенты могут работать с выбранным устройством: смотреть приложения с советами, замораживать, включать, удалять и устанавливать их. Защищённые пакеты агенту недоступны даже в экспертном режиме. Каждое действие агента записывается в журнал, и «Вернуть как было» его отменит. Каждый вызов подтверждается в самом агенте.</value>
+  </data>
+  <data name="McpJsonHeader" xml:space="preserve">
+    <value>Cursor, Windsurf, .mcp.json и другие</value>
+  </data>
+  <data name="McpRunningFormat" xml:space="preserve">
+    <value>Работает: {0}. Подключиться можно только с этого компьютера.</value>
+  </data>
+  <data name="McpServerToggle" xml:space="preserve">
+    <value>MCP-сервер</value>
+  </data>
+  <data name="McpStartFailedFormat" xml:space="preserve">
+    <value>Не удалось запустить MCP-сервер на порту {0}: {1}</value>
+  </data>
+  <data name="McpStopped" xml:space="preserve">
+    <value>Выключен.</value>
+  </data>
   <data name="MissingOnDeviceFormat" xml:space="preserve">
     <value>Нет на устройстве ({0}): </value>
   </data>

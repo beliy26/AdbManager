@@ -63,6 +63,11 @@ The interface is available in English and Russian.
 - **TV launcher** — install [Projectivy Launcher](https://github.com/spocky/miproja1) or [LTvLauncher](https://github.com/leanbitlab-org/LtvLauncher) from GitHub and make it the home screen.
 - Device screenshot to PNG.
 
+**AI agents (MCP)**
+- “… → Agents (MCP)…” turns on an [MCP server](https://modelcontextprotocol.io) at `http://localhost:47037/mcp`: while the app is open, Claude Code, Cursor, VS Code and other agents can work with the selected device — list devices and apps with advice, freeze, enable, uninstall, install APKs, read the change journal, take a screenshot.
+- The same rules as for the buttons: protected packages, the only home screen and TV inputs are off limits (expert mode does not apply to agents), a backup is made before changes, every action is journaled, and “Undo changes” reverts agent actions too.
+- Claude Code: `claude mcp add --transport http adb-manager http://localhost:47037/mcp`; ready-made JSON for other agents is in the same dialog. Only connections from this computer are accepted.
+
 **adb**
 - Finds `adb.exe` in `PATH`, `ANDROID_HOME`, the Android SDK; otherwise downloads the official platform-tools from Google (with SHA-256-verified mirrors as a fallback).
 

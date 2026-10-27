@@ -16,6 +16,12 @@ public sealed class Settings
     /// <summary>Версия, уведомление о которой закрыли, — о ней больше не напоминаем.</summary>
     public string? SkippedUpdateVersion { get; set; }
 
+    /// <summary>MCP-сервер для агентов включён — запускается вместе с окном.</summary>
+    public bool McpEnabled { get; set; }
+
+    /// <summary>Порт MCP-сервера на localhost.</summary>
+    public int McpPort { get; set; } = 47037;
+
     /// <summary>Устройства, сопряжённые по коду (беспроводная отладка Android 11+).</summary>
     public List<PairedDevice> PairedDevices { get; set; } = [];
 

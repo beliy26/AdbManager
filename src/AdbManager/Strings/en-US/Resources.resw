@@ -712,6 +712,39 @@
   <data name="MarkUserItem.Text" xml:space="preserve">
     <value>User</value>
   </data>
+  <data name="McpButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
+    <value>Connect AI agents (Claude Code, Cursor, VS Code) over the Model Context Protocol</value>
+  </data>
+  <data name="McpButton.Label" xml:space="preserve">
+    <value>Agents (MCP)…</value>
+  </data>
+  <data name="McpClaudeCodeHeader" xml:space="preserve">
+    <value>Claude Code — run in a terminal</value>
+  </data>
+  <data name="McpClaudeDesktopHeader" xml:space="preserve">
+    <value>Claude Desktop — claude_desktop_config.json (requires Node.js)</value>
+  </data>
+  <data name="McpDialogTitle" xml:space="preserve">
+    <value>Agents (MCP)</value>
+  </data>
+  <data name="McpIntro" xml:space="preserve">
+    <value>While the program is open, AI agents can work with the selected device: list apps with advice, freeze, enable, uninstall and install them. Protected packages are off limits to agents even in expert mode. Every agent action is written to the journal and can be reverted with “Undo changes”. Each call is confirmed in the agent itself.</value>
+  </data>
+  <data name="McpJsonHeader" xml:space="preserve">
+    <value>Cursor, Windsurf, .mcp.json and others</value>
+  </data>
+  <data name="McpRunningFormat" xml:space="preserve">
+    <value>Running at {0}. Accepts connections from this computer only.</value>
+  </data>
+  <data name="McpServerToggle" xml:space="preserve">
+    <value>MCP server</value>
+  </data>
+  <data name="McpStartFailedFormat" xml:space="preserve">
+    <value>Could not start the MCP server on port {0}: {1}</value>
+  </data>
+  <data name="McpStopped" xml:space="preserve">
+    <value>Off.</value>
+  </data>
   <data name="MissingOnDeviceFormat" xml:space="preserve">
     <value>Not on the device ({0}): </value>
   </data>

@@ -81,6 +81,11 @@ ADB Manager — бесплатная программа с открытым ко
 
 ![Установка лаунчера](docs/images/launcher.png)
 
+**ИИ-агенты (MCP)**
+- «… → Агенты (MCP)…» включает [MCP-сервер](https://modelcontextprotocol.io) на `http://localhost:47037/mcp`: пока программа открыта, Claude Code, Cursor, VS Code и другие агенты работают с выбранным устройством — список устройств и приложений с советами, заморозка, включение, удаление, установка APK, журнал изменений, снимок экрана.
+- Те же правила, что и для кнопок: защищённые пакеты, единственный главный экран и входы ТВ агенту недоступны (экспертный режим на него не действует), перед изменениями — бэкап, каждое действие — в журнал, «Вернуть как было» отменяет и действия агента.
+- Подключение к Claude Code: `claude mcp add --transport http adb-manager http://localhost:47037/mcp`; готовый JSON для других агентов — в том же диалоге. Сервер принимает подключения только с этого компьютера.
+
 **Прочее**
 - **Русский и английский интерфейс** — «… → Language / Язык»; по умолчанию — язык интерфейса Windows. Пояснения из баз советов тоже переведены.
 - **Уведомление о новой версии** — при запуске программа проверяет GitHub Releases; «… → Проверить обновления» — вручную.
@@ -170,6 +175,7 @@ AdbManager.sln             решение для IDE
 src/AdbManager/            исходники приложения
   AdbManager.csproj
   App.xaml(.cs), MainWindow.xaml(.cs)   запуск и интерфейс
+  MainWindow.Mcp.cs      инструменты MCP для агентов и диалог подключения
   Apk/
     BinaryFormats.cs       разбор бинарного XML (AXML) и resources.arsc
     RemoteApk.cs           чтение отдельных файлов из APK на устройстве
@@ -190,6 +196,7 @@ src/AdbManager/            исходники приложения
     NetworkScanner.cs      поиск устройств в сети, проверка маршрута через VPN
     LauncherInstaller.cs   загрузка лаунчеров для ТВ (Projectivy, LTvLauncher) с GitHub Releases
     UpdateChecker.cs       проверка новой версии программы
+    McpServer.cs           MCP-сервер (Streamable HTTP, JSON-RPC) на localhost
     Res.cs                 строки интерфейса из ресурсов (MRT Core)
     PresetFile.cs          экспорт и импорт пресетов отметки
     Settings.cs            настройки и пресеты (%LOCALAPPDATA%\AdbManager\settings.json)
