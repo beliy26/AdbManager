@@ -12,7 +12,7 @@ $bg = New-Object System.Drawing.Drawing2D.LinearGradientBrush (New-Object System
 $g.FillRectangle($bg, 0, 0, $W, $H)
 
 # Скриншот справа, со скруглённой рамкой
-$shot = [System.Drawing.Image]::FromFile("$repo\docs\screenshot.png")
+$shot = [System.Drawing.Image]::FromFile("$repo\docs\images\screenshot.png")
 $sw = 640; $sh = [int]($shot.Height * $sw / $shot.Width)
 $sx = $W - $sw - 40; $sy = [int](($H - $sh) / 2)
 $path = New-Object System.Drawing.Drawing2D.GraphicsPath
@@ -23,7 +23,7 @@ $g.SetClip($path); $g.DrawImage($shot, $sx, $sy, $sw, $sh); $g.ResetClip()
 $g.DrawPath((New-Object System.Drawing.Pen ([System.Drawing.Color]::FromArgb(90, 255, 255, 255)), 2), $path)
 
 # Иконка и текст слева
-$icon = [System.Drawing.Image]::FromFile("$repo\Assets\AppIcon.png")
+$icon = [System.Drawing.Image]::FromFile("$repo\src\AdbManager\Assets\AppIcon.png")
 $g.DrawImage($icon, 60, 110, 120, 120)
 $white = [System.Drawing.Brushes]::White
 $soft = New-Object System.Drawing.SolidBrush ([System.Drawing.Color]::FromArgb(255, 205, 210, 225))

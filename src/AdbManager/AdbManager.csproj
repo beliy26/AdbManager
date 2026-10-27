@@ -49,7 +49,9 @@
     <Content Include="Assets\Data\phone-packages.json" CopyToOutputDirectory="PreserveNewest" />
     <!-- Списки отключения CleanYourTV (MIT, см. THIRD-PARTY-NOTICES.md), tools/import-cleanyourtv.py -->
     <Content Include="Assets\Data\cleanyourtv-packages.json" CopyToOutputDirectory="PreserveNewest" />
-    <Content Include="THIRD-PARTY-NOTICES.md" CopyToOutputDirectory="PreserveNewest" />
+    <!-- Лицензии лежат в корне репозитория, рядом с README; в сборку — рядом с exe -->
+    <Content Include="..\..\LICENSE" Link="LICENSE" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="..\..\THIRD-PARTY-NOTICES.md" Link="THIRD-PARTY-NOTICES.md" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
   <!--

@@ -1,7 +1,7 @@
-"""Собирает Assets/Data/cleanyourtv-packages.json из списков отключения проекта CleanYourTV.
+"""Собирает src/AdbManager/Assets/Data/cleanyourtv-packages.json из списков отключения проекта CleanYourTV.
 
     git clone --depth 1 https://github.com/Gathin23/cleanyourtv <папка>
-    python -I tools/import-cleanyourtv.py <папка> Assets/Data/cleanyourtv-packages.json
+    python -I tools/import-cleanyourtv.py <папка> src/AdbManager/Assets/Data/cleanyourtv-packages.json
 
 Списки examples/*/debloat.txt (MIT, см. THIRD-PARTY-NOTICES.md): по пакету на строку, «# комментарий»
 после имени — что это. Для каждого пакета берётся самый частый комментарий и число моделей ТВ, где он

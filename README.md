@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="Assets/AppIcon.png" width="96" alt="ADB Manager">
+  <img src="src/AdbManager/Assets/AppIcon.png" width="96" alt="ADB Manager">
 </p>
 
 <h1 align="center">ADB Manager</h1>
@@ -23,7 +23,7 @@ ADB Manager — бесплатная программа с открытым ко
 Критичные системные пакеты защищены, перед изменениями делается бэкап, всё можно вернуть как было.
 Без установки и без командной строки — распакуйте архив и запустите `AdbManager.exe`.
 
-![Главное окно: советы по пакетам, отметки для массовых действий, найденные в сети устройства](docs/screenshot.png)
+![Главное окно: советы по пакетам, отметки для массовых действий, найденные в сети устройства](docs/images/screenshot.png)
 
 ## Возможности
 
@@ -50,9 +50,9 @@ ADB Manager — бесплатная программа с открытым ко
 - Сохранение APK на компьютер — одного приложения или сразу всех отмеченных (в выбранную папку), копирование имени пакета.
 - **Копировать список для LLM** — таблица приложений с готовым запросом к ИИ: что можно удалить или заморозить.
 
-![Меню «Отметить»: быстрые отметки для массовых действий](docs/mark-menu.png)
+![Меню «Отметить»: быстрые отметки для массовых действий](docs/images/mark-menu.png)
 
-![Пресеты отметки: загрузка, сохранение, управление и импорт](docs/presets.png)
+![Пресеты отметки: загрузка, сохранение, управление и импорт](docs/images/presets.png)
 
 **Очистка от рекламы и телеметрии**
 - **Колонка «Совет»** — «Можно отключить» (реклама, телеметрия, демо), «По желанию», «Не трогать», «Защищено». Источники:
@@ -65,7 +65,7 @@ ADB Manager — бесплатная программа с открытым ко
 - **Аудит приватности** — голосовой ассистент, назначенный в системе, приложения, обращавшиеся к микрофону (история AppOps), известные ACR и телеметрия; найденное можно отметить в таблице.
 - **Частный DNS**: AdGuard (блокировка рекламы и трекеров), AdGuard Семейный, свой сервер или выключить (Android 9+). После включения программа проверяет, что интернет работает: если провайдер или роутер режут DNS-over-TLS (порт 853), прежний DNS сразу возвращается.
 
-![Аудит приватности: ассистент, доступ к микрофону, ACR и телеметрия](docs/privacy-audit.png)
+![Аудит приватности: ассистент, доступ к микрофону, ACR и телеметрия](docs/images/privacy-audit.png)
 
 **Бэкап и откат**
 - Перед первым изменением сохраняются список пакетов, `getprop` и системные настройки; все действия пишутся в журнал.
@@ -73,13 +73,13 @@ ADB Manager — бесплатная программа с открытым ко
 - «Восстановить удалённые системные» возвращает любые системные приложения, удалённые для пользователя.
 - **Проверить после обновления прошивки** — обновление возвращает замороженное и удалённое; программа сравнит журнал с устройством и предложит повторить.
 
-![Меню «…»: откат, проверка после прошивки, лаунчер, аудит, DNS, снимок экрана](docs/more-menu.png)
+![Меню «…»: откат, проверка после прошивки, лаунчер, аудит, DNS, снимок экрана](docs/images/more-menu.png)
 
 **Для телевизоров**
 - **Лаунчер для ТВ** — «… → Установить лаунчер…», на выбор [Projectivy Launcher](https://github.com/spocky/miproja1/releases) или [LTvLauncher](https://github.com/leanbitlab-org/LtvLauncher/releases) (открытый, GPL-3.0; его ставит ЧистыйТВ; APK под процессор устройства): последняя версия главного экрана для Android TV без рекламы скачивается с GitHub, устанавливается и по желанию становится главным экраном (`cmd package set-home-activity`). Установку и смену главного экрана можно отменить через «Вернуть как было». На телефонах и планшетах пункт неактивен.
 - **Снимок экрана устройства** в PNG.
 
-![Установка лаунчера](docs/launcher.png)
+![Установка лаунчера](docs/images/launcher.png)
 
 **Прочее**
 - **Русский и английский интерфейс** — «… → Language / Язык»; по умолчанию — язык интерфейса Windows. Пояснения из баз советов тоже переведены.
@@ -108,11 +108,12 @@ ADB Manager — бесплатная программа с открытым ко
 ```powershell
 git clone https://github.com/beliy26/AdbManager.git
 cd AdbManager
-dotnet run
+dotnet run --project src/AdbManager
 ```
 
-По умолчанию собирается x64; другая платформа — `dotnet run -p:Platform=ARM64`.
-Приложение неупакованное (без MSIX) и self-contained по Windows App SDK — устанавливать рантайм отдельно не нужно, готовый `AdbManager.exe` лежит в `bin\x64\Debug\net10.0-windows10.0.19041.0\win-x64\`.
+По умолчанию собирается x64; другая платформа — `dotnet run --project src/AdbManager -p:Platform=ARM64`.
+В IDE (Rider, Visual Studio) откройте `AdbManager.sln` в корне репозитория.
+Приложение неупакованное (без MSIX) и self-contained по Windows App SDK — устанавливать рантайм отдельно не нужно, готовый `AdbManager.exe` лежит в `src\AdbManager\bin\x64\Debug\net10.0-windows10.0.19041.0\win-x64\`.
 
 ## Как это работает
 
@@ -159,39 +160,52 @@ Android не разрешает adb менять состояние `DISABLED_UN
 
 Тексты лицензий и коммиты, из которых взяты данные, — в [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md).
 
-## Структура проекта
+## Структура репозитория
 
 ```
-Apk/
-  BinaryFormats.cs      разбор бинарного XML (AXML) и resources.arsc
-  RemoteApk.cs          чтение отдельных файлов из APK на устройстве
-  ApkResolver.cs        поиск названия и иконки, VectorDrawable → SVG
-Controls/
-  AppIconView.cs        отрисовка иконки (в т.ч. adaptive)
-Models/                 устройство, пакет, иконка
-Assets/Data/
-  chistytv-packages.json  база пакетов ЧистогоТВ (MIT)
-  phone-packages.json     реклама и телеметрия на телефонах
-  cleanyourtv-packages.json  списки отключения CleanYourTV (MIT, tools/import-cleanyourtv.py)
-Services/
-  AdbService.cs         обёртка над adb.exe
-  AppMetadataService.cs загрузка и кэш названий/иконок
-  PackageAdvisor.cs     советы из базы и защита критичных пакетов
-  ChangeJournal.cs      журнал изменений и бэкапы по устройству
-  NetworkScanner.cs     поиск устройств в сети, проверка маршрута через VPN
-  LauncherInstaller.cs  загрузка лаунчеров для ТВ (Projectivy, LTvLauncher) с GitHub Releases
-  UpdateChecker.cs      проверка новой версии программы
-  Res.cs                строки интерфейса из ресурсов (MRT Core)
-  PresetFile.cs         экспорт и импорт пресетов отметки
-  Settings.cs           настройки и пресеты (%LOCALAPPDATA%\AdbManager\settings.json)
-Strings/
-  ru-RU/Resources.resw  строки интерфейса на русском
-  en-US/Resources.resw  строки интерфейса на английском
-  en-US/Advice.resw     перевод названий и пояснений из баз советов
-MainWindow.xaml(.cs)    интерфейс
-tools/make-icon.ps1     генерация иконки приложения
-tools/import-cleanyourtv.py  сборка базы из списков CleanYourTV
-tools/check-resources.py     проверка строковых ресурсов (ключи, подстановки, забытые литералы)
+README.md, README.en.md    описание на русском и английском
+LICENSE                    лицензия MIT
+THIRD-PARTY-NOTICES.md     лицензии и коммиты сторонних данных
+AdbManager.sln             решение для IDE
+src/AdbManager/            исходники приложения
+  AdbManager.csproj
+  App.xaml(.cs), MainWindow.xaml(.cs)   запуск и интерфейс
+  Apk/
+    BinaryFormats.cs       разбор бинарного XML (AXML) и resources.arsc
+    RemoteApk.cs           чтение отдельных файлов из APK на устройстве
+    ApkResolver.cs         поиск названия и иконки, VectorDrawable → SVG
+  Controls/
+    AppIconView.cs         отрисовка иконки (в т.ч. adaptive)
+  Models/                  устройство, пакет, иконка
+  Assets/                  иконка приложения
+  Assets/Data/
+    chistytv-packages.json     база пакетов ЧистогоТВ (MIT)
+    phone-packages.json        реклама и телеметрия на телефонах
+    cleanyourtv-packages.json  списки отключения CleanYourTV (MIT, tools/import-cleanyourtv.py)
+  Services/
+    AdbService.cs          обёртка над adb.exe
+    AppMetadataService.cs  загрузка и кэш названий/иконок
+    PackageAdvisor.cs      советы из базы и защита критичных пакетов
+    ChangeJournal.cs       журнал изменений и бэкапы по устройству
+    NetworkScanner.cs      поиск устройств в сети, проверка маршрута через VPN
+    LauncherInstaller.cs   загрузка лаунчеров для ТВ (Projectivy, LTvLauncher) с GitHub Releases
+    UpdateChecker.cs       проверка новой версии программы
+    Res.cs                 строки интерфейса из ресурсов (MRT Core)
+    PresetFile.cs          экспорт и импорт пресетов отметки
+    Settings.cs            настройки и пресеты (%LOCALAPPDATA%\AdbManager\settings.json)
+  Strings/
+    ru-RU/Resources.resw   строки интерфейса на русском
+    en-US/Resources.resw   строки интерфейса на английском
+    en-US/Advice.resw      перевод названий и пояснений из баз советов
+docs/                      сайт проекта (GitHub Pages)
+  index.html, sitemap.xml
+  social-preview.png       превью для ссылок
+  images/                  скриншоты для README и сайта
+tools/
+  make-icon.ps1            генерация иконки приложения
+  make-social-preview.ps1  генерация docs/social-preview.png
+  import-cleanyourtv.py    сборка базы из списков CleanYourTV
+  check-resources.py       проверка строковых ресурсов (ключи, подстановки, забытые литералы)
 ```
 
 ## Лицензия

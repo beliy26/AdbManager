@@ -1,4 +1,4 @@
-"""Проверка строковых ресурсов (Strings/<язык>/Resources.resw).
+"""Проверка строковых ресурсов (src/AdbManager/Strings/<язык>/Resources.resw).
 
 - у всех языков одинаковый набор ключей;
 - ключи из Res.Get/Res.Format в коде и x:Uid в XAML есть в ресурсах, неиспользуемых ключей нет;
@@ -12,7 +12,7 @@ import sys
 from pathlib import Path
 from xml.etree import ElementTree
 
-ROOT = Path(__file__).resolve().parent.parent
+ROOT = Path(__file__).resolve().parent.parent / 'src' / 'AdbManager'
 CYR = re.compile('[А-Яа-яЁё]')
 
 

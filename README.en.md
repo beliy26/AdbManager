@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="Assets/AppIcon.png" width="96" alt="ADB Manager">
+  <img src="src/AdbManager/Assets/AppIcon.png" width="96" alt="ADB Manager">
 </p>
 
 <h1 align="center">ADB Manager</h1>
@@ -23,7 +23,7 @@ bloatware from Samsung, Xiaomi and OPPO. Critical system packages are protected,
 first change, and everything can be rolled back. No installation and no command line — unzip and run `AdbManager.exe`.
 The interface is available in English and Russian.
 
-![Main window: package advice, check boxes for bulk actions, devices found on the network](docs/screenshot.png)
+![Main window: package advice, check boxes for bulk actions, devices found on the network](docs/images/screenshot.png)
 
 ## Getting started
 
@@ -70,7 +70,7 @@ The interface is available in English and Russian.
 
 - Windows 10 1809 or later, x64 or ARM64.
 - Developer options and USB debugging (or network / wireless debugging) enabled on the device.
-- To build from source — [.NET SDK 10](https://dotnet.microsoft.com/download): `git clone https://github.com/beliy26/AdbManager.git`, `cd AdbManager`, `dotnet run`.
+- To build from source — [.NET SDK 10](https://dotnet.microsoft.com/download): `git clone https://github.com/beliy26/AdbManager.git`, `cd AdbManager`, `dotnet run --project src/AdbManager` (or open `AdbManager.sln` in an IDE). Sources are in `src/AdbManager`, the website and screenshots in `docs`, helper scripts in `tools`.
 
 ## How it works
 
