@@ -8,7 +8,7 @@ GPL-3.0) в приложение не входят: по запросу поль
 
 Файл `Assets/Data/chistytv-packages.json` и список защищённых пакетов в `Services/PackageAdvisor.cs`
 взяты из проекта [ЧистыйТВ](https://github.com/by-sonic/chistytv)
-(коммит `4290bfe7f7d889d8fb66aae10b67112842d0ffec`). Источники данных базы перечислены в
+(коммит `8428b4abb0bd5f90766043b0095612a871db7021`). Источники данных базы перечислены в
 [docs/SOURCES.md](https://github.com/by-sonic/chistytv/blob/main/docs/SOURCES.md) проекта.
 
 ```
@@ -41,7 +41,7 @@ SOFTWARE.
 
 Файл `Assets/Data/cleanyourtv-packages.json` собран скриптом `tools/import-cleanyourtv.py` из списков
 `examples/*/debloat.txt` проекта [CleanYourTV](https://github.com/Gathin23/cleanyourtv)
-(коммит `56cd3e81c062244ea313899d5af8d75294f2daae`). Оттуда же — правила защиты главного экрана и
+(коммит `fe9ad3204b945d3aadfb6876ee6ea78c20a1fe73`). Оттуда же — правила защиты главного экрана и
 входов HDMI/AV (`tools/disable.sh`), проверка после обновления прошивки (`tools/check.py`) и каталог
 пакетов аудита приватности (`tools/privacy.py`), переписанные на C#.
 

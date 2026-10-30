@@ -26,6 +26,8 @@
             <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
                 <Image Source="ms-appx:///Assets/AppIcon-64.png" Width="16" Height="16" />
                 <TextBlock Text="ADB Manager" Style="{StaticResource CaptionTextBlockStyle}" />
+                <TextBlock x:Name="AppTitleVersion" Style="{StaticResource CaptionTextBlockStyle}"
+                           Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
             </StackPanel>
         </Grid>
 
@@ -282,6 +284,11 @@
                                 <AppBarButton x:Uid="CheckUpdatesButton" x:Name="CheckUpdatesButton" Click="CheckUpdates_Click">
                                     <AppBarButton.Icon>
                                         <FontIcon Glyph="&#xE895;" />
+                                    </AppBarButton.Icon>
+                                </AppBarButton>
+                                <AppBarButton x:Uid="AboutButton" x:Name="AboutButton" Click="About_Click">
+                                    <AppBarButton.Icon>
+                                        <FontIcon Glyph="&#xE946;" />
                                     </AppBarButton.Icon>
                                 </AppBarButton>
                                 <AppBarButton x:Uid="LanguageButton" x:Name="LanguageButton">

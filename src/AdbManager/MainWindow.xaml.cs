@@ -43,6 +43,7 @@ public sealed partial class MainWindow : Window
 
         _adb.Log += msg => DispatcherQueue.TryEnqueue(() => AppendLog(msg));
 
+        AppTitleVersion.Text = UpdateChecker.CurrentVersion.ToString();
         ConnectAddressBox.Text = _settings.LastConnectAddress ?? "";
         if (Enum.TryParse<SortColumn>(_settings.SortColumn, out var sortColumn)) _sortColumn = sortColumn;
         _sortDescending = _settings.SortDescending;
@@ -1939,6 +1940,74 @@ public sealed partial class MainWindow : Window
         _settings.Save();
     }
 
+    // ----- О программе -----
+
+    private async void About_Click(object sender, RoutedEventArgs e)
+    {
+        static HyperlinkButton Link(string text, string url) => new()
+        {
+            Content = text,
+            NavigateUri = new Uri(url),
+            Padding = new Thickness(0, 4, 0, 4),
+        };
+
+        var content = new StackPanel
+        {
+            Spacing = 4,
+            MaxWidth = 460,
+            Children =
+            {
+                new StackPanel
+                {
+                    Orientation = Orientation.Horizontal,
+                    Spacing = 12,
+                    Margin = new Thickness(0, 0, 0, 8),
+                    Children =
+                    {
+                        new Image
+                        {
+                            Source = new Microsoft.UI.Xaml.Media.Imaging.BitmapImage(new Uri("ms-appx:///Assets/AppIcon-64.png")),
+                            Width = 48,
+                            Height = 48,
+                        },
+                        new StackPanel
+                        {
+                            VerticalAlignment = VerticalAlignment.Center,
+                            Children =
+                            {
+                                new TextBlock { Text = "ADB Manager", Style = (Style)Application.Current.Resources["SubtitleTextBlockStyle"] },
+                                new TextBlock
+                                {
+                                    Text = Res.Format("AboutVersionFormat", UpdateChecker.CurrentVersion),
+                                    Foreground = ThemeBrush("TextFillColorSecondaryBrush"),
+                                    IsTextSelectionEnabled = true,
+                                },
+                            },
+                        },
+                    },
+                },
+                new TextBlock { Text = Res.Get("AboutDescription"), TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 0, 0, 8) },
+                Link(Res.Get("AboutSite"), UpdateChecker.ProjectSite),
+                Link(Res.Get("AboutSource"), UpdateChecker.RepositoryPage),
+                Link(Res.Get("AboutReleases"), UpdateChecker.ReleasesPage),
+                Link(Res.Get("AboutLicense"), UpdateChecker.RepositoryPage + "/blob/main/LICENSE"),
+                Link(Res.Get("AboutThirdParty"), UpdateChecker.RepositoryPage + "/blob/main/THIRD-PARTY-NOTICES.md"),
+            },
+        };
+
+        var dialog = new ContentDialog
+        {
+            XamlRoot = Content.XamlRoot,
+            Title = Res.Get("AboutTitle"),
+            Content = content,
+            PrimaryButtonText = Res.Get("AboutCheckUpdates"),
+            CloseButtonText = Res.Get("Close"),
+            DefaultButton = ContentDialogButton.Close,
+        };
+        if (await dialog.ShowAsync() == ContentDialogResult.Primary)
+            await CheckForUpdatesAsync(manual: true);
+    }
+
     // ----- Язык интерфейса -----
 
     private async void Language_Click(object sender, RoutedEventArgs e)
@@ -2107,7 +2176,8 @@ public sealed partial class MainWindow : Window
         await RunBusyAsync(async () =>
         {
             var errors = new List<string>();
-            int ok = 0;
+            var done = new List<JournalEntry>();
+            int ok;
             // Сначала главный экран — потом можно удалять лаунчер, который им был.
             foreach (var entry in chosen.OrderBy(c => c.Action == "home" ? 0 : 1))
             {
@@ -2123,25 +2193,50 @@ public sealed partial class MainWindow : Window
                     "install" => await _adb.UninstallAsync(device.Serial, new PackageInfo(entry.Package, false, ""), keepData: false),
                     _ => new AdbResult(1, "", Res.Get("UnknownAction")),
                 };
-                if (r.Success)
+                if (r.Success) done.Add(entry);
+                else errors.Add($"{entry.Package}: {LastLine(r.Text)}");
+            }
+
+            // Ответ pm — не доказательство (ЧистыйТВ 0.2.2): смотрим, что на самом деле стало на устройстве.
+            // Что не включилось, в журнал как возвращённое не пишем — оно останется в «Вернуть как было».
+            var gone = new List<string>();
+            if (done.Any(d => d.Action is "freeze" or "tvjournal" or "uninstall"))
+            {
+                var installed = await _adb.GetInstalledNamesAsync(device.Serial);
+                var states = await _adb.GetDisabledStatesAsync(device.Serial);
+                foreach (var entry in done.Where(d => d.Action is "freeze" or "tvjournal" or "uninstall").ToList())
                 {
-                    ok++;
-                    journal.Add(new JournalEntry(DateTime.Now, "restore", entry.Package, entry.Label, entry.System));
-                }
-                else
-                {
-                    errors.Add($"{entry.Package}: {LastLine(r.Text)}");
+                    if (!installed.Contains(entry.Package))
+                    {
+                        // Обновление прошивки убрало пакет совсем — включать нечего.
+                        if (entry.Action != "uninstall")
+                        {
+                            gone.Add(entry.Package);
+                            continue;
+                        }
+                    }
+                    else if (entry.Action == "uninstall" || !states.ContainsKey(entry.Package))
+                    {
+                        continue;
+                    }
+                    done.Remove(entry);
+                    errors.Add(Res.Format("UndoNotAppliedFormat", entry.Package));
                 }
             }
+            foreach (var entry in done)
+                journal.Add(new JournalEntry(DateTime.Now, "restore", entry.Package, entry.Label, entry.System));
+            ok = done.Count;
 
             if (props.Type == DeviceType.Tv)
                 await _adb.RemoveFromTvJournalAsync(device.Serial,
-                    chosen.Where(c => c.Action is "freeze" or "tvjournal").Select(c => c.Package));
+                    done.Where(c => c.Action is "freeze" or "tvjournal").Select(c => c.Package));
             await ReloadPackagesCoreAsync(device);
+            var goneText = gone.Count == 0 ? "" : Environment.NewLine + Res.Format("UndoPackagesGoneFormat", string.Join(", ", gone));
             if (errors.Count == 0)
-                ShowStatus(InfoBarSeverity.Success, Res.Get("UndoneTitle"), Res.Format("UndoneMessageFormat", ok));
+                ShowStatus(InfoBarSeverity.Success, Res.Get("UndoneTitle"), Res.Format("UndoneMessageFormat", ok) + goneText);
             else
-                ShowStatus(InfoBarSeverity.Error, Res.Format("UndoneErrorsFormat", ok, errors.Count), string.Join(Environment.NewLine, errors));
+                ShowStatus(InfoBarSeverity.Error, Res.Format("UndoneErrorsFormat", ok, errors.Count),
+                    string.Join(Environment.NewLine, errors) + goneText + Environment.NewLine + Res.Get("UndoRetryHint"));
         });
     }
 
@@ -2739,11 +2834,12 @@ public sealed partial class MainWindow : Window
             if (online)
             {
                 ShowStatus(InfoBarSeverity.Informational, Res.Get("PrivateDns"), Res.Get("DnsCheckingInternet"));
+                var sdk = (await GetPropsAsync(device)).Sdk;
                 var works = false;
                 for (var i = 0; i < 4 && !works; i++)
                 {
                     await Task.Delay(TimeSpan.FromSeconds(2));
-                    works = await _adb.CanResolveAsync(device.Serial);
+                    works = await _adb.WorksWithNewDnsAsync(device.Serial, sdk, i);
                 }
                 if (!works)
                 {

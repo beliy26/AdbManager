@@ -654,10 +654,40 @@ public sealed class AdbService
     /// Работает ли на устройстве поиск адресов (идея ЧистогоТВ). Строку «PING host (ip)» ping печатает,
     /// только когда имя нашлось, — проверка не зависит от того, отвечает ли сервер на ping.
     /// </summary>
-    public async Task<bool> CanResolveAsync(string serial)
+    public async Task<bool> CanResolveAsync(string serial, string host = "connectivitycheck.gstatic.com")
     {
-        var r = await RunAsync(["-s", serial, "shell", "ping -c 1 -W 2 connectivitycheck.gstatic.com 2>&1"], quiet: true);
+        var r = await RunAsync(["-s", serial, "shell", $"ping -c 1 -W 2 {host} 2>&1"], quiet: true);
         return System.Text.RegularExpressions.Regex.IsMatch(r.Output, @"PING \S+ \(\d");
+    }
+
+    /// <summary>Запасные имена для проверки нового DNS, если sslip.io недоступен: устройство вряд ли искало их недавно.</summary>
+    private static readonly string[] FreshDnsHosts = ["dns.google", "one.one.one.one", "dns.quad9.net", "cloudflare-dns.com"];
+
+    /// <summary>
+    /// Работает ли интернет после смены DNS (ЧистыйТВ 0.2.2). Имя, которое устройство уже искало, приходит из
+    /// кэша даже при сломанном DNS (так на Android 9), поэтому спрашиваем свежее: sslip.io отвечает адресом,
+    /// зашитым в само имя, и в кэше его нет. Android 10+ после смены DNS сам перепроверяет сеть вместе с HTTPS —
+    /// без VALIDATED интернета нет.
+    /// </summary>
+    public async Task<bool> WorksWithNewDnsAsync(string serial, int sdk, int attempt)
+    {
+        var fresh = $"ct{Random.Shared.Next(100000, 1000000)}.1-1-1-1.sslip.io";
+        if (!await CanResolveAsync(serial, fresh) && !await CanResolveAsync(serial, FreshDnsHosts[attempt % FreshDnsHosts.Length]))
+            return false;
+        return sdk < 29 || await IsNetworkValidatedAsync(serial) != false;
+    }
+
+    /// <summary>Вердикт Android по активной сети: проверена и частный DNS не сломан; null — вывод не разобрали.</summary>
+    public async Task<bool?> IsNetworkValidatedAsync(string serial)
+    {
+        var dump = (await RunAsync(["-s", serial, "shell", "dumpsys connectivity 2>/dev/null"], quiet: true)).Output;
+        var id = System.Text.RegularExpressions.Regex.Match(dump, @"Active default network: (\d+)");
+        if (!id.Success) return null;
+        var line = dump.Split('\n').FirstOrDefault(l => l.Contains($"network{{{id.Groups[1].Value}}}") && l.Contains("Capabilities: "));
+        var caps = line is null ? null : System.Text.RegularExpressions.Regex.Match(line, @"Capabilities: (\S+)");
+        if (caps is not { Success: true }) return null;
+        var list = caps.Groups[1].Value.Split('&');
+        return list.Contains("VALIDATED") && !list.Contains("PRIVATE_DNS_BROKEN");
     }
 
     // ----- Журнал на самом телевизоре (общий с ЧистымТВ) -----

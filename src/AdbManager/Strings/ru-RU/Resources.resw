@@ -4,6 +4,39 @@
   <resheader name="version"><value>2.0</value></resheader>
   <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
   <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="AboutButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
+    <value>Версия, сайт проекта, исходный код и лицензия</value>
+  </data>
+  <data name="AboutButton.Label" xml:space="preserve">
+    <value>О программе…</value>
+  </data>
+  <data name="AboutCheckUpdates" xml:space="preserve">
+    <value>Проверить обновления</value>
+  </data>
+  <data name="AboutDescription" xml:space="preserve">
+    <value>Бесплатная программа с открытым кодом для управления приложениями Android-телефонов и телевизоров по ADB: очистка от рекламы и телеметрии, заморозка, удаление и установка приложений, откат изменений.</value>
+  </data>
+  <data name="AboutLicense" xml:space="preserve">
+    <value>Лицензия MIT</value>
+  </data>
+  <data name="AboutReleases" xml:space="preserve">
+    <value>Все версии и список изменений</value>
+  </data>
+  <data name="AboutSite" xml:space="preserve">
+    <value>Сайт проекта</value>
+  </data>
+  <data name="AboutSource" xml:space="preserve">
+    <value>Исходный код на GitHub</value>
+  </data>
+  <data name="AboutThirdParty" xml:space="preserve">
+    <value>Сторонние компоненты и базы пакетов</value>
+  </data>
+  <data name="AboutTitle" xml:space="preserve">
+    <value>О программе</value>
+  </data>
+  <data name="AboutVersionFormat" xml:space="preserve">
+    <value>Версия {0}</value>
+  </data>
   <data name="AdbExeNotFound" xml:space="preserve">
     <value>adb.exe не найден</value>
   </data>
@@ -1286,6 +1319,15 @@
   </data>
   <data name="UndoneTitle" xml:space="preserve">
     <value>Возвращено</value>
+  </data>
+  <data name="UndoNotAppliedFormat" xml:space="preserve">
+    <value>{0}: команда прошла, но приложение по-прежнему отключено</value>
+  </data>
+  <data name="UndoPackagesGoneFormat" xml:space="preserve">
+    <value>Этих приложений на устройстве больше нет (убрало обновление прошивки), включать нечего: {0}</value>
+  </data>
+  <data name="UndoRetryHint" xml:space="preserve">
+    <value>Что не вернулось, осталось в журнале: перезагрузите устройство и запустите «Вернуть как было» ещё раз.</value>
   </data>
   <data name="UndoTitle" xml:space="preserve">
     <value>Вернуть как было</value>

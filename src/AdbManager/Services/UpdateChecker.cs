@@ -10,7 +10,9 @@ public sealed record AppRelease(Version Version, string Tag, string PageUrl);
 /// <summary>Проверка новой версии ADB Manager по GitHub Releases (последний стабильный выпуск).</summary>
 public static class UpdateChecker
 {
-    public const string ReleasesPage = "https://github.com/beliy26/AdbManager/releases";
+    public const string ProjectSite = "https://beliy26.github.io/AdbManager/";
+    public const string RepositoryPage = "https://github.com/beliy26/AdbManager";
+    public const string ReleasesPage = RepositoryPage + "/releases";
     private const string LatestApi = "https://api.github.com/repos/beliy26/AdbManager/releases/latest";
 
     /// <summary>Версия запущенной программы (<c>&lt;Version&gt;</c> из csproj), без номера ревизии.</summary>

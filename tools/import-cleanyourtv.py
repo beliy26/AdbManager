@@ -21,10 +21,17 @@ PACKAGE_RE = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*(\.[A-Za-z0-9_]+)+$")
 DISABLE_RE = re.compile(
     r"\b(ads?|advert\w*|promo\w*|analytics?|telemetry|track\w*|statistic\w*|stats|logg?\w*|logs?|report\w*|"
     r"feedback|demo\w*|recommend\w*|sponsor\w*|acr|survey|usage|crash\w*|marketing|banner|sticker|"
-    r"bloat\w*|upsell|nag\w*|spy\w*|data collection|diagnostic\w*|bugreport\w*|personali[sz]\w*|"
-    r"inscape|alphonso|samba)\b",
+    r"bloat\w*|upsell|nag\w*|spy\w*|data collection|diagnostic\w*|bugreport\w*|"
+    r"personali[sz]\w* (?:ads?|advert\w*|recommend\w*)|inscape|alphonso|samba ?tv|sambatv)\b",
     re.IGNORECASE,
 )
+
+# Файловые серверы и менеджеры — «По желанию», даже если в описании есть Samba (это SMB, а не Samba TV).
+KEEP_ASK_RE = re.compile(r"\b(smb|file[- ]sharing|file manager)\b", re.IGNORECASE)
+
+# Сами приложения, а не реклама: «ad» в имени MX Player, лаунчер с рекламными рядами (всё равно главный
+# экран), онлайн-кинотеатр, у которого в описании упомянута реклама на постерах.
+ASK = {"com.mxtech.videoplayer.ad", "com.zeasn.rca.toptech", "net.fetnet.fetvod.tv"}
 
 # Главный экран и мастер настройки отключаются в CleanYourTV только после установки своего лаунчера;
 # без него ТВ остаётся без Home. Их в базу не берём (ещё и защищены в программе).
@@ -62,6 +69,8 @@ def main():
         title = comments[name].most_common(1)[0][0] if comments[name] else ""
         count = len(models[name])
         action = "disable" if DISABLE_RE.search(title) or DISABLE_RE.search(name.replace(".", " ")) else "ask"
+        if name in ASK or KEEP_ASK_RE.search(title):
+            action = "ask"
         packages.append({
             "id": name,
             "platform": "any",

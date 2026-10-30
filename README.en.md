@@ -49,14 +49,14 @@ The interface is available in English and Russian.
 - Check boxes and bulk actions; **selection presets** with export and import; save APKs to the PC; copy the app list as a prompt for an LLM.
 
 **Ad and telemetry removal**
-- **Advice column** — “Can be disabled”, “Optional”, “Keep”, “Protected”. Sources: the [ChistyTV](https://github.com/by-sonic/chistytv) database, [CleanYourTV](https://github.com/Gathin23/cleanyourtv) lists for 200+ TV models (1,100+ packages), and our own list of phone bloatware.
+- **Advice column** — “Can be disabled”, “Optional”, “Keep”, “Protected”. Sources: the [ChistyTV](https://github.com/by-sonic/chistytv) database, [CleanYourTV](https://github.com/Gathin23/cleanyourtv) lists for 350+ TV models (1,500+ packages), and our own list of phone bloatware.
 - **Protection**: critical system packages, the only home screen and TV inputs (HDMI/AV/tuner) can't be frozen or removed. **Expert mode** lifts the protection after a warning.
 - **Privacy audit** — the system voice assistant, apps that used the microphone, known ACR and telemetry.
-- **Private DNS** — AdGuard, AdGuard Family or a custom server; if DNS-over-TLS is blocked by the provider, the previous DNS is restored automatically.
+- **Private DNS** — AdGuard, AdGuard Family or a custom server; if DNS-over-TLS is blocked by the provider, the previous DNS is restored automatically. The check asks for a fresh name (not from the device cache) and, on Android 10+, Android's own network validation.
 
 **Backup and undo**
 - Packages, `getprop` and system settings are saved before the first change; every action goes to a journal.
-- “Undo changes” reverts freezing, removal of system apps, DNS and home screen changes. On TVs the list of frozen packages is mirrored to the device in ChistyTV's format, so it can be undone from another PC too.
+- “Undo changes” reverts freezing, removal of system apps, DNS and home screen changes, then verifies that the apps were really enabled; what was not stays in the journal for another try. On TVs the list of frozen packages is mirrored to the device in ChistyTV's format, so it can be undone from another PC too.
 - “Check after a firmware update” finds what the update brought back.
 
 **For TVs**
@@ -67,6 +67,9 @@ The interface is available in English and Russian.
 - “… → Agents (MCP)…” turns on an [MCP server](https://modelcontextprotocol.io) at `http://localhost:47037/mcp`: while the app is open, Claude Code, Cursor, VS Code and other agents can work with the selected device — list devices and apps with advice, freeze, enable, uninstall, install APKs, read the change journal, take a screenshot.
 - The same rules as for the buttons: protected packages, the only home screen and TV inputs are off limits (expert mode does not apply to agents), a backup is made before changes, every action is journaled, and “Undo changes” reverts agent actions too.
 - Claude Code: `claude mcp add --transport http adb-manager http://localhost:47037/mcp`; ready-made JSON for other agents is in the same dialog. Only connections from this computer are accepted.
+
+**Other**
+- “… → About” shows the version (also in the title bar) and links to the website, source code, changelog and licenses; “Check for updates” compares it with the latest GitHub release.
 
 **adb**
 - Finds `adb.exe` in `PATH`, `ANDROID_HOME`, the Android SDK; otherwise downloads the official platform-tools from Google (with SHA-256-verified mirrors as a fallback).
