@@ -211,6 +211,16 @@ public sealed partial class MainWindow
             Schema(new JsonObject { ["limit"] = Prop("integer", "How many latest entries to return (default 50).") }),
             readOnly: true, destructive: false, GetJournalEntriesAsync),
 
+        Tool("get_device_status", "Device status",
+            "Parameters and current load of the selected device: model, Android version, security patch, SoC, ABIs, " +
+            "screen, uptime; CPU usage over one second, core frequencies and the busiest processes (from top); " +
+            "memory (RAM, swap); free space on internal storage, system and SD cards; battery and temperatures.",
+            Schema(new JsonObject
+            {
+                ["include_processes"] = Prop("boolean", "Include the top 10 processes by CPU (default true)."),
+            }),
+            readOnly: true, destructive: false, GetDeviceStatusAsync),
+
         Tool("take_screenshot", "Screenshot",
             "Screenshot of the selected device's screen as PNG.",
             Schema(), readOnly: true, destructive: false, TakeScreenshotAsync),
@@ -418,6 +428,14 @@ public sealed partial class MainWindow
         return McpToolResult.Text(entries.Count == 0
             ? "The journal is empty: nothing was changed on this device by ADB Manager."
             : JsonSerializer.Serialize(entries, McpServer.JsonOptions));
+    }
+
+    private async Task<McpToolResult> GetDeviceStatusAsync(JsonElement args)
+    {
+        var device = RequireDevice();
+        var status = (await DeviceStatus.ReadAsync(_adb, device.Serial)).ToJson(Bool(args, "include_processes", true));
+        status["device"]!["name"] = device.DisplayName;
+        return McpToolResult.Text(status.ToJsonString(McpServer.JsonOptions));
     }
 
     private async Task<McpToolResult> TakeScreenshotAsync(JsonElement args)

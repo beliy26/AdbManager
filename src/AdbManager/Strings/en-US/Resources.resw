@@ -127,6 +127,45 @@
   <data name="BackupTitle" xml:space="preserve">
     <value>Backup…</value>
   </data>
+  <data name="BatteryCharging" xml:space="preserve">
+    <value>charging</value>
+  </data>
+  <data name="BatteryDischarging" xml:space="preserve">
+    <value>discharging</value>
+  </data>
+  <data name="BatteryFull" xml:space="preserve">
+    <value>full</value>
+  </data>
+  <data name="BatteryHealthCold" xml:space="preserve">
+    <value>too cold</value>
+  </data>
+  <data name="BatteryHealthDead" xml:space="preserve">
+    <value>dead</value>
+  </data>
+  <data name="BatteryHealthFailure" xml:space="preserve">
+    <value>failure</value>
+  </data>
+  <data name="BatteryHealthGood" xml:space="preserve">
+    <value>good</value>
+  </data>
+  <data name="BatteryHealthOverheat" xml:space="preserve">
+    <value>overheat</value>
+  </data>
+  <data name="BatteryHealthOverVoltage" xml:space="preserve">
+    <value>over voltage</value>
+  </data>
+  <data name="BatteryNotCharging" xml:space="preserve">
+    <value>not charging</value>
+  </data>
+  <data name="BatterySourceAc" xml:space="preserve">
+    <value>AC</value>
+  </data>
+  <data name="BatterySourceWireless" xml:space="preserve">
+    <value>wireless</value>
+  </data>
+  <data name="BatteryUnknown" xml:space="preserve">
+    <value>unknown</value>
+  </data>
   <data name="BrowseAdbButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
     <value>Specify the path to adb.exe</value>
   </data>
@@ -138,6 +177,9 @@
   </data>
   <data name="Cancel" xml:space="preserve">
     <value>Cancel</value>
+  </data>
+  <data name="CelsiusFormat" xml:space="preserve">
+    <value>{0} °C</value>
   </data>
   <data name="ChangedErrorsFormat" xml:space="preserve">
     <value>{0}: {1}, errors: {2}</value>
@@ -252,6 +294,123 @@
   </data>
   <data name="DeviceStateUnauthorized" xml:space="preserve">
     <value>Unauthorized — allow debugging on the phone</value>
+  </data>
+  <data name="DeviceStatusAbis" xml:space="preserve">
+    <value>ABIs</value>
+  </data>
+  <data name="DeviceStatusAndroid" xml:space="preserve">
+    <value>Android</value>
+  </data>
+  <data name="DeviceStatusAndroidFormat" xml:space="preserve">
+    <value>{0} (API {1})</value>
+  </data>
+  <data name="DeviceStatusAutoRefresh" xml:space="preserve">
+    <value>Refresh every 3 s</value>
+  </data>
+  <data name="DeviceStatusBatteryHealth" xml:space="preserve">
+    <value>Health</value>
+  </data>
+  <data name="DeviceStatusBatterySection" xml:space="preserve">
+    <value>Battery</value>
+  </data>
+  <data name="DeviceStatusBatteryState" xml:space="preserve">
+    <value>State</value>
+  </data>
+  <data name="DeviceStatusBuild" xml:space="preserve">
+    <value>Build</value>
+  </data>
+  <data name="DeviceStatusButton.Label" xml:space="preserve">
+    <value>Device status…</value>
+  </data>
+  <data name="DeviceStatusCharge" xml:space="preserve">
+    <value>Charge</value>
+  </data>
+  <data name="DeviceStatusCodename" xml:space="preserve">
+    <value>Codename</value>
+  </data>
+  <data name="DeviceStatusCores" xml:space="preserve">
+    <value>Cores</value>
+  </data>
+  <data name="DeviceStatusCpuLoad" xml:space="preserve">
+    <value>Load over one second</value>
+  </data>
+  <data name="DeviceStatusCpuSection" xml:space="preserve">
+    <value>CPU</value>
+  </data>
+  <data name="DeviceStatusDeviceSection" xml:space="preserve">
+    <value>Device</value>
+  </data>
+  <data name="DeviceStatusFreeOfFormat" xml:space="preserve">
+    <value>{0} free of {1}, {2} used</value>
+  </data>
+  <data name="DeviceStatusFrequencies" xml:space="preserve">
+    <value>Core frequencies</value>
+  </data>
+  <data name="DeviceStatusLoadAverage" xml:space="preserve">
+    <value>Load average (1, 5, 15 min)</value>
+  </data>
+  <data name="DeviceStatusMaxFormat" xml:space="preserve">
+    <value>(max {0})</value>
+  </data>
+  <data name="DeviceStatusMemorySection" xml:space="preserve">
+    <value>Memory</value>
+  </data>
+  <data name="DeviceStatusModel" xml:space="preserve">
+    <value>Model</value>
+  </data>
+  <data name="DeviceStatusRam" xml:space="preserve">
+    <value>RAM</value>
+  </data>
+  <data name="DeviceStatusScreen" xml:space="preserve">
+    <value>Screen</value>
+  </data>
+  <data name="DeviceStatusScreenFormat" xml:space="preserve">
+    <value>{0}, {1} dpi</value>
+  </data>
+  <data name="DeviceStatusSecurityPatch" xml:space="preserve">
+    <value>Security patch</value>
+  </data>
+  <data name="DeviceStatusSoc" xml:space="preserve">
+    <value>Chipset</value>
+  </data>
+  <data name="DeviceStatusStorageExternalFormat" xml:space="preserve">
+    <value>External storage {0}</value>
+  </data>
+  <data name="DeviceStatusStorageInternal" xml:space="preserve">
+    <value>Internal storage</value>
+  </data>
+  <data name="DeviceStatusStorageSection" xml:space="preserve">
+    <value>Storage</value>
+  </data>
+  <data name="DeviceStatusStorageSystem" xml:space="preserve">
+    <value>System partition</value>
+  </data>
+  <data name="DeviceStatusSwap" xml:space="preserve">
+    <value>Swap</value>
+  </data>
+  <data name="DeviceStatusTemperature" xml:space="preserve">
+    <value>Temperature</value>
+  </data>
+  <data name="DeviceStatusTemperaturesSection" xml:space="preserve">
+    <value>Sensor temperatures</value>
+  </data>
+  <data name="DeviceStatusTitleFormat" xml:space="preserve">
+    <value>Status: {0}</value>
+  </data>
+  <data name="DeviceStatusTopProcesses" xml:space="preserve">
+    <value>Busiest processes (top)</value>
+  </data>
+  <data name="DeviceStatusUpdatedFormat" xml:space="preserve">
+    <value>Updated at {0}</value>
+  </data>
+  <data name="DeviceStatusUptime" xml:space="preserve">
+    <value>Uptime</value>
+  </data>
+  <data name="DeviceStatusUsedOfFormat" xml:space="preserve">
+    <value>{0} of {1} used ({2})</value>
+  </data>
+  <data name="DeviceStatusVoltage" xml:space="preserve">
+    <value>Voltage</value>
   </data>
   <data name="DeviceTypePhone" xml:space="preserve">
     <value>Phone</value>
@@ -778,6 +937,9 @@
   <data name="McpStopped" xml:space="preserve">
     <value>Off.</value>
   </data>
+  <data name="MhzFormat" xml:space="preserve">
+    <value>{0} MHz</value>
+  </data>
   <data name="MissingOnDeviceFormat" xml:space="preserve">
     <value>Not on the device ({0}): </value>
   </data>
@@ -907,6 +1069,9 @@ Connect a phone over USB with USB debugging enabled, click “Find on network”
   </data>
   <data name="PairTitle" xml:space="preserve">
     <value>Pair with code</value>
+  </data>
+  <data name="PercentFormat" xml:space="preserve">
+    <value>{0}%</value>
   </data>
   <data name="PlatformToolsAllSourcesFailedFormat" xml:space="preserve">
     <value>Could not download ADB from any source:
@@ -1434,6 +1599,12 @@ incl. cache: {2}</value>
   <data name="UpdateDownloadButton.Content" xml:space="preserve">
     <value>Open the download page</value>
   </data>
+  <data name="UptimeDaysFormat" xml:space="preserve">
+    <value>{0} d {1} h {2} min</value>
+  </data>
+  <data name="UptimeHoursFormat" xml:space="preserve">
+    <value>{0} h {1} min</value>
+  </data>
   <data name="UpToDateFormat" xml:space="preserve">
     <value>You have the latest version — {0}.</value>
   </data>
@@ -1448,6 +1619,9 @@ incl. cache: {2}</value>
   </data>
   <data name="VersionInstalledFormat" xml:space="preserve">
     <value>Version {0} installed.</value>
+  </data>
+  <data name="VoltsFormat" xml:space="preserve">
+    <value>{0} V</value>
   </data>
   <data name="VpnBlocksFormat" xml:space="preserve">
     <value>Traffic to the device goes through “{0}” — a VPN on the computer blocks access to the home network. Turn it off or allow local network access in it.</value>

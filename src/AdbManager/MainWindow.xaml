@@ -264,6 +264,11 @@
                                         <FontIcon Glyph="&#xE838;" />
                                     </AppBarButton.Icon>
                                 </AppBarButton>
+                                <AppBarButton x:Uid="DeviceStatusButton" x:Name="DeviceStatusButton" Click="DeviceStatus_Click" IsEnabled="False">
+                                    <AppBarButton.Icon>
+                                        <FontIcon Glyph="&#xE9D9;" />
+                                    </AppBarButton.Icon>
+                                </AppBarButton>
                                 <AppBarButton x:Uid="ScreenshotButton" x:Name="ScreenshotButton" Click="Screenshot_Click" IsEnabled="False">
                                     <AppBarButton.Icon>
                                         <FontIcon Glyph="&#xE722;" />

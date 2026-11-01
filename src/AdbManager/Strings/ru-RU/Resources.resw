@@ -127,6 +127,45 @@
   <data name="BackupTitle" xml:space="preserve">
     <value>Бэкап…</value>
   </data>
+  <data name="BatteryCharging" xml:space="preserve">
+    <value>заряжается</value>
+  </data>
+  <data name="BatteryDischarging" xml:space="preserve">
+    <value>разряжается</value>
+  </data>
+  <data name="BatteryFull" xml:space="preserve">
+    <value>заряжена</value>
+  </data>
+  <data name="BatteryHealthCold" xml:space="preserve">
+    <value>переохлаждение</value>
+  </data>
+  <data name="BatteryHealthDead" xml:space="preserve">
+    <value>неисправна</value>
+  </data>
+  <data name="BatteryHealthFailure" xml:space="preserve">
+    <value>сбой</value>
+  </data>
+  <data name="BatteryHealthGood" xml:space="preserve">
+    <value>в норме</value>
+  </data>
+  <data name="BatteryHealthOverheat" xml:space="preserve">
+    <value>перегрев</value>
+  </data>
+  <data name="BatteryHealthOverVoltage" xml:space="preserve">
+    <value>перенапряжение</value>
+  </data>
+  <data name="BatteryNotCharging" xml:space="preserve">
+    <value>не заряжается</value>
+  </data>
+  <data name="BatterySourceAc" xml:space="preserve">
+    <value>от сети</value>
+  </data>
+  <data name="BatterySourceWireless" xml:space="preserve">
+    <value>беспроводная</value>
+  </data>
+  <data name="BatteryUnknown" xml:space="preserve">
+    <value>неизвестно</value>
+  </data>
   <data name="BrowseAdbButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
     <value>Указать путь к adb.exe</value>
   </data>
@@ -138,6 +177,9 @@
   </data>
   <data name="Cancel" xml:space="preserve">
     <value>Отмена</value>
+  </data>
+  <data name="CelsiusFormat" xml:space="preserve">
+    <value>{0} °C</value>
   </data>
   <data name="ChangedErrorsFormat" xml:space="preserve">
     <value>{0}: {1}, ошибок: {2}</value>
@@ -252,6 +294,123 @@
   </data>
   <data name="DeviceStateUnauthorized" xml:space="preserve">
     <value>Не авторизовано — подтвердите отладку на телефоне</value>
+  </data>
+  <data name="DeviceStatusAbis" xml:space="preserve">
+    <value>Архитектуры (ABI)</value>
+  </data>
+  <data name="DeviceStatusAndroid" xml:space="preserve">
+    <value>Android</value>
+  </data>
+  <data name="DeviceStatusAndroidFormat" xml:space="preserve">
+    <value>{0} (API {1})</value>
+  </data>
+  <data name="DeviceStatusAutoRefresh" xml:space="preserve">
+    <value>Обновлять каждые 3 с</value>
+  </data>
+  <data name="DeviceStatusBatteryHealth" xml:space="preserve">
+    <value>Исправность</value>
+  </data>
+  <data name="DeviceStatusBatterySection" xml:space="preserve">
+    <value>Батарея</value>
+  </data>
+  <data name="DeviceStatusBatteryState" xml:space="preserve">
+    <value>Состояние</value>
+  </data>
+  <data name="DeviceStatusBuild" xml:space="preserve">
+    <value>Сборка</value>
+  </data>
+  <data name="DeviceStatusButton.Label" xml:space="preserve">
+    <value>Состояние устройства…</value>
+  </data>
+  <data name="DeviceStatusCharge" xml:space="preserve">
+    <value>Заряд</value>
+  </data>
+  <data name="DeviceStatusCodename" xml:space="preserve">
+    <value>Кодовое имя</value>
+  </data>
+  <data name="DeviceStatusCores" xml:space="preserve">
+    <value>Ядер</value>
+  </data>
+  <data name="DeviceStatusCpuLoad" xml:space="preserve">
+    <value>Загрузка за секунду</value>
+  </data>
+  <data name="DeviceStatusCpuSection" xml:space="preserve">
+    <value>Процессор</value>
+  </data>
+  <data name="DeviceStatusDeviceSection" xml:space="preserve">
+    <value>Устройство</value>
+  </data>
+  <data name="DeviceStatusFreeOfFormat" xml:space="preserve">
+    <value>свободно {0} из {1}, занято {2}</value>
+  </data>
+  <data name="DeviceStatusFrequencies" xml:space="preserve">
+    <value>Частоты ядер</value>
+  </data>
+  <data name="DeviceStatusLoadAverage" xml:space="preserve">
+    <value>Средняя нагрузка (1, 5, 15 мин)</value>
+  </data>
+  <data name="DeviceStatusMaxFormat" xml:space="preserve">
+    <value>(макс. {0})</value>
+  </data>
+  <data name="DeviceStatusMemorySection" xml:space="preserve">
+    <value>Память</value>
+  </data>
+  <data name="DeviceStatusModel" xml:space="preserve">
+    <value>Модель</value>
+  </data>
+  <data name="DeviceStatusRam" xml:space="preserve">
+    <value>Оперативная память</value>
+  </data>
+  <data name="DeviceStatusScreen" xml:space="preserve">
+    <value>Экран</value>
+  </data>
+  <data name="DeviceStatusScreenFormat" xml:space="preserve">
+    <value>{0}, {1} dpi</value>
+  </data>
+  <data name="DeviceStatusSecurityPatch" xml:space="preserve">
+    <value>Патч безопасности</value>
+  </data>
+  <data name="DeviceStatusSoc" xml:space="preserve">
+    <value>Процессор</value>
+  </data>
+  <data name="DeviceStatusStorageExternalFormat" xml:space="preserve">
+    <value>Внешний накопитель {0}</value>
+  </data>
+  <data name="DeviceStatusStorageInternal" xml:space="preserve">
+    <value>Внутренняя память</value>
+  </data>
+  <data name="DeviceStatusStorageSection" xml:space="preserve">
+    <value>Место</value>
+  </data>
+  <data name="DeviceStatusStorageSystem" xml:space="preserve">
+    <value>Системный раздел</value>
+  </data>
+  <data name="DeviceStatusSwap" xml:space="preserve">
+    <value>Подкачка (swap)</value>
+  </data>
+  <data name="DeviceStatusTemperature" xml:space="preserve">
+    <value>Температура</value>
+  </data>
+  <data name="DeviceStatusTemperaturesSection" xml:space="preserve">
+    <value>Температуры датчиков</value>
+  </data>
+  <data name="DeviceStatusTitleFormat" xml:space="preserve">
+    <value>Состояние: {0}</value>
+  </data>
+  <data name="DeviceStatusTopProcesses" xml:space="preserve">
+    <value>Самые активные процессы (top)</value>
+  </data>
+  <data name="DeviceStatusUpdatedFormat" xml:space="preserve">
+    <value>Обновлено в {0}</value>
+  </data>
+  <data name="DeviceStatusUptime" xml:space="preserve">
+    <value>Работает без перезагрузки</value>
+  </data>
+  <data name="DeviceStatusUsedOfFormat" xml:space="preserve">
+    <value>занято {0} из {1} ({2})</value>
+  </data>
+  <data name="DeviceStatusVoltage" xml:space="preserve">
+    <value>Напряжение</value>
   </data>
   <data name="DeviceTypePhone" xml:space="preserve">
     <value>Телефон</value>
@@ -778,6 +937,9 @@
   <data name="McpStopped" xml:space="preserve">
     <value>Выключен.</value>
   </data>
+  <data name="MhzFormat" xml:space="preserve">
+    <value>{0} МГц</value>
+  </data>
   <data name="MissingOnDeviceFormat" xml:space="preserve">
     <value>Нет на устройстве ({0}): </value>
   </data>
@@ -907,6 +1069,9 @@
   </data>
   <data name="PairTitle" xml:space="preserve">
     <value>Сопряжение по коду</value>
+  </data>
+  <data name="PercentFormat" xml:space="preserve">
+    <value>{0} %</value>
   </data>
   <data name="PlatformToolsAllSourcesFailedFormat" xml:space="preserve">
     <value>Не удалось скачать ADB ни с одного источника:
@@ -1434,6 +1599,12 @@
   <data name="UpdateDownloadButton.Content" xml:space="preserve">
     <value>Открыть страницу загрузки</value>
   </data>
+  <data name="UptimeDaysFormat" xml:space="preserve">
+    <value>{0} д {1} ч {2} мин</value>
+  </data>
+  <data name="UptimeHoursFormat" xml:space="preserve">
+    <value>{0} ч {1} мин</value>
+  </data>
   <data name="UpToDateFormat" xml:space="preserve">
     <value>Установлена последняя версия — {0}.</value>
   </data>
@@ -1448,6 +1619,9 @@
   </data>
   <data name="VersionInstalledFormat" xml:space="preserve">
     <value>Версия {0} установлена.</value>
+  </data>
+  <data name="VoltsFormat" xml:space="preserve">
+    <value>{0} В</value>
   </data>
   <data name="VpnBlocksFormat" xml:space="preserve">
     <value>Трафик к устройству идёт через «{0}» — VPN на компьютере закрывает доступ к домашней сети. Выключите его или разрешите в нём доступ к локальной сети.</value>

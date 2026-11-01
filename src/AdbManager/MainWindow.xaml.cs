@@ -385,6 +385,7 @@ public sealed partial class MainWindow : Window
         PrivacyAuditButton.IsEnabled = online;
         UpdateLauncherButton();
         ScreenshotButton.IsEnabled = online;
+        DeviceStatusButton.IsEnabled = online;
         EnableWifiButton.IsEnabled = online && !device!.IsWireless;
         var forget = device is { IsConnected: false, Kind: DeviceKind.Paired };
         DisconnectButton.IsEnabled = device is { IsConnected: true, IsWireless: true } || forget;
