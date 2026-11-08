@@ -49,7 +49,7 @@ The interface is available in English and Russian.
 - Check boxes and bulk actions; **selection presets** with export and import; save APKs to the PC; copy the app list as a prompt for an LLM.
 
 **Ad and telemetry removal**
-- **Advice column** — “Can be disabled”, “Optional”, “Keep”, “Protected”. Sources: the [ChistyTV](https://github.com/by-sonic/chistytv) database, [CleanYourTV](https://github.com/Gathin23/cleanyourtv) lists for 350+ TV models (1,500+ packages), and our own list of phone bloatware.
+- **Advice column** — “Can be disabled”, “Optional”, “Keep”, “Protected”. Sources: the [ChistyTV](https://github.com/by-sonic/chistytv) database, [CleanYourTV](https://github.com/Gathin23/cleanyourtv) lists for 450+ TV models (1,700+ packages), and our own list of phone bloatware.
 - **Protection**: critical system packages, the only home screen and TV inputs (HDMI/AV/tuner) can't be frozen or removed. **Expert mode** lifts the protection after a warning.
 - **Privacy audit** — the system voice assistant, apps that used the microphone, known ACR and telemetry.
 - **Private DNS** — AdGuard, AdGuard Family or a custom server; if DNS-over-TLS is blocked by the provider, the previous DNS is restored automatically. The check asks for a fresh name (not from the device cache) and, on Android 10+, Android's own network validation.

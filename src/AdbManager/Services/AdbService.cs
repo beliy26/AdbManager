@@ -423,9 +423,13 @@ public sealed class AdbService
         if (r.Output.Contains("new state: " + expected, StringComparison.OrdinalIgnoreCase))
             return r;
 
+        // «Cannot disable a protected package»: производитель внёс пакет в список защищённых
+        // (Яндекс ТВ на прошивках 2025–2026, ЧистыйТВ 0.2.6) — вместо стектрейса понятный текст.
         var error = r.Text.Contains("Shell cannot change component state", StringComparison.Ordinal)
             ? Res.Get("ShellCannotChangeState")
-            : r.Text;
+            : r.Text.Contains("protected package", StringComparison.OrdinalIgnoreCase)
+                ? Res.Get("FirmwareProtectedPackage")
+                : r.Text;
         return new AdbResult(r.ExitCode == 0 ? 1 : r.ExitCode, "", error);
     }
 
@@ -598,11 +602,43 @@ public sealed class AdbService
     /// <summary>Снимок экрана устройства (PNG).</summary>
     public Task<byte[]> ScreenshotAsync(string serial) => ExecOutAsync(serial, "screencap -p");
 
-    /// <summary>Имена всех установленных для пользователя пакетов (<c>pm list packages</c>).</summary>
-    public async Task<HashSet<string>> GetInstalledNamesAsync(string serial)
+    /// <summary>
+    /// Имена всех установленных для пользователя пакетов (<c>pm list packages</c>); с
+    /// <paramref name="includeUninstalled"/> — и удалённых для пользователя, оставшихся в прошивке (<c>-u</c>).
+    /// </summary>
+    public async Task<HashSet<string>> GetInstalledNamesAsync(string serial, bool includeUninstalled = false)
     {
-        var r = await RunAsync(["-s", serial, "shell", "pm", "list", "packages"], quiet: true);
+        string[] args = includeUninstalled
+            ? ["-s", serial, "shell", "pm", "list", "packages", "-u"]
+            : ["-s", serial, "shell", "pm", "list", "packages"];
+        var r = await RunAsync(args, quiet: true);
         return ParsePackages(r.Output, isSystem: false).Select(p => p.Name).ToHashSet();
+    }
+
+    /// <summary>
+    /// Штатные лаунчеры (системные пакеты с launcher/tvhome/.home в имени), убранные мимо программы
+    /// (ЧистыйТВ 0.2.4): удалённые для пользователя (<c>Removed</c>) или отключённые человеком —
+    /// <c>enabled=3</c>, DISABLED_USER; отключённое самой прошивкой (2) не трогаем.
+    /// </summary>
+    public async Task<List<(string Package, bool Removed)>> GetRemovedStockHomesAsync(string serial)
+    {
+        const string script =
+            "now=\" $(pm list packages | cut -d: -f2 | tr '\\n' ' ') \"; " +
+            "off=\" $(pm list packages -d | cut -d: -f2 | tr '\\n' ' ') \"; " +
+            "for p in $(pm list packages -u -s | cut -d: -f2 | grep -E 'launcher|tvhome|\\.home$' | grep -v updater); do " +
+            "case \"$now\" in *\" $p \"*) " +
+            "case \"$off\" in *\" $p \"*) " +
+            "dumpsys package $p 2>/dev/null | grep -m1 -qE 'User 0: .*enabled=3' && echo \"off $p\";; esac;; " +
+            "*) echo \"removed $p\";; esac; done";
+        var r = await RunAsync(["-s", serial, "shell", script], quiet: true);
+        var result = new List<(string, bool)>();
+        foreach (var raw in r.Output.Split('\n'))
+        {
+            var parts = raw.Trim().Split(' ', 2);
+            if (parts.Length == 2 && System.Text.RegularExpressions.Regex.IsMatch(parts[1], @"^[\w.]+$"))
+                result.Add((parts[1], parts[0] == "removed"));
+        }
+        return result;
     }
 
     /// <summary>

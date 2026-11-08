@@ -1375,6 +1375,9 @@
   <data name="SelectAllCheckBox.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
     <value>Отметить все показанные приложения</value>
   </data>
+  <data name="FirmwareProtectedPackage" xml:space="preserve">
+    <value>Прошивка защищает этот пакет: производитель не даёт его отключить.</value>
+  </data>
   <data name="ShellCannotChangeState" xml:space="preserve">
     <value>Android не разрешает adb менять состояние этого приложения.</value>
   </data>
@@ -1499,6 +1502,9 @@
   </data>
   <data name="UndoTitle" xml:space="preserve">
     <value>Вернуть как было</value>
+  </data>
+  <data name="UndoStockHomeFormat" xml:space="preserve">
+    <value>Вернуть штатный главный экран: {0} ({1}) — удалён или отключён не через AdbManager; без него ТВ может показывать чёрный экран</value>
   </data>
   <data name="UndoTvJournalFormat" xml:space="preserve">
     <value>Разморозить: {0} ({1}) — заморожено с другого компьютера или ЧистымТВ (журнал на ТВ)</value>

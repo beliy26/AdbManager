@@ -36,7 +36,6 @@ public sealed partial class PackageAdvisor
         /// <summary>CleanYourTV: на скольких моделях ТВ пакет отключён — пояснение строится из ресурсов.</summary>
         [JsonPropertyName("models")] public int Models { get; set; }
         [JsonPropertyName("launcher")] public bool Launcher { get; set; }
-        [JsonPropertyName("override_protect")] public bool OverrideProtect { get; set; }
     }
 
     // Пакеты, без которых устройство не работает. Применяется только к системным пакетам:
@@ -51,6 +50,13 @@ public sealed partial class PackageAdvisor
             "packageinstaller", "inputmethod", "keyboard", "leanbackime", @"\.ime$", "tvinput", "tvcenter", @"tv\.service",
             "bluetooth", "remote", "factory", "fac$", @"\.hkcfac", @"^com\.android\.vending$", @"^com\.google\.android\.gms$",
             @"^com\.google\.android\.gsf$", "setupwraith", "setupwizard", "provision", "networkstack", "wifi", "webview",
+            // ЧистыйТВ 0.2.4: после удаления штатного лаунчера CVTE телевизор не грузится дальше логотипа
+            @"^com\.cvte\.tv\.launcher",
+            // CleanYourTV (CORE_RE в tools/disable.sh): без них прошивки не загружаются или уходят
+            // в циклическую перезагрузку (location.fused — TCL 43S5400A)
+            @"^android\.ext\.(services|shared)$", @"^com\.android\.sdksandbox$", @"^com\.android\.location\.fused$",
+            @"^com\.(google\.)?android\.(ext\.services|ext\.shared|modulemetadata)$",
+            @"^com\.google\.android\.overlay\.modules", @"^com\.cltv\.mal$", @"^com\.mediatek\.(tis|tv\.agent)$",
             // Телефон
             @"^com\.android\.phone$", @"^com\.android\.server\.telecom$", @"^com\.android\.providers\.",
             "permissioncontroller", @"^com\.android\.shell$", "honeyboard",
@@ -122,7 +128,8 @@ public sealed partial class PackageAdvisor
         _byId.TryGetValue(package.Name, out var entry);
         var applicable = entry is not null && (entry.Platform == "any" || platformIds.Contains(entry.Platform));
 
-        if (IsProtected(package.Name, package.IsSystem) && !(applicable && entry!.OverrideProtect))
+        // Встроенную защиту база не обходит (ЧистыйТВ 0.2.3 убрал override_protect).
+        if (IsProtected(package.Name, package.IsSystem))
         {
             package.SetAdvice(PackageAdvice.Protected, Res.Get("CriticalComponentTitle"),
                 Res.Get("CriticalComponentNote"));

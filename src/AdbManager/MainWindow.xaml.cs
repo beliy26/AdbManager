@@ -2143,7 +2143,10 @@ public sealed partial class MainWindow : Window
             restorable = journal.GetRestorable();
             props = await GetPropsAsync(device);
             if (props.Type == DeviceType.Tv)
+            {
                 restorable.AddRange(await GetTvJournalEntriesAsync(device, restorable));
+                restorable.AddRange(await GetStockHomeEntriesAsync(device, restorable));
+            }
         }
         catch (Exception ex)
         {
@@ -2166,6 +2169,7 @@ public sealed partial class MainWindow : Window
             "home" => Res.Format("UndoHomeFormat", e.OldValue?.Split('/')[0] ?? Res.Get("PreviousHome"), e.Time),
             "install" => Res.Format("UndoInstallFormat", e.Label, e.Package, e.Time),
             "tvjournal" => Res.Format("UndoTvJournalFormat", e.Label, e.Package),
+            "stockhome" => Res.Format("UndoStockHomeFormat", e.Label, e.Package),
             _ => e.Package,
         };
 
@@ -2178,14 +2182,42 @@ public sealed partial class MainWindow : Window
         {
             var errors = new List<string>();
             var done = new List<JournalEntry>();
+            var gone = new List<string>();
             int ok;
+            static bool IsEnable(JournalEntry e) => e.Action is "freeze" or "tvjournal" or "stockhome";
+
+            // Удалённому для пользователя pm enable отвечает «enabled», а пакет так и не появляется
+            // (ЧистыйТВ 0.2.4): такой сначала возвращаем через install-existing.
+            HashSet<string> present = [], inFirmware = [];
+            if (chosen.Any(IsEnable))
+            {
+                present = await _adb.GetInstalledNamesAsync(device.Serial);
+                inFirmware = await _adb.GetInstalledNamesAsync(device.Serial, includeUninstalled: true);
+            }
+            async Task<AdbResult> EnableAsync(string package)
+            {
+                if (!present.Contains(package))
+                {
+                    var i = await _adb.InstallExistingAsync(device.Serial, package);
+                    if (!i.Success) return i;
+                }
+                return await _adb.SetFrozenAsync(device.Serial, package, frozen: false);
+            }
+
             // Сначала главный экран — потом можно удалять лаунчер, который им был.
             foreach (var entry in chosen.OrderBy(c => c.Action == "home" ? 0 : 1))
             {
                 ShowStatus(InfoBarSeverity.Informational, Res.Get("Undoing"), entry.Label ?? entry.Package);
+                if (IsEnable(entry) && !inFirmware.Contains(entry.Package))
+                {
+                    // Обновление прошивки убрало пакет совсем — включать нечего, из журнала убираем.
+                    gone.Add(entry.Package);
+                    done.Add(entry);
+                    continue;
+                }
                 AdbResult r = entry.Action switch
                 {
-                    "freeze" or "tvjournal" => await _adb.SetFrozenAsync(device.Serial, entry.Package, frozen: false),
+                    "freeze" or "tvjournal" or "stockhome" => await EnableAsync(entry.Package),
                     "uninstall" => await _adb.InstallExistingAsync(device.Serial, entry.Package),
                     "dns" => await RestoreDnsAsync(device, entry.OldValue),
                     "home" => string.IsNullOrEmpty(entry.OldValue)
@@ -2200,26 +2232,14 @@ public sealed partial class MainWindow : Window
 
             // Ответ pm — не доказательство (ЧистыйТВ 0.2.2): смотрим, что на самом деле стало на устройстве.
             // Что не включилось, в журнал как возвращённое не пишем — оно останется в «Вернуть как было».
-            var gone = new List<string>();
-            if (done.Any(d => d.Action is "freeze" or "tvjournal" or "uninstall"))
+            if (done.Any(d => IsEnable(d) || d.Action == "uninstall"))
             {
                 var installed = await _adb.GetInstalledNamesAsync(device.Serial);
                 var states = await _adb.GetDisabledStatesAsync(device.Serial);
-                foreach (var entry in done.Where(d => d.Action is "freeze" or "tvjournal" or "uninstall").ToList())
+                foreach (var entry in done.Where(d => (IsEnable(d) || d.Action == "uninstall") && !gone.Contains(d.Package)).ToList())
                 {
-                    if (!installed.Contains(entry.Package))
-                    {
-                        // Обновление прошивки убрало пакет совсем — включать нечего.
-                        if (entry.Action != "uninstall")
-                        {
-                            gone.Add(entry.Package);
-                            continue;
-                        }
-                    }
-                    else if (entry.Action == "uninstall" || !states.ContainsKey(entry.Package))
-                    {
+                    if (installed.Contains(entry.Package) && (entry.Action == "uninstall" || !states.ContainsKey(entry.Package)))
                         continue;
-                    }
                     done.Remove(entry);
                     errors.Add(Res.Format("UndoNotAppliedFormat", entry.Package));
                 }
@@ -2255,6 +2275,21 @@ public sealed partial class MainWindow : Window
             .Select(p => _allPackages.FirstOrDefault(x => x.Name == p) is { } pkg
                 ? new JournalEntry(DateTime.MinValue, "tvjournal", p, pkg.DisplayName, pkg.IsSystem)
                 : new JournalEntry(DateTime.MinValue, "tvjournal", p, p, true))
+            .ToList();
+    }
+
+    /// <summary>
+    /// Штатный лаунчер, убранный мимо программы (вручную, ИИ-ассистентом): в журнале его нет,
+    /// а без него ТВ может показывать чёрный экран (ЧистыйТВ 0.2.4).
+    /// </summary>
+    private async Task<List<JournalEntry>> GetStockHomeEntriesAsync(DeviceInfo device, List<JournalEntry> known)
+    {
+        var knownNames = known.Select(k => k.Package).ToHashSet();
+        return (await _adb.GetRemovedStockHomesAsync(device.Serial))
+            .Where(h => !knownNames.Contains(h.Package))
+            .Select(h => new JournalEntry(DateTime.MinValue, "stockhome", h.Package,
+                _allPackages.FirstOrDefault(x => x.Name == h.Package)?.DisplayName ?? h.Package, true,
+                h.Removed ? "removed" : "off"))
             .ToList();
     }
 

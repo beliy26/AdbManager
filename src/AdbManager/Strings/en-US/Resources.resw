@@ -1375,6 +1375,9 @@ Download platform-tools for Windows from developer.android.com/tools/releases/pl
   <data name="SelectAllCheckBox.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
     <value>Mark all shown apps</value>
   </data>
+  <data name="FirmwareProtectedPackage" xml:space="preserve">
+    <value>The firmware protects this package: the manufacturer doesn't allow it to be disabled.</value>
+  </data>
   <data name="ShellCannotChangeState" xml:space="preserve">
     <value>Android doesn't allow adb to change the state of this app.</value>
   </data>
@@ -1499,6 +1502,9 @@ incl. cache: {2}</value>
   </data>
   <data name="UndoTitle" xml:space="preserve">
     <value>Undo changes</value>
+  </data>
+  <data name="UndoStockHomeFormat" xml:space="preserve">
+    <value>Restore the stock home screen: {0} ({1}) — removed or disabled outside AdbManager; without it the TV may show a black screen</value>
   </data>
   <data name="UndoTvJournalFormat" xml:space="preserve">
     <value>Unfreeze: {0} ({1}) — frozen from another computer or by ChistyTV (journal on the TV)</value>

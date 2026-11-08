@@ -31,6 +31,21 @@
   <data name="Note_com_cultraview_osupdate" xml:space="preserve">
     <value>a firmware update may bring the ads back; without it there will be no new firmware either</value>
   </data>
+  <data name="Note_com_cvte_tv_launcher_highend" xml:space="preserve">
+    <value>without it the TV may not boot past the logo</value>
+  </data>
+  <data name="Note_com_cvte_tv_launcher_mars" xml:space="preserve">
+    <value>without it the TV may not boot past the logo</value>
+  </data>
+  <data name="Note_com_cvte_tv_launcher_mosaix" xml:space="preserve">
+    <value>without it the TV may not boot past the logo</value>
+  </data>
+  <data name="Note_com_cvte_tv_launcher_saturn" xml:space="preserve">
+    <value>without it the TV may not boot past the logo</value>
+  </data>
+  <data name="Note_com_cvte_tv_launcher_space" xml:space="preserve">
+    <value>without it the TV may not boot past the logo</value>
+  </data>
   <data name="Note_com_facebook_appmanager" xml:space="preserve">
     <value>Preinstall: updates and installs Facebook apps in the background, even if you don't have them</value>
   </data>
@@ -93,6 +108,9 @@
   </data>
   <data name="Note_com_linkedin_android" xml:space="preserve">
     <value>Partner preinstall</value>
+  </data>
+  <data name="Note_com_mediatek_wwtv_mediaplayer" xml:space="preserve">
+    <value>requests access to TV inputs; not touched without the HDMI check</value>
   </data>
   <data name="Note_com_microsoft_office_officehubrow" xml:space="preserve">
     <value>Partner preinstall</value>
@@ -190,6 +208,9 @@
   <data name="Note_com_UCMobile_intl" xml:space="preserve">
     <value>Browser with ads</value>
   </data>
+  <data name="Note_com_tpv_xmic_ots_cms_client" xml:space="preserve">
+    <value>downloads content from the internet at power-on</value>
+  </data>
   <data name="Note_com_xiaomi_glgm" xml:space="preserve">
     <value>Game catalog with ads</value>
   </data>
@@ -203,10 +224,10 @@
     <value>the main source of ads on Yandex TV</value>
   </data>
   <data name="Note_com_yandex_io_sdk" xml:space="preserve">
-    <value>also pulls in ads, but Alice may stop working once it is disabled</value>
+    <value>also pulls in ads, but Alice may stop working once it is disabled. Protected on 2025–2026 firmware, cannot be disabled</value>
   </data>
   <data name="Note_com_yandex_launcher_updaterapp" xml:space="preserve">
-    <value>updates often bring the ads back; without it there will be no new firmware either</value>
+    <value>updates often bring the ads back; without it there will be no new firmware either. Protected on 2025–2026 firmware, cannot be disabled</value>
   </data>
   <data name="Note_com_yandex_tv_alice" xml:space="preserve">
     <value>voice assistant</value>
@@ -246,6 +267,42 @@
   </data>
   <data name="Note_one_premier_rustoretv" xml:space="preserve">
     <value>streaming service</value>
+  </data>
+  <data name="Note_org_droidtv_candeebug" xml:space="preserve">
+    <value>sends usage statistics</value>
+  </data>
+  <data name="Note_org_droidtv_eum" xml:space="preserve">
+    <value>without it the Sources menu does not open</value>
+  </data>
+  <data name="Note_org_droidtv_fastip" xml:space="preserve">
+    <value>without it the free channels agreement screen does not hang</value>
+  </data>
+  <data name="Note_org_droidtv_gel" xml:space="preserve">
+    <value>works together with DAC</value>
+  </data>
+  <data name="Note_org_droidtv_icp" xml:space="preserve">
+    <value>system services are bound to it</value>
+  </data>
+  <data name="Note_org_droidtv_nettv_market" xml:space="preserve">
+    <value>Google Play stays</value>
+  </data>
+  <data name="Note_org_droidtv_nettvadvert" xml:space="preserve">
+    <value>counts ad impressions</value>
+  </data>
+  <data name="Note_org_droidtv_nettvrecommender" xml:space="preserve">
+    <value>ad rows</value>
+  </data>
+  <data name="Note_org_droidtv_nettvregistration" xml:space="preserve">
+    <value>needed to check for firmware updates</value>
+  </data>
+  <data name="Note_org_droidtv_playtv" xml:space="preserve">
+    <value>antenna, cable and inputs</value>
+  </data>
+  <data name="Note_org_droidtv_tv_frameworklogger" xml:space="preserve">
+    <value>tracks opened apps and the program guide</value>
+  </data>
+  <data name="Note_org_droidtv_tv_packageinfo" xml:space="preserve">
+    <value>sends the list of apps; tested on two TVs only</value>
   </data>
   <data name="Note_ru_cn_tv" xml:space="preserve">
     <value>TV channels</value>
@@ -316,6 +373,9 @@
   <data name="Note_tv_okko_androidtv" xml:space="preserve">
     <value>streaming service</value>
   </data>
+  <data name="Platform_cvte" xml:space="preserve">
+    <value>CVTE board</value>
+  </data>
   <data name="Platform_sber" xml:space="preserve">
     <value>Salute TV / SberBox</value>
   </data>
@@ -333,6 +393,9 @@
   </data>
   <data name="Title_android_autoinstalls_config_hisense_xiaoyushan" xml:space="preserve">
     <value>Auto-install of partner apps</value>
+  </data>
+  <data name="Title_android_autoinstalls_config_tpv_device" xml:space="preserve">
+    <value>TPV app auto-install</value>
   </data>
   <data name="Title_android_autoinstalls_config_xiaomi_amelie" xml:space="preserve">
     <value>Auto-install of partner apps</value>
@@ -354,6 +417,21 @@
   </data>
   <data name="Title_com_cultraview_osupdate" xml:space="preserve">
     <value>Firmware update (CVTE)</value>
+  </data>
+  <data name="Title_com_cvte_tv_launcher_highend" xml:space="preserve">
+    <value>CVTE home screen</value>
+  </data>
+  <data name="Title_com_cvte_tv_launcher_mars" xml:space="preserve">
+    <value>CVTE home screen</value>
+  </data>
+  <data name="Title_com_cvte_tv_launcher_mosaix" xml:space="preserve">
+    <value>CVTE home screen</value>
+  </data>
+  <data name="Title_com_cvte_tv_launcher_saturn" xml:space="preserve">
+    <value>CVTE home screen</value>
+  </data>
+  <data name="Title_com_cvte_tv_launcher_space" xml:space="preserve">
+    <value>CVTE home screen</value>
   </data>
   <data name="Title_com_google_android_apps_tv_launcherx" xml:space="preserve">
     <value>Google TV home screen</value>
@@ -430,6 +508,9 @@
   <data name="Title_com_mediatek_android_leanbacklauncher_partnercustomizer" xml:space="preserve">
     <value>Partner rows on the home screen</value>
   </data>
+  <data name="Title_com_mediatek_wwtv_mediaplayer" xml:space="preserve">
+    <value>USB media player</value>
+  </data>
   <data name="Title_com_mitv_dream" xml:space="preserve">
     <value>MiDream screensaver</value>
   </data>
@@ -505,6 +586,9 @@
   <data name="Title_com_telink_lt_ota" xml:space="preserve">
     <value>Remote firmware</value>
   </data>
+  <data name="Title_com_tpv_xmic_ots_cms_client" xml:space="preserve">
+    <value>TPV ad client (CMS)</value>
+  </data>
   <data name="Title_com_vk_tv" xml:space="preserve">
     <value>VK Video</value>
   </data>
@@ -578,7 +662,7 @@
     <value>Built-in YouTube (Cobalt)</value>
   </data>
   <data name="Title_fusion_android_tv_demo" xml:space="preserve">
-    <value>Demo mode</value>
+    <value>Store demo mode</value>
   </data>
   <data name="Title_it_hon_service" xml:space="preserve">
     <value>hOn (Haier smart home)</value>
@@ -588,6 +672,60 @@
   </data>
   <data name="Title_net_vidaatv_hisense_android_tv" xml:space="preserve">
     <value>VIDAA channels</value>
+  </data>
+  <data name="Title_org_droidtv" xml:space="preserve">
+    <value>Philips system</value>
+  </data>
+  <data name="Title_org_droidtv_candeebug" xml:space="preserve">
+    <value>Philips analytics (DAC)</value>
+  </data>
+  <data name="Title_org_droidtv_demome" xml:space="preserve">
+    <value>Store demo mode</value>
+  </data>
+  <data name="Title_org_droidtv_eum" xml:space="preserve">
+    <value>Philips help</value>
+  </data>
+  <data name="Title_org_droidtv_fastip" xml:space="preserve">
+    <value>Philips free channels (promo)</value>
+  </data>
+  <data name="Title_org_droidtv_gel" xml:space="preserve">
+    <value>Philips metrics collector</value>
+  </data>
+  <data name="Title_org_droidtv_icp" xml:space="preserve">
+    <value>Philips service (ICP)</value>
+  </data>
+  <data name="Title_org_droidtv_nettv_market" xml:space="preserve">
+    <value>Philips app store (App Gallery)</value>
+  </data>
+  <data name="Title_org_droidtv_nettvadvert" xml:space="preserve">
+    <value>Philips ads</value>
+  </data>
+  <data name="Title_org_droidtv_nettvrecommender" xml:space="preserve">
+    <value>Philips recommendations</value>
+  </data>
+  <data name="Title_org_droidtv_nettvregistration" xml:space="preserve">
+    <value>Philips Smart TV registration</value>
+  </data>
+  <data name="Title_org_droidtv_oad" xml:space="preserve">
+    <value>Philips firmware update</value>
+  </data>
+  <data name="Title_org_droidtv_playtv" xml:space="preserve">
+    <value>Philips broadcast TV</value>
+  </data>
+  <data name="Title_org_droidtv_recommendation" xml:space="preserve">
+    <value>Philips recommendations (service)</value>
+  </data>
+  <data name="Title_org_droidtv_sticker" xml:space="preserve">
+    <value>Demo mode stickers</value>
+  </data>
+  <data name="Title_org_droidtv_tv_frameworklogger" xml:space="preserve">
+    <value>Philips activity log</value>
+  </data>
+  <data name="Title_org_droidtv_tv_packageinfo" xml:space="preserve">
+    <value>Philips installed apps report</value>
+  </data>
+  <data name="Title_org_droidtv_usagelogger" xml:space="preserve">
+    <value>Philips usage tracking</value>
   </data>
   <data name="Title_ru_kinopoisk_tv" xml:space="preserve">
     <value>Kinopoisk</value>
