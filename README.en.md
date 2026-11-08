@@ -65,7 +65,7 @@ The interface is available in English and Russian.
 - **Device status** (“… → Device status…”): model, Android version and security patch, chipset and screen; CPU load, core frequencies and the busiest processes; RAM, free space, battery and temperatures. Can refresh automatically every 3 seconds.
 
 **AI agents (MCP)**
-- “… → Agents (MCP)…” turns on an [MCP server](https://modelcontextprotocol.io) at `http://localhost:47037/mcp`: while the app is open, Claude Code, Cursor, VS Code and other agents can work with the selected device — list devices and apps with advice, freeze, enable, uninstall, install APKs, read the change journal, take a screenshot, check device status (model and Android version, CPU load and the busiest processes, memory, free space, battery, temperatures).
+- “… → Agents (MCP)…” turns on an [MCP server](https://modelcontextprotocol.io) at `http://localhost:47037/mcp`: while the app is open, Claude Code, Cursor, VS Code, OpenCode and other agents can work with the selected device — list devices and apps with advice, freeze, enable, uninstall, install APKs, read the change journal, take a screenshot, check device status (model and Android version, CPU load and the busiest processes, memory, free space, battery, temperatures).
 - The same rules as for the buttons: protected packages, the only home screen and TV inputs are off limits (expert mode does not apply to agents), a backup is made before changes, every action is journaled, and “Undo changes” reverts agent actions too.
 - Claude Code: `claude mcp add --transport http adb-manager http://localhost:47037/mcp`; ready-made JSON for other agents is in the same dialog. Only connections from this computer are accepted.
 

@@ -922,6 +922,9 @@
   <data name="McpIntro" xml:space="preserve">
     <value>Пока программа открыта, ИИ-агенты могут работать с выбранным устройством: смотреть приложения с советами, замораживать, включать, удалять и устанавливать их. Защищённые пакеты агенту недоступны даже в экспертном режиме. Каждое действие агента записывается в журнал, и «Вернуть как было» его отменит. Каждый вызов подтверждается в самом агенте.</value>
   </data>
+  <data name="McpOpenCodeHeader" xml:space="preserve">
+    <value>OpenCode — opencode.json (в проекте или ~/.config/opencode/)</value>
+  </data>
   <data name="McpJsonHeader" xml:space="preserve">
     <value>Cursor, Windsurf, .mcp.json и другие</value>
   </data>

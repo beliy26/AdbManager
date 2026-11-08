@@ -922,6 +922,9 @@
   <data name="McpIntro" xml:space="preserve">
     <value>While the program is open, AI agents can work with the selected device: list apps with advice, freeze, enable, uninstall and install them. Protected packages are off limits to agents even in expert mode. Every agent action is written to the journal and can be reverted with “Undo changes”. Each call is confirmed in the agent itself.</value>
   </data>
+  <data name="McpOpenCodeHeader" xml:space="preserve">
+    <value>OpenCode — opencode.json (in the project or ~/.config/opencode/)</value>
+  </data>
   <data name="McpJsonHeader" xml:space="preserve">
     <value>Cursor, Windsurf, .mcp.json and others</value>
   </data>

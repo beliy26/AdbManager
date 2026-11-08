@@ -119,6 +119,14 @@ public sealed partial class MainWindow
                 ["adb-manager"] = new JsonObject { ["command"] = "npx", ["args"] = new JsonArray("mcp-remote", url) },
             },
         };
+        var opencode = new JsonObject
+        {
+            ["$schema"] = "https://opencode.ai/config.json",
+            ["mcp"] = new JsonObject
+            {
+                ["adb-manager"] = new JsonObject { ["type"] = "remote", ["url"] = url, ["enabled"] = true },
+            },
+        };
         var content = new StackPanel
         {
             Spacing = 10,
@@ -131,6 +139,7 @@ public sealed partial class MainWindow
                 Snippet(Res.Get("McpClaudeCodeHeader"), $"claude mcp add --transport http adb-manager {url}"),
                 Snippet(Res.Get("McpJsonHeader"), json.ToJsonString()),
                 Snippet(Res.Get("McpClaudeDesktopHeader"), desktop.ToJsonString()),
+                Snippet(Res.Get("McpOpenCodeHeader"), opencode.ToJsonString()),
             },
         };
 
