@@ -1258,6 +1258,9 @@ Download platform-tools for Windows from developer.android.com/tools/releases/pl
   <data name="RecommendedNoneHint" xml:space="preserve">
     <value>No known ads or junk among the shown enabled apps. Turn on “System apps” if they are hidden.</value>
   </data>
+  <data name="ReenabledOutsideFormat" xml:space="preserve">
+    <value>Turned back on outside this program (by the firmware or the app store), nothing to undo: {0}. Freeze them again if you don't need them.</value>
+  </data>
   <data name="RefreezeFormat" xml:space="preserve">
     <value>Freeze again: {0} ({1}) — enabled again</value>
   </data>

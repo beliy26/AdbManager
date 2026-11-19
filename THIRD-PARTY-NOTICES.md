@@ -41,7 +41,7 @@ SOFTWARE.
 
 Файл `Assets/Data/cleanyourtv-packages.json` собран скриптом `tools/import-cleanyourtv.py` из списков
 `examples/*/debloat.txt` проекта [CleanYourTV](https://github.com/Gathin23/cleanyourtv)
-(коммит `294d3d59dc2514e69fed557f46c1ecdfb87a95ec`). Оттуда же — правила защиты главного экрана, системных пакетов (`CORE_RE`) и
+(коммит `311a34b164034514fb1fe0bd526a32b1b46f9070`). Оттуда же — правила защиты главного экрана, системных пакетов (`CORE_RE`) и
 входов HDMI/AV (`tools/disable.sh`), проверка после обновления прошивки (`tools/check.py`) и каталог
 пакетов аудита приватности (`tools/privacy.py`), переписанные на C#.
 

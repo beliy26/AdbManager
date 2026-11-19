@@ -1,6 +1,6 @@
 {
  "source": "https://github.com/Gathin23/cleanyourtv (MIT), examples/*/debloat.txt",
- "commit": "294d3d59dc2514e69fed557f46c1ecdfb87a95ec",
+ "commit": "311a34b164034514fb1fe0bd526a32b1b46f9070",
  "platforms": [],
  "packages": [
   {
@@ -64,7 +64,7 @@
    "platform": "any",
    "action": "ask",
    "title": "Play auto-install config for partner apps",
-   "models": 5
+   "models": 8
   },
   {
    "id": "android.autoinstalls.config.Sony.BRAVIA_VU1",
@@ -113,14 +113,14 @@
    "platform": "any",
    "action": "ask",
    "title": "silently installs partner apps",
-   "models": 55
+   "models": 57
   },
   {
    "id": "android.autoinstalls.config.haier.hanyang",
    "platform": "any",
    "action": "ask",
    "title": "Haier auto-install stub",
-   "models": 1
+   "models": 2
   },
   {
    "id": "android.autoinstalls.config.hisense",
@@ -211,7 +211,7 @@
    "platform": "any",
    "action": "ask",
    "title": "Play auto-installs of partner apps",
-   "models": 10
+   "models": 11
   },
   {
    "id": "android.autoinstalls.config.sdmc",
@@ -260,14 +260,21 @@
    "platform": "any",
    "action": "ask",
    "title": "Play auto-install of partner apps",
-   "models": 27
+   "models": 29
   },
   {
    "id": "android.autoinstalls.config.tcl.device",
    "platform": "any",
    "action": "ask",
    "title": "partner-app auto installer",
-   "models": 27
+   "models": 30
+  },
+  {
+   "id": "android.autoinstalls.config.technicolor",
+   "platform": "any",
+   "action": "ask",
+   "title": "partner app installer",
+   "models": 1
   },
   {
    "id": "android.autoinstalls.config.tpv.device",
@@ -295,7 +302,7 @@
    "platform": "any",
    "action": "ask",
    "title": "Vestel auto-install stub (preloads apps at setup)",
-   "models": 1
+   "models": 2
   },
   {
    "id": "android.autoinstalls.config.vestel.medusa",
@@ -323,7 +330,7 @@
    "platform": "any",
    "action": "ask",
    "title": "Play auto-install of partner apps",
-   "models": 14
+   "models": 16
   },
   {
    "id": "android.autoinstalls.config.xiaomi.mibox3",
@@ -337,7 +344,7 @@
    "platform": "any",
    "action": "ask",
    "title": "Play auto-install of partner apps (sic, \"xioami\")",
-   "models": 7
+   "models": 8
   },
   {
    "id": "android.autoinstalls.config.xioami.mibox3",
@@ -512,7 +519,7 @@
    "platform": "any",
    "action": "disable",
    "title": "Sensara partner TV guide (sponsored show recommendations)",
-   "models": 3
+   "models": 4
   },
   {
    "id": "co.sensara.tv.mitv.res",
@@ -533,7 +540,7 @@
    "platform": "any",
    "action": "ask",
    "title": "on-screen manual",
-   "models": 24
+   "models": 27
   },
   {
    "id": "com.aajtak.firetv",
@@ -590,6 +597,13 @@
    "action": "ask",
    "title": "\"RC Upgrade\": remote firmware updater; pairing still works",
    "models": 3
+  },
+  {
+   "id": "com.aispeech.dui.dds.tvassistant",
+   "platform": "any",
+   "action": "ask",
+   "title": "TV assistant voice stub",
+   "models": 1
   },
   {
    "id": "com.aksys.jiogamepad",
@@ -1184,7 +1198,7 @@
    "platform": "any",
    "action": "ask",
    "title": "content support provider",
-   "models": 13
+   "models": 12
   },
   {
    "id": "com.amazon.recess",
@@ -1660,14 +1674,14 @@
    "platform": "any",
    "action": "disable",
    "title": "Privacy Sandbox ad services",
-   "models": 80
+   "models": 88
   },
   {
    "id": "com.android.backupconfirm",
    "platform": "any",
    "action": "ask",
-   "title": "com.android.backupconfirm",
-   "models": 16
+   "title": "backup confirmation dialogs",
+   "models": 21
   },
   {
    "id": "com.android.bips",
@@ -1688,7 +1702,7 @@
    "platform": "any",
    "action": "ask",
    "title": "com.android.bookmarkprovider",
-   "models": 1
+   "models": 2
   },
   {
    "id": "com.android.browser",
@@ -1716,14 +1730,14 @@
    "platform": "any",
    "action": "ask",
    "title": "Camera, no camera on this box",
-   "models": 11
+   "models": 14
   },
   {
    "id": "com.android.cameraextensions",
    "platform": "any",
    "action": "ask",
-   "title": "com.android.cameraextensions",
-   "models": 7
+   "title": "camera extensions; the set has no camera",
+   "models": 9
   },
   {
    "id": "com.android.carrierconfig",
@@ -1751,42 +1765,49 @@
    "platform": "any",
    "action": "ask",
    "title": "com.android.chrome",
-   "models": 3
+   "models": 4
   },
   {
    "id": "com.android.companiondevicemanager",
    "platform": "any",
    "action": "ask",
    "title": "WearOS pairing",
-   "models": 3
+   "models": 4
   },
   {
    "id": "com.android.cts.ctsshim",
    "platform": "any",
    "action": "ask",
    "title": "Android test shim",
-   "models": 14
+   "models": 18
   },
   {
    "id": "com.android.cts.priv.ctsshim",
    "platform": "any",
    "action": "ask",
    "title": "Android test shim",
-   "models": 13
+   "models": 17
+  },
+  {
+   "id": "com.android.deskclock",
+   "platform": "any",
+   "action": "ask",
+   "title": "com.android.deskclock",
+   "models": 1
   },
   {
    "id": "com.android.dreams.basic",
    "platform": "any",
    "action": "ask",
    "title": "stock \"colors\" screensaver",
-   "models": 29
+   "models": 37
   },
   {
    "id": "com.android.dreams.phototable",
    "platform": "any",
    "action": "ask",
    "title": "com.android.dreams.phototable",
-   "models": 2
+   "models": 3
   },
   {
    "id": "com.android.dreams.web",
@@ -1800,7 +1821,7 @@
    "platform": "any",
    "action": "ask",
    "title": "Dynamic System Updates",
-   "models": 19
+   "models": 23
   },
   {
    "id": "com.android.egg",
@@ -1814,42 +1835,42 @@
    "platform": "any",
    "action": "ask",
    "title": "com.android.ext.adservices.api",
-   "models": 1
+   "models": 2
   },
   {
    "id": "com.android.federatedcompute.services",
    "platform": "any",
    "action": "ask",
    "title": "federated learning for the above",
-   "models": 69
+   "models": 78
   },
   {
    "id": "com.android.gallery3d",
    "platform": "any",
    "action": "ask",
    "title": "legacy photo viewer",
-   "models": 15
+   "models": 18
   },
   {
    "id": "com.android.health.connect.backuprestore",
    "platform": "any",
    "action": "ask",
    "title": "Health Connect backup",
-   "models": 33
+   "models": 38
   },
   {
    "id": "com.android.healthconnect.controller",
    "platform": "any",
    "action": "ask",
    "title": "Health Connect",
-   "models": 33
+   "models": 37
   },
   {
    "id": "com.android.hotspot2.osulogin",
    "platform": "any",
    "action": "ask",
    "title": "Passpoint hotspot sign-in",
-   "models": 16
+   "models": 18
   },
   {
    "id": "com.android.hotwordenrollment.okgoogle",
@@ -1869,8 +1890,22 @@
    "id": "com.android.htmlviewer",
    "platform": "any",
    "action": "ask",
-   "title": "local HTML viewer",
-   "models": 21
+   "title": "internal HTML viewer",
+   "models": 26
+  },
+  {
+   "id": "com.android.icore",
+   "platform": "any",
+   "action": "ask",
+   "title": "not an Android package: obfuscated, in /data/app, INSTALL/DELETE_PACKAGES, location, starts at boot",
+   "models": 1
+  },
+  {
+   "id": "com.android.inputmethod.pinyin",
+   "platform": "any",
+   "action": "ask",
+   "title": "com.android.inputmethod.pinyin",
+   "models": 1
   },
   {
    "id": "com.android.localtransport",
@@ -1884,7 +1919,7 @@
    "platform": "any",
    "action": "ask",
    "title": "enterprise work-profile provisioning",
-   "models": 7
+   "models": 10
   },
   {
    "id": "com.android.media.tools",
@@ -1919,7 +1954,7 @@
    "platform": "any",
    "action": "ask",
    "title": "com.android.music",
-   "models": 7
+   "models": 9
   },
   {
    "id": "com.android.musicfx",
@@ -1933,7 +1968,7 @@
    "platform": "any",
    "action": "ask",
    "title": "Nearby pairing pop-up",
-   "models": 3
+   "models": 5
   },
   {
    "id": "com.android.nfc",
@@ -1954,7 +1989,7 @@
    "platform": "any",
    "action": "disable",
    "title": "on-device ad personalisation",
-   "models": 73
+   "models": 81
   },
   {
    "id": "com.android.onetimeinitializer",
@@ -1982,7 +2017,7 @@
    "platform": "any",
    "action": "ask",
    "title": "printing",
-   "models": 132
+   "models": 144
   },
   {
    "id": "com.android.protips",
@@ -2003,14 +2038,14 @@
    "platform": "any",
    "action": "ask",
    "title": "calendar provider",
-   "models": 34
+   "models": 39
   },
   {
    "id": "com.android.providers.contacts",
    "platform": "any",
    "action": "ask",
    "title": "contacts provider",
-   "models": 13
+   "models": 14
   },
   {
    "id": "com.android.providers.userdictionary",
@@ -2024,7 +2059,7 @@
    "platform": "any",
    "action": "ask",
    "title": "com.android.proxyhandler",
-   "models": 2
+   "models": 3
   },
   {
    "id": "com.android.safetyregulatoryinfo",
@@ -2038,21 +2073,21 @@
    "platform": "any",
    "action": "ask",
    "title": "Secure Element (eSIM, NFC payments). This TV has",
-   "models": 8
+   "models": 11
   },
   {
    "id": "com.android.settings.intelligence",
    "platform": "any",
    "action": "ask",
-   "title": "the search box inside Settings. The menus keep",
-   "models": 9
+   "title": "the search box inside Settings; the menus keep working",
+   "models": 13
   },
   {
    "id": "com.android.sharedstoragebackup",
    "platform": "any",
    "action": "ask",
-   "title": "com.android.sharedstoragebackup",
-   "models": 16
+   "title": "shared-storage backup transport",
+   "models": 20
   },
   {
    "id": "com.android.simappdialog",
@@ -2066,7 +2101,7 @@
    "platform": "any",
    "action": "ask",
    "title": "WAP push manager, no SMS on a TV box",
-   "models": 6
+   "models": 7
   },
   {
    "id": "com.android.soundpicker",
@@ -2074,6 +2109,13 @@
    "action": "ask",
    "title": "ringtone / sound picker",
    "models": 5
+  },
+  {
+   "id": "com.android.soundrecorder",
+   "platform": "any",
+   "action": "ask",
+   "title": "com.android.soundrecorder",
+   "models": 1
   },
   {
    "id": "com.android.tcl.messagebox",
@@ -2101,14 +2143,14 @@
    "platform": "any",
    "action": "disable",
    "title": "feedback consent prompt",
-   "models": 92
+   "models": 103
   },
   {
    "id": "com.android.uwb.resources",
    "platform": "any",
    "action": "ask",
    "title": "com.android.uwb.resources",
-   "models": 1
+   "models": 2
   },
   {
    "id": "com.android.virtualmachine.res",
@@ -2122,14 +2164,14 @@
    "platform": "any",
    "action": "ask",
    "title": "live wallpaper picker",
-   "models": 7
+   "models": 8
   },
   {
    "id": "com.android.wallpaperbackup",
    "platform": "any",
    "action": "ask",
    "title": "wallpaper backup agent",
-   "models": 29
+   "models": 35
   },
   {
    "id": "com.android.wallpapercropper",
@@ -2137,6 +2179,20 @@
    "action": "ask",
    "title": "com.android.wallpapercropper",
    "models": 2
+  },
+  {
+   "id": "com.android.wallpaperpicker",
+   "platform": "any",
+   "action": "ask",
+   "title": "AOSP wallpaper picker",
+   "models": 1
+  },
+  {
+   "id": "com.android.wechathci",
+   "platform": "any",
+   "action": "ask",
+   "title": "voice handwriting input engine",
+   "models": 1
   },
   {
    "id": "com.android.ytb",
@@ -2248,7 +2304,7 @@
    "platform": "any",
    "action": "ask",
    "title": "\"S-Channel\" content rows on Home",
-   "models": 6
+   "models": 7
   },
   {
    "id": "com.apps.clear",
@@ -2262,14 +2318,14 @@
    "platform": "any",
    "action": "disable",
    "title": "E-SHOW in-store demo / promo",
-   "models": 8
+   "models": 9
   },
   {
    "id": "com.apps.esticker",
    "platform": "any",
    "action": "disable",
    "title": "ShowService overlay, demo stickers",
-   "models": 9
+   "models": 10
   },
   {
    "id": "com.apps.esticker3",
@@ -2297,7 +2353,7 @@
    "platform": "any",
    "action": "ask",
    "title": "SCBC data-consent agent",
-   "models": 8
+   "models": 9
   },
   {
    "id": "com.apps.mk.gameui",
@@ -2367,7 +2423,7 @@
    "platform": "any",
    "action": "ask",
    "title": "TV as a Wi-Fi hotspot",
-   "models": 15
+   "models": 16
   },
   {
    "id": "com.apps.wwalexa",
@@ -2451,14 +2507,14 @@
    "platform": "any",
    "action": "ask",
    "title": "factory test service",
-   "models": 3
+   "models": 4
   },
   {
    "id": "com.at.factory.factorymanager",
    "platform": "any",
    "action": "ask",
-   "title": "factory test manager",
-   "models": 3
+   "title": "HKC_FactoryManager",
+   "models": 4
   },
   {
    "id": "com.atmaca.atmretailmode",
@@ -2471,8 +2527,8 @@
    "id": "com.audiocn.karaoke.global.micmanager",
    "platform": "any",
    "action": "ask",
-   "title": "karaoke microphone app",
-   "models": 2
+   "title": "karaoke mic manager",
+   "models": 3
   },
   {
    "id": "com.audiocn.karaoke.micmanager",
@@ -2594,6 +2650,13 @@
    "models": 1
   },
   {
+   "id": "com.cghs.stresstest",
+   "platform": "any",
+   "action": "ask",
+   "title": "com.cghs.stresstest",
+   "models": 1
+  },
+  {
    "id": "com.channel4.youviewandroidlauncher",
    "platform": "any",
    "action": "ask",
@@ -2626,6 +2689,13 @@
    "platform": "any",
    "action": "ask",
    "title": "com.chocolabs.app.chocotv.tv",
+   "models": 1
+  },
+  {
+   "id": "com.cibn.tv",
+   "platform": "any",
+   "action": "ask",
+   "title": "CIBN",
    "models": 1
   },
   {
@@ -2724,7 +2794,7 @@
    "platform": "any",
    "action": "disable",
    "title": "\"Demo Now\" retail mode",
-   "models": 9
+   "models": 11
   },
   {
    "id": "com.coocaa.educate",
@@ -2982,8 +3052,8 @@
    "id": "com.cvte.haier.tv.appmanager",
    "platform": "any",
    "action": "ask",
-   "title": "boot receiver that manages Haier apps",
-   "models": 1
+   "title": "boot receiver: re-enabled disabled apps at every boot until this was off",
+   "models": 2
   },
   {
    "id": "com.cvte.industries",
@@ -3032,7 +3102,7 @@
    "platform": "any",
    "action": "ask",
    "title": "factory auto-test activity",
-   "models": 3
+   "models": 4
   },
   {
    "id": "com.cvte.tv.audiotest",
@@ -3060,6 +3130,20 @@
    "platform": "any",
    "action": "ask",
    "title": "Hisense factory tool",
+   "models": 1
+  },
+  {
+   "id": "com.cvte.tv.hkcfac",
+   "platform": "any",
+   "action": "ask",
+   "title": "HKC_FACTORY_AT",
+   "models": 1
+  },
+  {
+   "id": "com.cvte.tv.hotel",
+   "platform": "any",
+   "action": "ask",
+   "title": "HKC_AnTv",
    "models": 1
   },
   {
@@ -3315,11 +3399,18 @@
    "models": 1
   },
   {
+   "id": "com.droidlogic.mediacenter",
+   "platform": "any",
+   "action": "ask",
+   "title": "\"Chromecast+\", a DLNA renderer",
+   "models": 1
+  },
+  {
    "id": "com.droidlogic.miracast",
    "platform": "any",
    "action": "ask",
    "title": "Miracast receiver",
-   "models": 2
+   "models": 3
   },
   {
    "id": "com.droidlogic.readlog",
@@ -3389,14 +3480,14 @@
    "platform": "any",
    "action": "ask",
    "title": "factory test app; claims HOME at priority 0",
-   "models": 2
+   "models": 3
   },
   {
    "id": "com.duokan.videodaily",
    "platform": "any",
    "action": "disable",
-   "title": "video daily promos",
-   "models": 6
+   "title": "short-video promos, bundles the Mi ad SDK",
+   "models": 7
   },
   {
    "id": "com.ecloud.eairplay",
@@ -3424,7 +3515,7 @@
    "platform": "any",
    "action": "ask",
    "title": "on-TV e-manual",
-   "models": 6
+   "models": 8
   },
   {
    "id": "com.eltelon.zapping",
@@ -3438,6 +3529,13 @@
    "platform": "any",
    "action": "ask",
    "title": "Emotn browser preload (the launcher itself is a separate owner-installed app)",
+   "models": 2
+  },
+  {
+   "id": "com.epic.docubay",
+   "platform": "any",
+   "action": "ask",
+   "title": "DocuBay, partner preinstall",
    "models": 1
   },
   {
@@ -3458,8 +3556,8 @@
    "id": "com.esaba.downloader",
    "platform": "any",
    "action": "ask",
-   "title": "background APK/content downloader, boot-started",
-   "models": 1
+   "title": "SABA URL downloader preload",
+   "models": 3
   },
   {
    "id": "com.eshare.tutorial",
@@ -3487,6 +3585,13 @@
    "platform": "any",
    "action": "ask",
    "title": "com.estrongs.android.pop",
+   "models": 1
+  },
+  {
+   "id": "com.example.a",
+   "platform": "any",
+   "action": "ask",
+   "title": "ProductTest",
    "models": 1
   },
   {
@@ -3525,6 +3630,13 @@
    "models": 1
   },
   {
+   "id": "com.expressluck.tvhelpmanual",
+   "platform": "any",
+   "action": "ask",
+   "title": "on-screen manual",
+   "models": 1
+  },
+  {
    "id": "com.expressvpn.vpn",
    "platform": "any",
    "action": "ask",
@@ -3537,6 +3649,13 @@
    "action": "ask",
    "title": "Facebook",
    "models": 2
+  },
+  {
+   "id": "com.factorytools.factorystability",
+   "platform": "any",
+   "action": "ask",
+   "title": "factory stress tool with INSTALL_PACKAGES (disabled only, never opened)",
+   "models": 1
   },
   {
    "id": "com.fancode.tv",
@@ -3675,8 +3794,8 @@
    "id": "com.gameloft.android.HEP.GloftANHP",
    "platform": "any",
    "action": "ask",
-   "title": "Gameloft game preload",
-   "models": 1
+   "title": "Gameloft game",
+   "models": 2
   },
   {
    "id": "com.gaochuang.factory.at",
@@ -3705,6 +3824,13 @@
    "action": "disable",
    "title": "GITV promo demo reel",
    "models": 2
+  },
+  {
+   "id": "com.gitvjimi.video",
+   "platform": "any",
+   "action": "ask",
+   "title": "GITV / 极米视频内容",
+   "models": 1
   },
   {
    "id": "com.glance.tv",
@@ -3760,14 +3886,14 @@
    "platform": "any",
    "action": "ask",
    "title": "data-saver VPN",
-   "models": 30
+   "models": 33
   },
   {
    "id": "com.google.android.apps.pixelmigrate",
    "platform": "any",
    "action": "ask",
-   "title": "com.google.android.apps.pixelmigrate",
-   "models": 1
+   "title": "Pixel data migration, meaningless on a box",
+   "models": 2
   },
   {
    "id": "com.google.android.apps.searchlite.overlay",
@@ -3781,14 +3907,14 @@
    "platform": "any",
    "action": "ask",
    "title": "Google Meet / Duo",
-   "models": 4
+   "models": 5
   },
   {
    "id": "com.google.android.apps.tv.dreamx",
    "platform": "any",
    "action": "ask",
    "title": "ambient mode screensaver",
-   "models": 67
+   "models": 71
   },
   {
    "id": "com.google.android.apps.tv.launcherx.overlay",
@@ -3809,21 +3935,21 @@
    "platform": "any",
    "action": "ask",
    "title": "ambient screensaver",
-   "models": 99
+   "models": 105
   },
   {
    "id": "com.google.android.backuptransport",
    "platform": "any",
    "action": "ask",
    "title": "com.google.android.backuptransport",
-   "models": 2
+   "models": 3
   },
   {
    "id": "com.google.android.boot.appsplashscreen",
    "platform": "any",
    "action": "ask",
    "title": "Boot splash screen animator",
-   "models": 3
+   "models": 4
   },
   {
    "id": "com.google.android.carriersetup",
@@ -3850,8 +3976,15 @@
    "id": "com.google.android.feedback",
    "platform": "any",
    "action": "disable",
-   "title": "\"send feedback\"",
-   "models": 341
+   "title": "Google feedback reporter",
+   "models": 368
+  },
+  {
+   "id": "com.google.android.googlequicksearchbox",
+   "platform": "any",
+   "action": "ask",
+   "title": "com.google.android.googlequicksearchbox",
+   "models": 1
   },
   {
    "id": "com.google.android.inputmethod.japanese",
@@ -3886,42 +4019,42 @@
    "platform": "any",
    "action": "ask",
    "title": "Google Assistant / voice search",
-   "models": 133
+   "models": 136
   },
   {
    "id": "com.google.android.leanbacklauncher.partnercustomizer",
    "platform": "any",
-   "action": "disable",
-   "title": "Sponsored leanback partner channels",
-   "models": 17
+   "action": "ask",
+   "title": "partner rows for the Leanback launcher",
+   "models": 21
   },
   {
    "id": "com.google.android.leanbacklauncher.partnerwidget",
    "platform": "any",
    "action": "ask",
    "title": "32S6500S unit only",
-   "models": 1
+   "models": 2
   },
   {
    "id": "com.google.android.leanbacklauncher.recommendations",
    "platform": "any",
    "action": "disable",
    "title": "recommendations for the Leanback launcher, which is not Home",
-   "models": 41
+   "models": 43
   },
   {
    "id": "com.google.android.marvin.talkback",
    "platform": "any",
    "action": "ask",
    "title": "re-enable if you need the screen reader",
-   "models": 82
+   "models": 90
   },
   {
    "id": "com.google.android.music",
    "platform": "any",
    "action": "ask",
    "title": "Google Play Music (service discontinued)",
-   "models": 24
+   "models": 26
   },
   {
    "id": "com.google.android.ondevicepersonalization.services",
@@ -3935,21 +4068,21 @@
    "platform": "any",
    "action": "ask",
    "title": "one-time setup leftovers",
-   "models": 75
+   "models": 81
   },
   {
    "id": "com.google.android.partnersetup",
    "platform": "any",
    "action": "ask",
    "title": "partner-app attribution",
-   "models": 166
+   "models": 186
   },
   {
    "id": "com.google.android.play.games",
    "platform": "any",
    "action": "ask",
    "title": "Play Games",
-   "models": 268
+   "models": 288
   },
   {
    "id": "com.google.android.speech.pumpkin",
@@ -3963,35 +4096,35 @@
    "platform": "any",
    "action": "ask",
    "title": "Second Screen Setup (set up from phone)",
-   "models": 3
+   "models": 4
   },
   {
    "id": "com.google.android.sss.authbridge",
    "platform": "any",
    "action": "ask",
    "title": "set-up-from-phone helper",
-   "models": 8
+   "models": 9
   },
   {
    "id": "com.google.android.syncadapters.calendar",
    "platform": "any",
    "action": "ask",
    "title": "calendar sync",
-   "models": 136
+   "models": 150
   },
   {
    "id": "com.google.android.syncadapters.contacts",
    "platform": "any",
    "action": "ask",
-   "title": "contacts sync",
-   "models": 10
+   "title": "Google Contacts sync",
+   "models": 12
   },
   {
    "id": "com.google.android.tts",
    "platform": "any",
    "action": "ask",
-   "title": "text-to-speech",
-   "models": 34
+   "title": "Google text-to-speech",
+   "models": 39
   },
   {
    "id": "com.google.android.tv",
@@ -4005,7 +4138,7 @@
    "platform": "any",
    "action": "ask",
    "title": "Assistant LED service",
-   "models": 34
+   "models": 35
   },
   {
    "id": "com.google.android.tv.axel",
@@ -4019,7 +4152,7 @@
    "platform": "any",
    "action": "disable",
    "title": "bug report uploader",
-   "models": 65
+   "models": 70
   },
   {
    "id": "com.google.android.tv.dfuservice",
@@ -4054,21 +4187,21 @@
    "platform": "any",
    "action": "disable",
    "title": "recommendation rows for the stock launcher",
-   "models": 176
+   "models": 186
   },
   {
    "id": "com.google.android.tvtutorials",
    "platform": "any",
    "action": "ask",
    "title": "Android TV first-run tutorials",
-   "models": 10
+   "models": 11
   },
   {
    "id": "com.google.android.videos",
    "platform": "any",
    "action": "ask",
    "title": "Play Movies & TV",
-   "models": 192
+   "models": 202
   },
   {
    "id": "com.google.android.voicesearch",
@@ -4096,7 +4229,7 @@
    "platform": "any",
    "action": "ask",
    "title": "YouTube Music",
-   "models": 157
+   "models": 162
   },
   {
    "id": "com.google.android.youtube.tvunplugged",
@@ -4138,14 +4271,14 @@
    "platform": "any",
    "action": "disable",
    "title": "Haier promo content app",
-   "models": 7
+   "models": 8
   },
   {
    "id": "com.haier.apps.evoSmart",
    "platform": "any",
    "action": "disable",
    "title": "store / partner promo",
-   "models": 1
+   "models": 2
   },
   {
    "id": "com.haier.emanual",
@@ -4257,7 +4390,7 @@
    "platform": "any",
    "action": "ask",
    "title": "\"TV housekeeper\" cleaner",
-   "models": 6
+   "models": 7
   },
   {
    "id": "com.haier.uhome.messageboard",
@@ -4305,8 +4438,8 @@
    "id": "com.haierubic.usmartdevice",
    "platform": "any",
    "action": "ask",
-   "title": "Haier smart-device / IoT service",
-   "models": 6
+   "title": "Haier smart-device service",
+   "models": 7
   },
   {
    "id": "com.haystack.android",
@@ -4540,6 +4673,13 @@
    "models": 1
   },
   {
+   "id": "com.hisense.aiot",
+   "platform": "any",
+   "action": "ask",
+   "title": "smart home IoT service",
+   "models": 1
+  },
+  {
    "id": "com.hisense.alexa",
    "platform": "any",
    "action": "ask",
@@ -4572,7 +4712,14 @@
    "platform": "any",
    "action": "disable",
    "title": "ad SDK",
-   "models": 7
+   "models": 8
+  },
+  {
+   "id": "com.hisense.childlock",
+   "platform": "any",
+   "action": "ask",
+   "title": "child lock",
+   "models": 1
   },
   {
    "id": "com.hisense.cloudfalcon",
@@ -4586,14 +4733,14 @@
    "platform": "any",
    "action": "disable",
    "title": "DbxDemo / multi-channel sound demo reels",
-   "models": 6
+   "models": 7
   },
   {
    "id": "com.hisense.electronictutorial",
    "platform": "any",
    "action": "ask",
    "title": "e-manual",
-   "models": 6
+   "models": 7
   },
   {
    "id": "com.hisense.evservice",
@@ -4628,13 +4775,20 @@
    "platform": "any",
    "action": "ask",
    "title": "DasApp: DataReportReceiver only",
-   "models": 6
+   "models": 7
   },
   {
    "id": "com.hisense.hitv.hicloud.account",
    "platform": "any",
    "action": "ask",
    "title": "HiCloud account manager",
+   "models": 2
+  },
+  {
+   "id": "com.hisense.hitv.payment",
+   "platform": "any",
+   "action": "ask",
+   "title": "payment service",
    "models": 1
   },
   {
@@ -4642,7 +4796,7 @@
    "platform": "any",
    "action": "ask",
    "title": "hotel mode menu",
-   "models": 6
+   "models": 7
   },
   {
    "id": "com.hisense.hotelmode",
@@ -4652,11 +4806,32 @@
    "models": 1
   },
   {
+   "id": "com.hisense.locking",
+   "platform": "any",
+   "action": "ask",
+   "title": "lock service",
+   "models": 1
+  },
+  {
    "id": "com.hisense.logupload",
    "platform": "any",
    "action": "disable",
    "title": "log uploader",
-   "models": 7
+   "models": 8
+  },
+  {
+   "id": "com.hisense.msvoicetome",
+   "platform": "any",
+   "action": "ask",
+   "title": "voice service",
+   "models": 1
+  },
+  {
+   "id": "com.hisense.multiscreen.screenhelper",
+   "platform": "any",
+   "action": "ask",
+   "title": "multi-screen helper",
+   "models": 1
   },
   {
    "id": "com.hisense.myapplication",
@@ -4666,18 +4841,39 @@
    "models": 1
   },
   {
+   "id": "com.hisense.nas.pt",
+   "platform": "any",
+   "action": "ask",
+   "title": "vendor NAS client",
+   "models": 1
+  },
+  {
+   "id": "com.hisense.nasservice",
+   "platform": "any",
+   "action": "ask",
+   "title": "vendor NAS background service",
+   "models": 1
+  },
+  {
    "id": "com.hisense.odinbrowser",
    "platform": "any",
    "action": "ask",
    "title": "Hisense browser",
-   "models": 5
+   "models": 6
+  },
+  {
+   "id": "com.hisense.pcm.share",
+   "platform": "any",
+   "action": "ask",
+   "title": "PC screen share",
+   "models": 1
   },
   {
    "id": "com.hisense.platformreport",
    "platform": "any",
    "action": "disable",
-   "title": "usage/telemetry reporting",
-   "models": 6
+   "title": "platform data reporter",
+   "models": 7
   },
   {
    "id": "com.hisense.remoteupgrade",
@@ -4691,7 +4887,7 @@
    "platform": "any",
    "action": "disable",
    "title": "ad service",
-   "models": 7
+   "models": 8
   },
   {
    "id": "com.hisense.service.hproxy",
@@ -4705,7 +4901,7 @@
    "platform": "any",
    "action": "ask",
    "title": "HiMsgService, the vendor push channel",
-   "models": 9
+   "models": 10
   },
   {
    "id": "com.hisense.singlelisten",
@@ -4727,6 +4923,13 @@
    "action": "disable",
    "title": "retail store demo mode",
    "models": 5
+  },
+  {
+   "id": "com.hisense.tv.aivirtualassistant",
+   "platform": "any",
+   "action": "ask",
+   "title": "AI virtual assistant character",
+   "models": 1
   },
   {
    "id": "com.hisense.tv.b2b",
@@ -4831,7 +5034,7 @@
    "platform": "any",
    "action": "ask",
    "title": "weather card, another content feed",
-   "models": 6
+   "models": 7
   },
   {
    "id": "com.hisense.usbupgrade",
@@ -4876,6 +5079,13 @@
    "models": 2
   },
   {
+   "id": "com.hispeech.ai.area",
+   "platform": "any",
+   "action": "ask",
+   "title": "HiSpeech AI service",
+   "models": 1
+  },
+  {
    "id": "com.hitv.explore",
    "platform": "any",
    "action": "ask",
@@ -4887,6 +5097,13 @@
    "platform": "any",
    "action": "ask",
    "title": "Ginga (Latin-America ISDB-T middleware), inert on an EU DVB set",
+   "models": 1
+  },
+  {
+   "id": "com.hkc.tv.hkc_help",
+   "platform": "any",
+   "action": "ask",
+   "title": "HKC_Help",
    "models": 1
   },
   {
@@ -4929,7 +5146,14 @@
    "platform": "any",
    "action": "ask",
    "title": "e-manual",
-   "models": 18
+   "models": 20
+  },
+  {
+   "id": "com.homwee.howtocast",
+   "platform": "any",
+   "action": "ask",
+   "title": "com.homwee.howtocast",
+   "models": 1
   },
   {
    "id": "com.homwee.mmp.fileexplorer",
@@ -4962,9 +5186,9 @@
   {
    "id": "com.homwee.store",
    "platform": "any",
-   "action": "ask",
-   "title": "Changhong app-store service",
-   "models": 18
+   "action": "disable",
+   "title": "Homwee app store (content + ads)",
+   "models": 20
   },
   {
    "id": "com.homwee.upgrade",
@@ -5041,28 +5265,28 @@
    "platform": "any",
    "action": "ask",
    "title": "factory test app",
-   "models": 3
+   "models": 4
   },
   {
    "id": "com.htc.samescreen",
    "platform": "any",
    "action": "ask",
    "title": "htc_cast mirroring",
-   "models": 1
+   "models": 2
   },
   {
    "id": "com.htc.screensaver",
    "platform": "any",
    "action": "ask",
-   "title": "stock screensaver; ClockDream replaces it",
-   "models": 2
+   "title": "stock screensaver",
+   "models": 3
   },
   {
    "id": "com.htc.storeos",
    "platform": "any",
    "action": "ask",
    "title": "HTC app store",
-   "models": 4
+   "models": 5
   },
   {
    "id": "com.huawei.appmarket",
@@ -5261,6 +5485,13 @@
    "models": 2
   },
   {
+   "id": "com.intelligent.speech",
+   "platform": "any",
+   "action": "ask",
+   "title": "intelligent speech engine",
+   "models": 1
+  },
+  {
    "id": "com.internet.tvbrowser",
    "platform": "any",
    "action": "ask",
@@ -5320,36 +5551,43 @@
    "id": "com.jamdeo.calendar",
    "platform": "any",
    "action": "ask",
-   "title": "vendor calendar, not the AOSP one",
-   "models": 6
+   "title": "calendar",
+   "models": 7
   },
   {
    "id": "com.jamdeo.screensaver",
    "platform": "any",
    "action": "disable",
    "title": "vendor ad screensaver",
-   "models": 4
+   "models": 5
   },
   {
    "id": "com.jamdeo.tv.fte",
    "platform": "any",
    "action": "ask",
-   "title": "first-run wizard, already done; Wi-Fi belongs to android.uid.system",
-   "models": 6
+   "title": "first-run wizard (already past)",
+   "models": 7
+  },
+  {
+   "id": "com.jamdeo.tv.jurestartapp",
+   "platform": "any",
+   "action": "ask",
+   "title": "restart helper",
+   "models": 1
   },
   {
    "id": "com.jamdeo.tv.mediacenter",
    "platform": "any",
    "action": "ask",
    "title": "Hisense MediaCenter DLNA/USB player",
-   "models": 2
+   "models": 3
   },
   {
    "id": "com.jamdeo.tv.vod",
    "platform": "any",
    "action": "ask",
    "title": "com.jamdeo.tv.vod",
-   "models": 1
+   "models": 2
   },
   {
    "id": "com.jd.smartservicetwo",
@@ -5524,7 +5762,7 @@
    "platform": "any",
    "action": "ask",
    "title": "Migu Video, carrier preload",
-   "models": 1
+   "models": 2
   },
   {
    "id": "com.july.ndtv",
@@ -5534,11 +5772,18 @@
    "models": 1
   },
   {
+   "id": "com.keylab.speech.core.vidaa",
+   "platform": "any",
+   "action": "ask",
+   "title": "speech core service",
+   "models": 1
+  },
+  {
    "id": "com.keylab.speech.view.vidaa",
    "platform": "any",
    "action": "ask",
-   "title": "com.keylab.speech.view.vidaa",
-   "models": 1
+   "title": "speech assistant UI and second-screen launcher",
+   "models": 2
   },
   {
    "id": "com.kgzn.castscreen",
@@ -5618,25 +5863,32 @@
    "models": 1
   },
   {
+   "id": "com.kookong.tvplus",
+   "platform": "any",
+   "action": "ask",
+   "title": "TV plus / remote live content",
+   "models": 1
+  },
+  {
    "id": "com.ktc.serialport",
    "platform": "any",
    "action": "ask",
    "title": "KTCAutoTest serial console, runs from boot",
-   "models": 2
+   "models": 3
   },
   {
    "id": "com.ktc.tv.factory",
    "platform": "any",
    "action": "ask",
    "title": "KtcFactoryKeyService, runs from boot",
-   "models": 2
+   "models": 3
   },
   {
    "id": "com.ktcp.tvvideo",
    "platform": "any",
    "action": "ask",
    "title": "云视听极光",
-   "models": 1
+   "models": 2
   },
   {
    "id": "com.limelight",
@@ -5695,11 +5947,25 @@
    "models": 1
   },
   {
+   "id": "com.mcontent",
+   "platform": "any",
+   "action": "ask",
+   "title": "content feed",
+   "models": 1
+  },
+  {
+   "id": "com.media.playcast.PHILIPS.MTK",
+   "platform": "any",
+   "action": "ask",
+   "title": "Playcast screen mirroring; Chromecast (mediashell) is separate and kept",
+   "models": 1
+  },
+  {
    "id": "com.mediatek.AirplayAPK",
    "platform": "any",
    "action": "ask",
    "title": "AirPlay",
-   "models": 7
+   "models": 8
   },
   {
    "id": "com.mediatek.MtkDemo",
@@ -5727,28 +5993,28 @@
    "platform": "any",
    "action": "ask",
    "title": "AirPlay (two packages)",
-   "models": 6
+   "models": 7
   },
   {
    "id": "com.mediatek.android.leanbacklauncher.partnercustomizer",
    "platform": "any",
    "action": "ask",
    "title": "partner rows for the stock launcher",
-   "models": 20
+   "models": 23
   },
   {
    "id": "com.mediatek.androidbox",
    "platform": "any",
    "action": "ask",
    "title": "WFDSinkTest, Wi-Fi Display test app",
-   "models": 8
+   "models": 11
   },
   {
    "id": "com.mediatek.backgrounddetection",
    "platform": "any",
    "action": "ask",
    "title": "com.mediatek.backgrounddetection",
-   "models": 3
+   "models": 4
   },
   {
    "id": "com.mediatek.bootvideo",
@@ -5824,8 +6090,8 @@
    "id": "com.mediatek.partner.airplay_sys",
    "platform": "any",
    "action": "ask",
-   "title": "com.mediatek.partner.airplay_sys",
-   "models": 1
+   "title": "sticky system_ext priv-app; may partially respawn after reboot",
+   "models": 2
   },
   {
    "id": "com.mediatek.partner.netflix",
@@ -5838,8 +6104,8 @@
    "id": "com.mediatek.support.webview",
    "platform": "any",
    "action": "ask",
-   "title": "com.mediatek.support.webview",
-   "models": 4
+   "title": "spare webview",
+   "models": 5
   },
   {
    "id": "com.mediatek.testpq",
@@ -5860,7 +6126,7 @@
    "platform": "any",
    "action": "ask",
    "title": "Freeview Play (UK only, useless outside the UK)",
-   "models": 5
+   "models": 6
   },
   {
    "id": "com.mediatek.tv.launcher.partner",
@@ -5909,28 +6175,28 @@
    "platform": "any",
    "action": "ask",
    "title": "TV setup wizard (setup already done)",
-   "models": 2
+   "models": 4
   },
   {
    "id": "com.mediatek.wwtv.tvrecommendation",
    "platform": "any",
    "action": "ask",
    "title": "com.mediatek.wwtv.tvrecommendation",
-   "models": 1
+   "models": 2
   },
   {
    "id": "com.mediatek.wwtv.webview",
    "platform": "any",
    "action": "ask",
    "title": "vendor web view shell",
-   "models": 4
+   "models": 5
   },
   {
    "id": "com.meetingroom",
    "platform": "any",
    "action": "ask",
-   "title": "meeting-room mode",
-   "models": 3
+   "title": "meeting-room mode, answers HOME at -100",
+   "models": 4
   },
   {
    "id": "com.megogo.application",
@@ -6013,8 +6279,8 @@
    "id": "com.mitv.gallery",
    "platform": "any",
    "action": "ask",
-   "title": "Mi Gallery; Media Player still opens USB photos",
-   "models": 23
+   "title": "Mi Gallery",
+   "models": 26
   },
   {
    "id": "com.mitv.milinkservice",
@@ -6035,7 +6301,7 @@
    "platform": "any",
    "action": "ask",
    "title": "overseas service partner helper",
-   "models": 2
+   "models": 3
   },
   {
    "id": "com.mitv.screensaver",
@@ -6049,35 +6315,35 @@
    "platform": "any",
    "action": "ask",
    "title": "TV Taobao shopping plugin",
-   "models": 9
+   "models": 10
   },
   {
    "id": "com.mitv.toolhouse",
    "platform": "any",
    "action": "ask",
    "title": "com.mitv.toolhouse",
-   "models": 8
+   "models": 9
   },
   {
    "id": "com.mitv.tvhome.atv",
    "platform": "any",
    "action": "ask",
    "title": "PatchWall",
-   "models": 30
+   "models": 32
   },
   {
    "id": "com.mitv.tvhome.michannel",
    "platform": "any",
    "action": "ask",
    "title": "Mi content rows",
-   "models": 23
+   "models": 25
   },
   {
    "id": "com.mitv.tvhome.mitvplus",
    "platform": "any",
    "action": "disable",
    "title": "Mi TV+ ad-funded channels",
-   "models": 23
+   "models": 25
   },
   {
    "id": "com.mitv.tvhome.oemtab",
@@ -6105,21 +6371,21 @@
    "platform": "any",
    "action": "ask",
    "title": "Mi video player",
-   "models": 14
+   "models": 15
   },
   {
    "id": "com.miui.analytics",
    "platform": "any",
    "action": "disable",
    "title": "OneTrack analytics SDK host",
-   "models": 7
+   "models": 8
   },
   {
    "id": "com.miui.hybrid.tv",
    "platform": "any",
    "action": "ask",
    "title": "hybrid runtime container",
-   "models": 2
+   "models": 3
   },
   {
    "id": "com.miui.misightservice",
@@ -6133,7 +6399,7 @@
    "platform": "any",
    "action": "disable",
    "title": "TV usage statistics",
-   "models": 42
+   "models": 45
   },
   {
    "id": "com.mk.tv.booster",
@@ -6175,7 +6441,7 @@
    "platform": "any",
    "action": "ask",
    "title": "Office suite",
-   "models": 3
+   "models": 4
   },
   {
    "id": "com.movenda.omadm.tv",
@@ -6196,14 +6462,14 @@
    "platform": "any",
    "action": "ask",
    "title": "AirPlay receiver",
-   "models": 1
+   "models": 2
   },
   {
    "id": "com.mphotool.dlna",
    "platform": "any",
    "action": "ask",
    "title": "DLNA receiver",
-   "models": 1
+   "models": 2
   },
   {
    "id": "com.mphotool.usbcastserver",
@@ -6211,6 +6477,20 @@
    "action": "ask",
    "title": "USB cast",
    "models": 2
+  },
+  {
+   "id": "com.ms.ucast.ucastapp",
+   "platform": "any",
+   "action": "ask",
+   "title": "ucast casting",
+   "models": 1
+  },
+  {
+   "id": "com.ms.weshare",
+   "platform": "any",
+   "action": "ask",
+   "title": "weshare casting",
+   "models": 1
   },
   {
    "id": "com.mstar.android.media.tests",
@@ -6224,14 +6504,14 @@
    "platform": "any",
    "action": "ask",
    "title": "disclaimer screen used only by first-run setup",
-   "models": 43
+   "models": 49
   },
   {
    "id": "com.mstar.netflixobserver",
    "platform": "any",
    "action": "ask",
    "title": "MNetflixObserver measurement service (Netflix app untouched)",
-   "models": 2
+   "models": 3
   },
   {
    "id": "com.mtc.emanual",
@@ -6364,7 +6644,7 @@
    "platform": "any",
    "action": "ask",
    "title": "网易云音乐",
-   "models": 1
+   "models": 2
   },
   {
    "id": "com.netflix.dial",
@@ -6868,14 +7148,14 @@
    "platform": "any",
    "action": "ask",
    "title": "unknown browser",
-   "models": 3
+   "models": 4
   },
   {
    "id": "com.qterics.da.product",
    "platform": "any",
    "action": "ask",
    "title": "Qterics device agent",
-   "models": 41
+   "models": 45
   },
   {
    "id": "com.realsil.ota",
@@ -7004,6 +7284,20 @@
    "models": 1
   },
   {
+   "id": "com.rockchip.devicetest",
+   "platform": "any",
+   "action": "ask",
+   "title": "com.rockchip.devicetest",
+   "models": 1
+  },
+  {
+   "id": "com.rockchips.dlna",
+   "platform": "any",
+   "action": "ask",
+   "title": "com.rockchips.dlna",
+   "models": 1
+  },
+  {
    "id": "com.roku.web.trc",
    "platform": "any",
    "action": "ask",
@@ -7113,7 +7407,7 @@
    "platform": "any",
    "action": "ask",
    "title": "Skyworth product test, key check, USB command handler",
-   "models": 7
+   "models": 8
   },
   {
    "id": "com.secretexit.turbodismount",
@@ -7351,14 +7645,14 @@
    "platform": "any",
    "action": "disable",
    "title": "ACR — listens to ambient audio for ad targeting",
-   "models": 5
+   "models": 6
   },
   {
    "id": "com.smartdevice.aftersale",
    "platform": "any",
    "action": "ask",
    "title": "\"after-sale\" service: boot + network receivers, can install APKs",
-   "models": 13
+   "models": 15
   },
   {
    "id": "com.smartdevice.common.demonow",
@@ -7372,7 +7666,7 @@
    "platform": "any",
    "action": "ask",
    "title": "TV Guard / cleaner",
-   "models": 11
+   "models": 12
   },
   {
    "id": "com.smartdevice.dailyshortcut",
@@ -7386,28 +7680,28 @@
    "platform": "any",
    "action": "disable",
    "title": "retail store demo",
-   "models": 2
+   "models": 3
   },
   {
    "id": "com.smartdevice.dtv.icast",
    "platform": "any",
    "action": "ask",
    "title": "Miracast + DLNA",
-   "models": 7
+   "models": 8
   },
   {
    "id": "com.smartdevice.epopplayer",
    "platform": "any",
    "action": "disable",
    "title": "ePop shop demo player",
-   "models": 10
+   "models": 11
   },
   {
    "id": "com.smartdevice.factory",
    "platform": "any",
    "action": "ask",
    "title": "com.smartdevice.factory",
-   "models": 2
+   "models": 3
   },
   {
    "id": "com.smartdevice.firewall",
@@ -7421,28 +7715,28 @@
    "platform": "any",
    "action": "ask",
    "title": "partner config that injects rows into the home screen",
-   "models": 21
+   "models": 23
   },
   {
    "id": "com.smartdevice.myapp",
    "platform": "any",
    "action": "ask",
    "title": "Daily Key / app manager",
-   "models": 9
+   "models": 10
   },
   {
    "id": "com.smartdevice.recommendation",
    "platform": "any",
    "action": "disable",
    "title": "Coocaa recommendation rows; bundles Sensors Data analytics",
-   "models": 16
+   "models": 17
   },
   {
    "id": "com.smartdevice.recordactivation",
    "platform": "any",
    "action": "ask",
    "title": "records first activation",
-   "models": 7
+   "models": 9
   },
   {
    "id": "com.smartdevice.setupwraith",
@@ -7456,7 +7750,7 @@
    "platform": "any",
    "action": "disable",
    "title": "Unit 2: Coocaa recommendation channels and notification listener",
-   "models": 1
+   "models": 2
   },
   {
    "id": "com.smartdevice.tv.aircast",
@@ -7547,7 +7841,7 @@
    "platform": "any",
    "action": "ask",
    "title": "Miracast",
-   "models": 3
+   "models": 4
   },
   {
    "id": "com.softwinner.provision",
@@ -7616,15 +7910,15 @@
    "id": "com.sony.dangbeimarket",
    "platform": "any",
    "action": "ask",
-   "title": "com.sony.dangbeimarket",
-   "models": 1
+   "title": "应用中心: partner build of 当贝市场",
+   "models": 2
   },
   {
    "id": "com.sony.dtv.QuickSetupCustomizer",
    "platform": "any",
    "action": "ask",
    "title": "partner customisation for first setup",
-   "models": 4
+   "models": 5
   },
   {
    "id": "com.sony.dtv.accessibility.tutorial",
@@ -7686,15 +7980,15 @@
    "id": "com.sony.dtv.b2b.hotelmode",
    "platform": "any",
    "action": "ask",
-   "title": "Hotel mode service",
-   "models": 16
+   "title": "always-running service, boot + periodic restart receivers",
+   "models": 17
   },
   {
    "id": "com.sony.dtv.b2b.importexport",
    "platform": "any",
    "action": "ask",
    "title": "B2B settings import/export",
-   "models": 13
+   "models": 15
   },
   {
    "id": "com.sony.dtv.b2b.ipcontrolsettings",
@@ -7715,21 +8009,21 @@
    "platform": "any",
    "action": "ask",
    "title": "Node.js runtime for hotel apps",
-   "models": 11
+   "models": 13
   },
   {
    "id": "com.sony.dtv.b2b.noderuntime.privilege",
    "platform": "any",
    "action": "ask",
    "title": "com.sony.dtv.b2b.noderuntime.privilege",
-   "models": 11
+   "models": 13
   },
   {
    "id": "com.sony.dtv.b2b.noderuntimeextension.bpk",
    "platform": "any",
    "action": "ask",
    "title": "com.sony.dtv.b2b.noderuntimeextension.bpk",
-   "models": 6
+   "models": 7
   },
   {
    "id": "com.sony.dtv.b2b.noderuntimeextension.node_12_13_1",
@@ -7757,14 +8051,14 @@
    "platform": "any",
    "action": "ask",
    "title": "Pro mode settings",
-   "models": 13
+   "models": 15
   },
   {
    "id": "com.sony.dtv.b2b.rs232csupport",
    "platform": "any",
    "action": "ask",
    "title": "RS-232C control; re-enable if something drives the TV over serial",
-   "models": 15
+   "models": 16
   },
   {
    "id": "com.sony.dtv.b2b.softap",
@@ -7778,7 +8072,7 @@
    "platform": "any",
    "action": "ask",
    "title": "SDDP model/MAC/IP broadcast for Control4-style home",
-   "models": 22
+   "models": 24
   },
   {
    "id": "com.sony.dtv.b2b.webappruntimedrm",
@@ -7792,21 +8086,21 @@
    "platform": "any",
    "action": "ask",
    "title": "BIVL content service list (feeds Discover)",
-   "models": 21
+   "models": 23
   },
   {
    "id": "com.sony.dtv.bravialifehack",
    "platform": "any",
    "action": "ask",
    "title": "Bravia Lifehack",
-   "models": 3
+   "models": 4
   },
   {
    "id": "com.sony.dtv.braviashow",
    "platform": "any",
    "action": "ask",
    "title": "BRAVIA Show DreamService",
-   "models": 1
+   "models": 2
   },
   {
    "id": "com.sony.dtv.broadcastclock.broadcastrequirementcontrol",
@@ -7876,7 +8170,7 @@
    "platform": "any",
    "action": "ask",
    "title": "Help tile",
-   "models": 32
+   "models": 35
   },
   {
    "id": "com.sony.dtv.customersupport.provider.res",
@@ -7890,7 +8184,7 @@
    "platform": "any",
    "action": "ask",
    "title": "Sony device agent / remote support",
-   "models": 41
+   "models": 45
   },
   {
    "id": "com.sony.dtv.demo",
@@ -7904,21 +8198,21 @@
    "platform": "any",
    "action": "disable",
    "title": "Shop demo mode",
-   "models": 16
+   "models": 17
   },
   {
    "id": "com.sony.dtv.demosupport",
    "platform": "any",
    "action": "disable",
    "title": "Retail demo support",
-   "models": 34
+   "models": 36
   },
   {
    "id": "com.sony.dtv.demosystemsupport",
    "platform": "any",
    "action": "disable",
    "title": "Retail demo system support",
-   "models": 22
+   "models": 24
   },
   {
    "id": "com.sony.dtv.deviceadminsettings",
@@ -7939,7 +8233,7 @@
    "platform": "any",
    "action": "ask",
    "title": "Sony Discover content bar",
-   "models": 21
+   "models": 23
   },
   {
    "id": "com.sony.dtv.discovery.plugin.wasuplugin",
@@ -7960,14 +8254,14 @@
    "platform": "any",
    "action": "ask",
    "title": "BRAVIA CAM proximity/distance alert (second unit)",
-   "models": 7
+   "models": 8
   },
   {
    "id": "com.sony.dtv.duid.generator",
    "platform": "any",
    "action": "disable",
    "title": "tracking ID generator",
-   "models": 2
+   "models": 3
   },
   {
    "id": "com.sony.dtv.ecodashboard",
@@ -7981,7 +8275,7 @@
    "platform": "any",
    "action": "ask",
    "title": "BRAVIA CAM gestures (no camera attached)",
-   "models": 14
+   "models": 15
   },
   {
    "id": "com.sony.dtv.hbbtvlauncher",
@@ -8016,14 +8310,14 @@
    "platform": "any",
    "action": "ask",
    "title": "i-Manual",
-   "models": 20
+   "models": 22
   },
   {
    "id": "com.sony.dtv.indiametarecommendation",
    "platform": "any",
    "action": "disable",
    "title": "content recommendation feed (India per its name)",
-   "models": 2
+   "models": 3
   },
   {
    "id": "com.sony.dtv.irblaster",
@@ -8037,7 +8331,7 @@
    "platform": "any",
    "action": "disable",
    "title": "IRB recommendations",
-   "models": 3
+   "models": 4
   },
   {
    "id": "com.sony.dtv.keepsleepserviceforwol",
@@ -8086,7 +8380,7 @@
    "platform": "any",
    "action": "ask",
    "title": "com.sony.dtv.magicpacketnotifyservice",
-   "models": 1
+   "models": 2
   },
   {
    "id": "com.sony.dtv.moreapps",
@@ -8100,14 +8394,14 @@
    "platform": "any",
    "action": "disable",
    "title": "shop-mode demo",
-   "models": 38
+   "models": 40
   },
   {
    "id": "com.sony.dtv.mysony",
    "platform": "any",
    "action": "disable",
    "title": "My Sony 会员尊享 (membership/promo app)",
-   "models": 1
+   "models": 2
   },
   {
    "id": "com.sony.dtv.netflixmanager",
@@ -8128,14 +8422,14 @@
    "platform": "any",
    "action": "disable",
    "title": "Network recommendations",
-   "models": 4
+   "models": 5
   },
   {
    "id": "com.sony.dtv.notificationcenter",
    "platform": "any",
    "action": "ask",
    "title": "\"BRAVIA notifications\" inbox",
-   "models": 3
+   "models": 4
   },
   {
    "id": "com.sony.dtv.osat.album",
@@ -8170,7 +8464,7 @@
    "platform": "any",
    "action": "disable",
    "title": "My BRAVIA promos",
-   "models": 26
+   "models": 27
   },
   {
    "id": "com.sony.dtv.qq",
@@ -8198,14 +8492,14 @@
    "platform": "any",
    "action": "disable",
    "title": "Recommendation service",
-   "models": 4
+   "models": 5
   },
   {
    "id": "com.sony.dtv.remoteaccess",
    "platform": "any",
    "action": "ask",
    "title": "Sony remote support",
-   "models": 2
+   "models": 3
   },
   {
    "id": "com.sony.dtv.scrums.action.tvdotactionactivitymanagerplugin",
@@ -8247,7 +8541,7 @@
    "platform": "any",
    "action": "ask",
    "title": "BRAVIA CAM settings provider (second unit)",
-   "models": 7
+   "models": 8
   },
   {
    "id": "com.sony.dtv.sensingfusionservice",
@@ -8280,16 +8574,16 @@
   {
    "id": "com.sony.dtv.shopsettings",
    "platform": "any",
-   "action": "ask",
-   "title": "com.sony.dtv.shopsettings",
-   "models": 2
+   "action": "disable",
+   "title": "in-store demo settings",
+   "models": 4
   },
   {
    "id": "com.sony.dtv.smarthelp",
    "platform": "any",
    "action": "ask",
    "title": "Sony help tile",
-   "models": 35
+   "models": 38
   },
   {
    "id": "com.sony.dtv.smarthomesettings",
@@ -8331,35 +8625,35 @@
    "platform": "any",
    "action": "disable",
    "title": "Sony Select app store/promo tile",
-   "models": 39
+   "models": 42
   },
   {
    "id": "com.sony.dtv.sonyselect.overlay",
    "platform": "any",
    "action": "ask",
-   "title": "com.sony.dtv.sonyselect.overlay",
-   "models": 6
+   "title": "its launcher overlay",
+   "models": 7
   },
   {
    "id": "com.sony.dtv.sonyshelf",
    "platform": "any",
    "action": "disable",
    "title": "Sony Shelf recommendation row",
-   "models": 3
+   "models": 4
   },
   {
    "id": "com.sony.dtv.sonytab",
    "platform": "any",
    "action": "ask",
    "title": "Sony content tab / partner rows",
-   "models": 15
+   "models": 16
   },
   {
    "id": "com.sony.dtv.touchpad.tutorial",
    "platform": "any",
    "action": "ask",
    "title": "touchpad remote tutorial",
-   "models": 6
+   "models": 8
   },
   {
    "id": "com.sony.dtv.tuningconfirmation_dvbt",
@@ -8436,14 +8730,14 @@
    "platform": "any",
    "action": "disable",
    "title": "Watch TV recommendations",
-   "models": 4
+   "models": 5
   },
   {
    "id": "com.sony.dtv.woprecommendation",
    "platform": "any",
    "action": "disable",
    "title": "What's on Play recommendations",
-   "models": 3
+   "models": 4
   },
   {
    "id": "com.sony.dtv.youview",
@@ -8457,14 +8751,14 @@
    "platform": "any",
    "action": "ask",
    "title": "DLNA renderer",
-   "models": 14
+   "models": 15
   },
   {
    "id": "com.sony.huey.dlna.renderersettings",
    "platform": "any",
    "action": "ask",
    "title": "com.sony.huey.dlna.renderersettings",
-   "models": 13
+   "models": 14
   },
   {
    "id": "com.sony.rvu",
@@ -8485,14 +8779,14 @@
    "platform": "any",
    "action": "ask",
    "title": "Sony Video Unlimited (service discontinued)",
-   "models": 1
+   "models": 2
   },
   {
    "id": "com.sonyericsson.dlna",
    "platform": "any",
    "action": "ask",
    "title": "DLNA media server/renderer",
-   "models": 14
+   "models": 15
   },
   {
    "id": "com.sonyericsson.dlna.dtcpplayer",
@@ -8506,7 +8800,7 @@
    "platform": "any",
    "action": "disable",
    "title": "Sony IDD usage-data agent",
-   "models": 21
+   "models": 22
   },
   {
    "id": "com.sonyliv",
@@ -8527,7 +8821,7 @@
    "platform": "any",
    "action": "ask",
    "title": "voice chat room",
-   "models": 1
+   "models": 2
   },
   {
    "id": "com.spocky.projengmenu",
@@ -8681,14 +8975,14 @@
    "platform": "any",
    "action": "ask",
    "title": "unused, Google WebView is the active provider",
-   "models": 18
+   "models": 19
   },
   {
    "id": "com.tcl.appmarket2",
    "platform": "any",
    "action": "ask",
    "title": "TCL app store (Play Store stays)",
-   "models": 13
+   "models": 14
   },
   {
    "id": "com.tcl.appreciate.art",
@@ -8709,7 +9003,7 @@
    "platform": "any",
    "action": "ask",
    "title": "TCL voice service",
-   "models": 26
+   "models": 28
   },
   {
    "id": "com.tcl.atomic.servicecenter",
@@ -8723,14 +9017,14 @@
    "platform": "any",
    "action": "ask",
    "title": "stock audio player",
-   "models": 9
+   "models": 10
   },
   {
    "id": "com.tcl.bi",
    "platform": "any",
    "action": "disable",
    "title": "TCL BI analytics",
-   "models": 39
+   "models": 42
   },
   {
    "id": "com.tcl.bootadservice",
@@ -8744,7 +9038,7 @@
    "platform": "any",
    "action": "ask",
    "title": "second web browser",
-   "models": 29
+   "models": 30
   },
   {
    "id": "com.tcl.c2dm.client",
@@ -8771,8 +9065,8 @@
    "id": "com.tcl.common.terminalmanagerplus",
    "platform": "any",
    "action": "ask",
-   "title": "TCL device-management service, starts at boot and watches",
-   "models": 1
+   "title": "TCL device-management service, watches package installs",
+   "models": 2
   },
   {
    "id": "com.tcl.common.weather",
@@ -8786,21 +9080,21 @@
    "platform": "any",
    "action": "ask",
    "title": "phone-to-TV data migration",
-   "models": 19
+   "models": 20
   },
   {
    "id": "com.tcl.cyberui",
    "platform": "any",
    "action": "ask",
    "title": "TCL's own launcher/content service, unused",
-   "models": 7
+   "models": 8
   },
   {
    "id": "com.tcl.dashboard",
    "platform": "any",
    "action": "disable",
-   "title": "TCL Home panel and its promos",
-   "models": 35
+   "title": "TCL dashboard / promo backend",
+   "models": 38
   },
   {
    "id": "com.tcl.eletronicpolicy",
@@ -8814,7 +9108,7 @@
    "platform": "any",
    "action": "disable",
    "title": "retail demo stickers",
-   "models": 75
+   "models": 80
   },
   {
    "id": "com.tcl.eva",
@@ -8829,6 +9123,13 @@
    "action": "disable",
    "title": "store demo",
    "models": 24
+  },
+  {
+   "id": "com.tcl.externaldevice.update",
+   "platform": "any",
+   "action": "ask",
+   "title": "USB accessory updater",
+   "models": 1
   },
   {
    "id": "com.tcl.factory.view",
@@ -8856,7 +9157,7 @@
    "platform": "any",
    "action": "ask",
    "title": "USB photo gallery + TCL screensaver",
-   "models": 15
+   "models": 17
   },
   {
    "id": "com.tcl.gamebar",
@@ -8877,28 +9178,28 @@
    "platform": "any",
    "action": "ask",
    "title": "TCL \"cleaner\" / app manager",
-   "models": 49
+   "models": 53
   },
   {
    "id": "com.tcl.hearaid",
    "platform": "any",
    "action": "ask",
    "title": "hearing test / accessibility helper",
-   "models": 15
+   "models": 16
   },
   {
    "id": "com.tcl.hotelmenu",
    "platform": "any",
    "action": "ask",
    "title": "hotel-mode portal",
-   "models": 18
+   "models": 19
   },
   {
    "id": "com.tcl.imageplayer",
    "platform": "any",
    "action": "ask",
    "title": "stock image player",
-   "models": 9
+   "models": 10
   },
   {
    "id": "com.tcl.initsetup",
@@ -8926,7 +9227,7 @@
    "platform": "any",
    "action": "disable",
    "title": "log capture and upload",
-   "models": 37
+   "models": 38
   },
   {
    "id": "com.tcl.m",
@@ -8947,7 +9248,7 @@
    "platform": "any",
    "action": "disable",
    "title": "TCL push messages and promos",
-   "models": 62
+   "models": 65
   },
   {
    "id": "com.tcl.micmanager",
@@ -8975,7 +9276,7 @@
    "platform": "any",
    "action": "ask",
    "title": "e-manual",
-   "models": 35
+   "models": 37
   },
   {
    "id": "com.tcl.overseasappshow",
@@ -8989,14 +9290,14 @@
    "platform": "any",
    "action": "ask",
    "title": "TCL tweaks to Google TV home rows",
-   "models": 53
+   "models": 56
   },
   {
    "id": "com.tcl.partnercustomizer.resource",
    "platform": "any",
    "action": "ask",
    "title": "32S6500S unit only",
-   "models": 1
+   "models": 2
   },
   {
    "id": "com.tcl.playskill",
@@ -9038,7 +9339,7 @@
    "platform": "any",
    "action": "ask",
    "title": "repair-guide app",
-   "models": 28
+   "models": 29
   },
   {
    "id": "com.tcl.samba",
@@ -9052,7 +9353,7 @@
    "platform": "any",
    "action": "ask",
    "title": "Alexa",
-   "models": 39
+   "models": 42
   },
   {
    "id": "com.tcl.smartlink.core",
@@ -9080,7 +9381,7 @@
    "platform": "any",
    "action": "ask",
    "title": "Bluetooth \"listen alone\"",
-   "models": 25
+   "models": 26
   },
   {
    "id": "com.tcl.tclmusic",
@@ -9115,14 +9416,14 @@
    "platform": "any",
    "action": "ask",
    "title": "TCL TV+ content app",
-   "models": 7
+   "models": 8
   },
   {
    "id": "com.tcl.tv.tclchannel",
    "platform": "any",
-   "action": "disable",
-   "title": "TCL Channel, bundles Google Mobile Ads",
-   "models": 2
+   "action": "ask",
+   "title": "TCL Channel",
+   "models": 3
   },
   {
    "id": "com.tcl.tv.tclhome_master",
@@ -9136,7 +9437,7 @@
    "platform": "any",
    "action": "ask",
    "title": "pushes TCL content to the home screen at boot",
-   "models": 46
+   "models": 48
   },
   {
    "id": "com.tcl.tvhealthcheck",
@@ -9157,14 +9458,14 @@
    "platform": "any",
    "action": "ask",
    "title": "TCL \"TV Guard\" cleaner",
-   "models": 15
+   "models": 16
   },
   {
    "id": "com.tcl.ui_mediaCenter",
    "platform": "any",
    "action": "ask",
    "title": "USB media player",
-   "models": 37
+   "models": 39
   },
   {
    "id": "com.tcl.usagestats",
@@ -9178,14 +9479,14 @@
    "platform": "any",
    "action": "ask",
    "title": "end-user agreement screens",
-   "models": 31
+   "models": 32
   },
   {
    "id": "com.tcl.usercenter",
    "platform": "any",
    "action": "disable",
    "title": "TCL account sign-in nags",
-   "models": 53
+   "models": 57
   },
   {
    "id": "com.tcl.versionUpdateApp",
@@ -9206,7 +9507,7 @@
    "platform": "any",
    "action": "ask",
    "title": "com.tcl.videoplayer",
-   "models": 7
+   "models": 8
   },
   {
    "id": "com.tcl.vod",
@@ -9227,7 +9528,7 @@
    "platform": "any",
    "action": "disable",
    "title": "TCL movie/show recommendation browser",
-   "models": 58
+   "models": 61
   },
   {
    "id": "com.tcl.waterfall.resource",
@@ -9255,7 +9556,7 @@
    "platform": "any",
    "action": "disable",
    "title": "background reporting service",
-   "models": 6
+   "models": 8
   },
   {
    "id": "com.teamsmart.videomanager.tv",
@@ -9265,11 +9566,18 @@
    "models": 1
   },
   {
+   "id": "com.teamviewer.quicksupport.addon.tpvision2k16_v1",
+   "platform": "any",
+   "action": "ask",
+   "title": "its TP Vision add-on",
+   "models": 1
+  },
+  {
    "id": "com.teamviewer.quicksupport.market",
    "platform": "any",
    "action": "ask",
-   "title": "com.teamviewer.quicksupport.market",
-   "models": 1
+   "title": "TeamViewer QuickSupport remote access",
+   "models": 2
   },
   {
    "id": "com.technicolor.android.BootupTraceQR",
@@ -9279,11 +9587,39 @@
    "models": 2
   },
   {
+   "id": "com.technicolor.app.ota",
+   "platform": "any",
+   "action": "ask",
+   "title": "ApplicationOta: silent background partner APK installer",
+   "models": 1
+  },
+  {
+   "id": "com.technicolor.autoperiodicreboot",
+   "platform": "any",
+   "action": "ask",
+   "title": "forced periodic scheduled reboot daemon",
+   "models": 1
+  },
+  {
    "id": "com.technicolor.cputemperature",
    "platform": "any",
    "action": "ask",
    "title": "com.technicolor.cputemperature",
    "models": 2
+  },
+  {
+   "id": "com.technicolor.project.releasenote",
+   "platform": "any",
+   "action": "ask",
+   "title": "pop-up release notes",
+   "models": 1
+  },
+  {
+   "id": "com.technicolor.zta",
+   "platform": "any",
+   "action": "ask",
+   "title": "Technicolor Zero-Touch provisioning",
+   "models": 1
   },
   {
    "id": "com.technicolor.zwavereceiver",
@@ -9318,7 +9654,7 @@
    "platform": "any",
    "action": "ask",
    "title": "QQ Music TV preload",
-   "models": 2
+   "models": 3
   },
   {
    "id": "com.tianci.ad",
@@ -9367,7 +9703,7 @@
    "platform": "any",
    "action": "ask",
    "title": "\"Media\" tile: plays files from a USB drive",
-   "models": 2
+   "models": 3
   },
   {
    "id": "com.tianci.push",
@@ -9556,42 +9892,42 @@
    "platform": "any",
    "action": "ask",
    "title": "no UI, holds GET_TASKS (sees which apps you run) + INTERNET",
-   "models": 4
+   "models": 5
   },
   {
    "id": "com.vestel.smartlogger",
    "platform": "any",
    "action": "disable",
    "title": "Vestel logging service",
-   "models": 3
+   "models": 5
   },
   {
    "id": "com.vestel.tv.eib",
    "platform": "any",
    "action": "ask",
-   "title": "E-User Manual viewer: one activity, no services or receivers",
-   "models": 1
+   "title": "the on-screen e-manual (its label was confirmed on screen)",
+   "models": 3
   },
   {
    "id": "com.vestel.tv.speedup",
    "platform": "any",
    "action": "ask",
-   "title": "\"speed up\" cleaner, holds READ_LOGS + DUMP + INTERNET",
-   "models": 5
+   "title": "\"speed up\" cleaner",
+   "models": 7
   },
   {
    "id": "com.vestel.vestelreporter",
    "platform": "any",
    "action": "disable",
    "title": "Vestel reporter: INTERNET + BOOT_COMPLETED, no UI",
-   "models": 7
+   "models": 9
   },
   {
    "id": "com.vewd.core.browser",
    "platform": "any",
    "action": "ask",
-   "title": "Vewd web browser",
-   "models": 2
+   "title": "the Vewd browser",
+   "models": 3
   },
   {
    "id": "com.vewd.core.integration.dia",
@@ -9633,7 +9969,7 @@
    "platform": "any",
    "action": "ask",
    "title": "VIDAA content provider for the stock home's rows",
-   "models": 3
+   "models": 4
   },
   {
    "id": "com.vimeo.android.videoapp",
@@ -9647,7 +9983,7 @@
    "platform": "any",
    "action": "ask",
    "title": "AI picture book",
-   "models": 4
+   "models": 5
   },
   {
    "id": "com.vk.tv",
@@ -9664,11 +10000,53 @@
    "models": 1
   },
   {
+   "id": "com.vs.phone.remote.search.assistants",
+   "platform": "any",
+   "action": "ask",
+   "title": "\"VsVoiceAssistants\" - voice search backend",
+   "models": 1
+  },
+  {
+   "id": "com.vstv.diagnosis",
+   "platform": "any",
+   "action": "disable",
+   "title": "\"Diagnosis\" - vendor telemetry/self-test app",
+   "models": 1
+  },
+  {
+   "id": "com.vstv.factory",
+   "platform": "any",
+   "action": "ask",
+   "title": "\"Factory Menu\" - service-menu UI",
+   "models": 1
+  },
+  {
+   "id": "com.vstv.factory.test",
+   "platform": "any",
+   "action": "ask",
+   "title": "VsFactoryTest - panel/burn-in test routines",
+   "models": 1
+  },
+  {
+   "id": "com.vstv.tv.assistant",
+   "platform": "any",
+   "action": "ask",
+   "title": "\"TvAssistant\" - remote microphone / voice assistant",
+   "models": 1
+  },
+  {
    "id": "com.vt.alexa",
    "platform": "any",
    "action": "ask",
-   "title": "Hisense Alexa (Google Assistant is kept)",
-   "models": 4
+   "title": "HiAlexa",
+   "models": 5
+  },
+  {
+   "id": "com.vt.ambiencelife",
+   "platform": "any",
+   "action": "ask",
+   "title": "ambience / wallpaper gimmick",
+   "models": 1
   },
   {
    "id": "com.vt.ambiencephoto",
@@ -9682,35 +10060,42 @@
    "platform": "any",
    "action": "ask",
    "title": "com.vt.factory",
-   "models": 1
+   "models": 2
   },
   {
    "id": "com.vt.fte",
    "platform": "any",
    "action": "ask",
    "title": "first-time setup hooks for the setup wizard",
-   "models": 3
+   "models": 4
   },
   {
    "id": "com.vt.hishow",
    "platform": "any",
    "action": "ask",
    "title": "\"Family Moment\" screensaver and photo content",
-   "models": 4
+   "models": 5
+  },
+  {
+   "id": "com.vt.mic.service",
+   "platform": "any",
+   "action": "ask",
+   "title": "microphone background service",
+   "models": 1
   },
   {
    "id": "com.vt.roomcalibration",
    "platform": "any",
    "action": "ask",
    "title": "room audio calibration prompt (RoomCalibration)",
-   "models": 1
+   "models": 2
   },
   {
    "id": "com.vt.storemode",
    "platform": "any",
    "action": "disable",
    "title": "shop demo mode",
-   "models": 4
+   "models": 5
   },
   {
    "id": "com.vt.tv.ai_sense",
@@ -9720,32 +10105,39 @@
    "models": 1
   },
   {
+   "id": "com.vt.tv.airplaykeycheck",
+   "platform": "any",
+   "action": "ask",
+   "title": "com.vt.tv.airplaykeycheck",
+   "models": 1
+  },
+  {
    "id": "com.vt.tv.b2b",
    "platform": "any",
    "action": "ask",
    "title": "hotel/business mode, starts at boot",
-   "models": 2
+   "models": 3
   },
   {
    "id": "com.vt.tv.calmanconnector",
    "platform": "any",
    "action": "ask",
    "title": "Calman professional calibration connector",
-   "models": 1
+   "models": 2
   },
   {
    "id": "com.vt.tv.dlna",
    "platform": "any",
    "action": "ask",
    "title": "DLNA media renderer, starts at boot",
-   "models": 2
+   "models": 3
   },
   {
    "id": "com.vt.tv.evservice",
    "platform": "any",
    "action": "disable",
    "title": "viewing-data (ACR) service",
-   "models": 4
+   "models": 5
   },
   {
    "id": "com.vt.tv.interactive",
@@ -9759,28 +10151,28 @@
    "platform": "any",
    "action": "ask",
    "title": "Media Center: USB and DLNA file player",
-   "models": 1
+   "models": 2
   },
   {
    "id": "com.vt.tv.mobiledeviceconnectiontips",
    "platform": "any",
    "action": "ask",
    "title": "Miracast screen mirroring (codePath Miracast); Chromecast and AirPlay kept",
-   "models": 1
+   "models": 2
   },
   {
    "id": "com.vt.tv.protector",
    "platform": "any",
    "action": "ask",
    "title": "DeviceAssistant: cache cleaner and \"turbo mode\", starts at boot",
-   "models": 3
+   "models": 4
   },
   {
    "id": "com.vt.tv.singlelisten",
    "platform": "any",
    "action": "ask",
    "title": "MyMusic",
-   "models": 2
+   "models": 3
   },
   {
    "id": "com.vt.tv.smartsense.ui",
@@ -9801,6 +10193,13 @@
    "platform": "any",
    "action": "ask",
    "title": "华数TV, preloaded",
+   "models": 1
+  },
+  {
+   "id": "com.waxrain.airplaydmr",
+   "platform": "any",
+   "action": "ask",
+   "title": "third-party AirPlay receiver",
    "models": 1
   },
   {
@@ -9853,6 +10252,13 @@
    "models": 1
   },
   {
+   "id": "com.windowsight.windowsighttv.hisense.artstudio",
+   "platform": "any",
+   "action": "ask",
+   "title": "com.windowsight.windowsighttv.hisense.artstudio",
+   "models": 1
+  },
+  {
    "id": "com.witsoftware.ir.vodafonetv",
    "platform": "any",
    "action": "ask",
@@ -9878,7 +10284,7 @@
    "platform": "any",
    "action": "ask",
    "title": "account stub",
-   "models": 1
+   "models": 2
   },
   {
    "id": "com.xgimi.activitypage",
@@ -9892,14 +10298,14 @@
    "platform": "any",
    "action": "disable",
    "title": "XGIMI ad service",
-   "models": 1
+   "models": 2
   },
   {
    "id": "com.xgimi.atmosphere",
    "platform": "any",
    "action": "ask",
    "title": "XGIMI animated screensaver / ambient scenes",
-   "models": 2
+   "models": 3
   },
   {
    "id": "com.xgimi.atvwifiverify",
@@ -9913,7 +10319,7 @@
    "platform": "any",
    "action": "disable",
    "title": "XGIMI bug report uploader",
-   "models": 8
+   "models": 9
   },
   {
    "id": "com.xgimi.burnin",
@@ -9926,15 +10332,15 @@
    "id": "com.xgimi.datareporter",
    "platform": "any",
    "action": "disable",
-   "title": "XGIMI usage reporting",
-   "models": 2
+   "title": "usage/telemetry reporter",
+   "models": 3
   },
   {
    "id": "com.xgimi.doubanfm",
    "platform": "any",
    "action": "ask",
    "title": "XGIMI music app, speaker-mode screen",
-   "models": 6
+   "models": 7
   },
   {
    "id": "com.xgimi.filemanager",
@@ -9955,7 +10361,7 @@
    "platform": "any",
    "action": "ask",
    "title": "help/instruction content",
-   "models": 1
+   "models": 2
   },
   {
    "id": "com.xgimi.karaokesdk",
@@ -9976,7 +10382,7 @@
    "platform": "any",
    "action": "ask",
    "title": "push message/notification center",
-   "models": 1
+   "models": 2
   },
   {
    "id": "com.xgimi.newappmarket",
@@ -9997,7 +10403,7 @@
    "platform": "any",
    "action": "ask",
    "title": "VIP/payment UI",
-   "models": 1
+   "models": 2
   },
   {
    "id": "com.xgimi.screensaver",
@@ -10011,7 +10417,7 @@
    "platform": "any",
    "action": "ask",
    "title": "XGIMI video/VIP content app",
-   "models": 1
+   "models": 2
   },
   {
    "id": "com.xgimi.upgrade",
@@ -10025,7 +10431,7 @@
    "platform": "any",
    "action": "ask",
    "title": "account/VIP/backup UI and provider",
-   "models": 1
+   "models": 2
   },
   {
    "id": "com.xgimi.yg.minitvfactory",
@@ -10087,15 +10493,15 @@
    "id": "com.xiaomi.floatingframe",
    "platform": "any",
    "action": "disable",
-   "title": "floating promo overlay service",
-   "models": 10
+   "title": "floating promo overlay",
+   "models": 12
   },
   {
    "id": "com.xiaomi.gamecenter.sdk.service.mibox",
    "platform": "any",
    "action": "ask",
    "title": "game center SDK",
-   "models": 10
+   "models": 11
   },
   {
    "id": "com.xiaomi.mi_connect_service",
@@ -10123,7 +10529,7 @@
    "platform": "any",
    "action": "ask",
    "title": "Mi Music",
-   "models": 27
+   "models": 29
   },
   {
    "id": "com.xiaomi.miplay",
@@ -10144,7 +10550,7 @@
    "platform": "any",
    "action": "ask",
    "title": "calendar",
-   "models": 7
+   "models": 8
   },
   {
    "id": "com.xiaomi.mitv.csi",
@@ -10172,35 +10578,35 @@
    "platform": "any",
    "action": "ask",
    "title": "user handbook",
-   "models": 9
+   "models": 10
   },
   {
    "id": "com.xiaomi.mitv.health",
    "platform": "any",
    "action": "ask",
    "title": "MiHealth",
-   "models": 3
+   "models": 4
   },
   {
    "id": "com.xiaomi.mitv.healthdiagnosis",
    "platform": "any",
    "action": "ask",
    "title": "TV self-diagnosis",
-   "models": 4
+   "models": 5
   },
   {
    "id": "com.xiaomi.mitv.hyper.screensaver",
    "platform": "any",
    "action": "ask",
    "title": "HyperOS screensaver Activity; see device doc",
-   "models": 2
+   "models": 3
   },
   {
    "id": "com.xiaomi.mitv.karaoke.service",
    "platform": "any",
    "action": "ask",
    "title": "karaoke",
-   "models": 5
+   "models": 6
   },
   {
    "id": "com.xiaomi.mitv.legal.webview",
@@ -10263,7 +10669,7 @@
    "platform": "any",
    "action": "ask",
    "title": "Xiaomi store",
-   "models": 7
+   "models": 8
   },
   {
    "id": "com.xiaomi.mitv.smartpanel",
@@ -10284,14 +10690,14 @@
    "platform": "any",
    "action": "ask",
    "title": "\"TV Manager\" cleaner",
-   "models": 29
+   "models": 31
   },
   {
    "id": "com.xiaomi.mitv.tvpush.tvpushservice",
    "platform": "any",
    "action": "disable",
    "title": "push ads/notifications",
-   "models": 6
+   "models": 7
   },
   {
    "id": "com.xiaomi.mitv.tvvideocall",
@@ -10319,7 +10725,7 @@
    "platform": "any",
    "action": "ask",
    "title": "screen recorder",
-   "models": 8
+   "models": 9
   },
   {
    "id": "com.xiaomi.setupwizard",
@@ -10333,35 +10739,35 @@
    "platform": "any",
    "action": "ask",
    "title": "Mi Home; the remote's voice button still worked without it",
-   "models": 6
+   "models": 7
   },
   {
    "id": "com.xiaomi.statistic",
    "platform": "any",
    "action": "disable",
    "title": "statistics upload",
-   "models": 34
+   "models": 36
   },
   {
    "id": "com.xiaomi.tv.gallery",
    "platform": "any",
    "action": "ask",
    "title": "\"Pictorial\" wallpaper app",
-   "models": 6
+   "models": 7
   },
   {
    "id": "com.xiaomi.tvqs",
    "platform": "any",
    "action": "disable",
-   "title": "quality system: uploads crash/perf/dropbox entries",
-   "models": 8
+   "title": "quality/performance reporting",
+   "models": 9
   },
   {
    "id": "com.xiaomi.tvqs.overseas",
    "platform": "any",
    "action": "disable",
    "title": "Firebase analytics + DOWNLOAD_WITHOUT_NOTIFICATION",
-   "models": 5
+   "models": 6
   },
   {
    "id": "com.xiaomi.tvqs.overseas.y24",
@@ -10375,7 +10781,7 @@
    "platform": "any",
    "action": "ask",
    "title": "weather provider; also feeds the Hyper screensaver",
-   "models": 5
+   "models": 6
   },
   {
    "id": "com.xiaomi.voicecontrol",
@@ -10403,21 +10809,21 @@
    "platform": "any",
    "action": "ask",
    "title": "old SonyLIV 3.6 build; the Play Store com.sonyliv is kept",
-   "models": 2
+   "models": 3
   },
   {
    "id": "com.xiaomo.tv.milegal",
    "platform": "any",
    "action": "ask",
    "title": "static legal / privacy text screens",
-   "models": 15
+   "models": 17
   },
   {
    "id": "com.xm.webcontent",
    "platform": "any",
    "action": "disable",
-   "title": "Xiaomi promo web content",
-   "models": 40
+   "title": "webview container for promotions",
+   "models": 43
   },
   {
    "id": "com.yablio.sendfilestotv",
@@ -10770,6 +11176,13 @@
    "models": 1
   },
   {
+   "id": "cyx.browser",
+   "platform": "any",
+   "action": "ask",
+   "title": "cyx.browser",
+   "models": 1
+  },
+  {
    "id": "de.benzac.msx",
    "platform": "any",
    "action": "ask",
@@ -10893,7 +11306,14 @@
    "platform": "any",
    "action": "disable",
    "title": "retail demo mode",
-   "models": 73
+   "models": 81
+  },
+  {
+   "id": "fusion.android.tv.demo2",
+   "platform": "any",
+   "action": "disable",
+   "title": "/system_ext/app/HKC_RetailDisplay_polytron",
+   "models": 1
   },
   {
    "id": "hu.telekom.ttvtester",
@@ -11019,6 +11439,13 @@
    "platform": "any",
    "action": "ask",
    "title": "it.telecomitalia.timmusic_tv",
+   "models": 1
+  },
+  {
+   "id": "jp.co.omronsoft.openwnn",
+   "platform": "any",
+   "action": "ask",
+   "title": "jp.co.omronsoft.openwnn",
    "models": 1
   },
   {
@@ -11180,7 +11607,7 @@
    "platform": "any",
    "action": "ask",
    "title": "ktc.factorymenu.ui",
-   "models": 1
+   "models": 2
   },
   {
    "id": "limehd.ru.ctv",
@@ -11222,7 +11649,7 @@
    "platform": "any",
    "action": "ask",
    "title": "factory menu: disabled, never launched",
-   "models": 10
+   "models": 13
   },
   {
    "id": "mitv.service",
@@ -11299,7 +11726,7 @@
    "platform": "any",
    "action": "disable",
    "title": "\"Hisense Channels\", VIDAA free ad-supported channels",
-   "models": 5
+   "models": 6
   },
   {
    "id": "oneplus.smarthome",
@@ -11313,7 +11740,7 @@
    "platform": "any",
    "action": "ask",
    "title": "WebView test shell",
-   "models": 7
+   "models": 8
   },
   {
    "id": "org.droidtv.amazonalexa",
@@ -11355,7 +11782,7 @@
    "platform": "any",
    "action": "disable",
    "title": "\"DAC\" analytics uploader",
-   "models": 18
+   "models": 19
   },
   {
    "id": "org.droidtv.consentcmpapp",
@@ -11403,8 +11830,8 @@
    "id": "org.droidtv.demome",
    "platform": "any",
    "action": "disable",
-   "title": "\"Demo me\" retail demo mode",
-   "models": 12
+   "title": "retail demo mode (needs TVINPUT_ALLOW=1)",
+   "models": 13
   },
   {
    "id": "org.droidtv.dlna",
@@ -11417,22 +11844,22 @@
    "id": "org.droidtv.dms",
    "platform": "any",
    "action": "ask",
-   "title": "UPnP media server, started at boot; the DLNA renderer and the USB player (contentexplorer) stay (55PUS6581)",
-   "models": 1
+   "title": "UPnP media server, started at boot; the DLNA renderer and USB player stay",
+   "models": 2
   },
   {
    "id": "org.droidtv.dropboxprovider",
    "platform": "any",
    "action": "ask",
    "title": "Dropbox source in Media",
-   "models": 2
+   "models": 3
   },
   {
    "id": "org.droidtv.gel",
    "platform": "any",
    "action": "ask",
    "title": "metrics collector sharing candeebug's process",
-   "models": 18
+   "models": 19
   },
   {
    "id": "org.droidtv.hbbtvopapp",
@@ -11481,14 +11908,21 @@
    "platform": "any",
    "action": "ask",
    "title": "\"Smart TV Collection\" app storefront",
-   "models": 13
+   "models": 14
   },
   {
    "id": "org.droidtv.nettv_launcherapp",
    "platform": "any",
    "action": "ask",
    "title": "NetTV app launcher entry",
-   "models": 3
+   "models": 4
+  },
+  {
+   "id": "org.droidtv.nettvadvert",
+   "platform": "any",
+   "action": "disable",
+   "title": "ad widget, ad data cache and an ad-impression accessibility service",
+   "models": 1
   },
   {
    "id": "org.droidtv.nettvapp1814",
@@ -11498,11 +11932,25 @@
    "models": 5
   },
   {
+   "id": "org.droidtv.nettvapp1815",
+   "platform": "any",
+   "action": "ask",
+   "title": "ARTE",
+   "models": 1
+  },
+  {
    "id": "org.droidtv.nettvapp1984",
    "platform": "any",
    "action": "ask",
    "title": "Dailymotion",
-   "models": 2
+   "models": 3
+  },
+  {
+   "id": "org.droidtv.nettvapp2000020",
+   "platform": "any",
+   "action": "ask",
+   "title": "FilmoTV",
+   "models": 1
   },
   {
    "id": "org.droidtv.nettvapp20004410",
@@ -11520,6 +11968,13 @@
   },
   {
    "id": "org.droidtv.nettvapp3073",
+   "platform": "any",
+   "action": "ask",
+   "title": "Cinetrailer",
+   "models": 1
+  },
+  {
+   "id": "org.droidtv.nettvapp3076",
    "platform": "any",
    "action": "ask",
    "title": "Cinetrailer",
@@ -11558,13 +12013,20 @@
    "platform": "any",
    "action": "ask",
    "title": "TV5Monde",
-   "models": 1
+   "models": 2
   },
   {
    "id": "org.droidtv.nettvapp3903",
    "platform": "any",
    "action": "ask",
    "title": "VOYO",
+   "models": 1
+  },
+  {
+   "id": "org.droidtv.nettvapp3983",
+   "platform": "any",
+   "action": "ask",
+   "title": "Rakuten TV",
    "models": 1
   },
   {
@@ -11607,7 +12069,7 @@
    "platform": "any",
    "action": "ask",
    "title": "MEGOGO",
-   "models": 6
+   "models": 7
   },
   {
    "id": "org.droidtv.nettvapp4633",
@@ -11635,14 +12097,14 @@
    "platform": "any",
    "action": "ask",
    "title": "France24",
-   "models": 1
+   "models": 2
   },
   {
    "id": "org.droidtv.nettvapp4771",
    "platform": "any",
    "action": "ask",
    "title": "Divan.TV",
-   "models": 1
+   "models": 2
   },
   {
    "id": "org.droidtv.nettvapp4835",
@@ -11656,7 +12118,7 @@
    "platform": "any",
    "action": "ask",
    "title": "Social TV",
-   "models": 1
+   "models": 2
   },
   {
    "id": "org.droidtv.nettvapp4932",
@@ -11670,7 +12132,7 @@
    "platform": "any",
    "action": "ask",
    "title": "Filmbox Live",
-   "models": 1
+   "models": 2
   },
   {
    "id": "org.droidtv.nettvapp5245",
@@ -11691,14 +12153,14 @@
    "platform": "any",
    "action": "ask",
    "title": "Toon Goggles",
-   "models": 4
+   "models": 5
   },
   {
    "id": "org.droidtv.nettvapp5512",
    "platform": "any",
    "action": "ask",
    "title": "Fishing TV",
-   "models": 5
+   "models": 6
   },
   {
    "id": "org.droidtv.nettvapp5527",
@@ -11712,21 +12174,21 @@
    "platform": "any",
    "action": "ask",
    "title": "\"NetTvApps\" manager",
-   "models": 8
+   "models": 9
   },
   {
    "id": "org.droidtv.nettvrecommender",
    "platform": "any",
-   "action": "disable",
-   "title": "\"Top Picks\" content promotion row",
-   "models": 13
+   "action": "ask",
+   "title": "\"Top Picks\" content row",
+   "models": 14
   },
   {
    "id": "org.droidtv.nettvregistration",
    "platform": "any",
    "action": "ask",
    "title": "Philips account registration for NetTV",
-   "models": 3
+   "models": 4
   },
   {
    "id": "org.droidtv.oemtabprovider",
@@ -11761,7 +12223,7 @@
    "platform": "any",
    "action": "disable",
    "title": "e-sticker and shop banners",
-   "models": 4
+   "models": 5
   },
   {
    "id": "org.droidtv.sunrise",
@@ -11774,22 +12236,22 @@
    "id": "org.droidtv.tv.frameworklogger",
    "platform": "any",
    "action": "disable",
-   "title": "hands reboot reasons and firmware-install records to the Philips logger",
-   "models": 9
+   "title": "reboot reasons and firmware-install records to the Philips logger",
+   "models": 10
   },
   {
    "id": "org.droidtv.twittershare",
    "platform": "any",
    "action": "ask",
    "title": "Twitter share sheet",
-   "models": 2
+   "models": 3
   },
   {
    "id": "org.droidtv.usagelogger",
    "platform": "any",
    "action": "disable",
    "title": "boot stats, keypress counts, panel telemetry (needs TVINPUT_ALLOW=1)",
-   "models": 13
+   "models": 14
   },
   {
    "id": "org.liskovsoft.androidtv.rukeyboard",
@@ -11859,6 +12321,13 @@
    "platform": "any",
    "action": "ask",
    "title": "rocks.funkykarts",
+   "models": 1
+  },
+  {
+   "id": "ru.haier.evo",
+   "platform": "any",
+   "action": "ask",
+   "title": "ru.haier.evo",
    "models": 1
   },
   {
@@ -12072,6 +12541,13 @@
    "models": 7
   },
   {
+   "id": "timvision.setup_wizard",
+   "platform": "any",
+   "action": "ask",
+   "title": "TIM setup wizard",
+   "models": 1
+  },
+  {
    "id": "timvision.telemetry",
    "platform": "any",
    "action": "disable",
@@ -12111,7 +12587,7 @@
    "platform": "any",
    "action": "disable",
    "title": "automatic content recognition",
-   "models": 28
+   "models": 34
   },
   {
    "id": "tv.anoki.acr.controller",
@@ -12223,14 +12699,14 @@
    "platform": "any",
    "action": "disable",
    "title": "Samba TV fingerprints what's on screen",
-   "models": 37
+   "models": 38
   },
   {
    "id": "tv.samba.ssm.ui",
    "platform": "any",
    "action": "disable",
-   "title": "Samba TV ACR viewing tracking (enabled at the factory here)",
-   "models": 17
+   "title": "Samba TV opt-in / privacy screens",
+   "models": 18
   },
   {
    "id": "tv.sweet.tvplayer",

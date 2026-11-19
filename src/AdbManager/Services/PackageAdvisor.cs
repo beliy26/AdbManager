@@ -54,7 +54,7 @@ public sealed partial class PackageAdvisor
             @"^com\.cvte\.tv\.launcher",
             // CleanYourTV (CORE_RE в tools/disable.sh): без них прошивки не загружаются или уходят
             // в циклическую перезагрузку (location.fused — TCL 43S5400A)
-            @"^android\.ext\.(services|shared)$", @"^com\.android\.sdksandbox$", @"^com\.android\.location\.fused$",
+            @"^android\.ext\.(services|shared)$", @"^com\.(google\.)?android\.sdksandbox$", @"^com\.android\.location\.fused$",
             @"^com\.(google\.)?android\.(ext\.services|ext\.shared|modulemetadata)$",
             @"^com\.google\.android\.overlay\.modules", @"^com\.cltv\.mal$", @"^com\.mediatek\.(tis|tv\.agent)$",
             // Телефон

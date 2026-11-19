@@ -57,7 +57,7 @@ ADB Manager — бесплатная программа с открытым ко
 **Очистка от рекламы и телеметрии**
 - **Колонка «Совет»** — «Можно отключить» (реклама, телеметрия, демо), «По желанию», «Не трогать», «Защищено». Источники:
   - база [ЧистогоТВ](https://github.com/by-sonic/chistytv); платформа (Яндекс ТВ, Салют ТВ, Xiaomi, TCL, Haier, Hisense, Google TV) определяется автоматически;
-  - списки отключения [CleanYourTV](https://github.com/Gathin23/cleanyourtv) для 450+ моделей ТВ (TCL, Xiaomi, Sony, Philips, Hisense, Fire TV…) — 1 700+ пакетов с пояснениями;
+  - списки отключения [CleanYourTV](https://github.com/Gathin23/cleanyourtv) для 490+ моделей ТВ (TCL, Xiaomi, Sony, Philips, Hisense, Fire TV…) — 1 800+ пакетов с пояснениями;
   - свой список рекламных и шпионских предустановок телефонов: скрытые установщики Facebook и AppCloud, Samsung Free / Global Goals / Visit In, системная реклама и телеметрия Xiaomi и OPPO, «очистители».
 - «Отметить → Рекомендуемые к отключению» отмечает всё с советом «Можно отключить».
 - **Защита**: критичные системные пакеты (системный интерфейс, настройки, телефония, Wi-Fi, Bluetooth, клавиатура, установщик, Google Play, WebView…) программа не даст заморозить или удалить. Также защищены текущий **главный экран**, если другого лаунчера нет, и **входы ТВ** — пакеты, обслуживающие HDMI/AV/тюнер: если их отключить, вход показывает «Нет сигнала».
@@ -159,7 +159,7 @@ Android не разрешает adb менять состояние `DISABLED_UN
 | Проект | Лицензия | Что взято |
 |---|---|---|
 | [by-sonic/chistytv](https://github.com/by-sonic/chistytv) — ЧистыйТВ | MIT | База пакетов (`Assets/Data/chistytv-packages.json`), правила защиты критичных пакетов, идеи бэкапа с откатом, поиска устройств в сети, частного DNS с проверкой интернета, журнала на ТВ, очистки кэша перед установкой и запасных источников adb |
-| [Gathin23/cleanyourtv](https://github.com/Gathin23/cleanyourtv) — CleanYourTV | MIT | Списки отключения для 450+ моделей ТВ (`Assets/Data/cleanyourtv-packages.json`), защита главного экрана и входов ТВ, проверка после обновления прошивки, каталог аудита приватности |
+| [Gathin23/cleanyourtv](https://github.com/Gathin23/cleanyourtv) — CleanYourTV | MIT | Списки отключения для 490+ моделей ТВ (`Assets/Data/cleanyourtv-packages.json`), защита главного экрана и входов ТВ, проверка после обновления прошивки, каталог аудита приватности |
 | [spocky/miproja1](https://github.com/spocky/miproja1) — Projectivy Launcher | — | Не входит в приложение: последняя версия APK скачивается с GitHub Releases автора по запросу пользователя |
 | [leanbitlab-org/LtvLauncher](https://github.com/leanbitlab-org/LtvLauncher) — LTvLauncher | GPL-3.0 | Не входит в приложение: последняя версия APK скачивается с GitHub Releases автора по запросу пользователя |
 | [Android SDK Platform-Tools](https://developer.android.com/tools/releases/platform-tools) | Google | `adb.exe`; если не найден, скачивается с dl.google.com |

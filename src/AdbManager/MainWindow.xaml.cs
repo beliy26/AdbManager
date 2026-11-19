@@ -2154,10 +2154,35 @@ public sealed partial class MainWindow : Window
             return;
         }
 
+        // Заморожено программой, назад не возвращали, а пакет снова включён — его включила прошивка
+        // или магазин (ЧистыйТВ 0.2.8, Салют ТВ). Возвращать нечего, но пользователю стоит знать.
+        var reenabled = new List<JournalEntry>();
+        try
+        {
+            if (restorable.Any(r => r.Action == "freeze"))
+            {
+                var installed = await _adb.GetInstalledNamesAsync(device.Serial);
+                var states = await _adb.GetDisabledStatesAsync(device.Serial);
+                reenabled = restorable.Where(r => r.Action == "freeze" && installed.Contains(r.Package)
+                    && !states.ContainsKey(r.Package)).ToList();
+                restorable.RemoveAll(reenabled.Contains);
+            }
+        }
+        catch (Exception ex)
+        {
+            ShowStatus(InfoBarSeverity.Error, Res.Get("Error"), ex.Message);
+            return;
+        }
+        var reenabledText = reenabled.Count == 0 ? "" : Res.Format("ReenabledOutsideFormat",
+            string.Join(", ", reenabled.Select(r => r.Label is { } l && l != r.Package ? $"{l} ({r.Package})" : r.Package)));
+
         if (restorable.Count == 0)
         {
-            ShowStatus(InfoBarSeverity.Informational, Res.Get("NothingToUndoTitle"),
-                Res.Get("NothingToUndoMessage"));
+            if (reenabled.Count > 0)
+                ShowStatus(InfoBarSeverity.Warning, Res.Get("NothingToUndoTitle"), reenabledText);
+            else
+                ShowStatus(InfoBarSeverity.Informational, Res.Get("NothingToUndoTitle"),
+                    Res.Get("NothingToUndoMessage"));
             return;
         }
 
@@ -2174,7 +2199,7 @@ public sealed partial class MainWindow : Window
         };
 
         var chosen = await ShowChecklistAsync(Res.Get("UndoTitle"),
-            Res.Get("UndoMessage"),
+            Res.Get("UndoMessage") + (reenabledText == "" ? "" : Environment.NewLine + Environment.NewLine + reenabledText),
             restorable.Select(r => (Describe(r), r)).ToList(), Res.Get("UndoAction"));
         if (chosen is not { Count: > 0 }) return;
 

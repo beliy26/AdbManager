@@ -418,6 +418,11 @@ public sealed class AdbService
             ? await RunOnDeviceAsync(serial, "shell", "pm", "disable-user", "--user", "0", package)
             : await RunOnDeviceAsync(serial, "shell", "pm", "enable", "--user", "0", package);
 
+        // Прошивка Homatics на Android 14 отвечает «This command is illegal!» на --user 0,
+        // а без него отключает (ЧистыйТВ 0.2.8)
+        if (frozen && r.Text.Contains("command is illegal", StringComparison.OrdinalIgnoreCase))
+            r = await RunOnDeviceAsync(serial, "shell", "pm", "disable-user", package);
+
         // При успехе pm пишет «Package x new state: disabled-user / enabled».
         var expected = frozen ? "disabled" : "enabled";
         if (r.Output.Contains("new state: " + expected, StringComparison.OrdinalIgnoreCase))
